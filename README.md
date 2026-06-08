@@ -1,11 +1,8 @@
 # S.I.G.S.M. — Sistema Informático de Gestión de Servicios Médicos
 
-**"Trazabilidad Clínica en Tiempo Real y Cero Papel"**
-
 Proyecto de Egreso — BT Tecnologías de la Información 2026
 Cliente: **Hospital de Clínicas** | Empresa desarrolladora: **QuadNet**
-Institución: I.S.B.O. — Polo Educativo Tecnológico Vista Linda
-
+Institución: I.S.B.O. Instituto Superior Brazo Oriental
 ---
 
 ## ¿Qué es S.I.G.S.M.?
@@ -67,7 +64,7 @@ Gestión y seguimiento del transporte mediante ambulancias y otros vehículos de
 |------|-----------|
 | Frontend | HTML · CSS |
 | Backend | PHP |
-| Base de datos | MySQL / MariaDB |
+| Base de datos | MySQL |
 | Infraestructura | GNU/Linux · Docker · SSH |
 | Control de versiones | Git · GitHub |
 | Entorno de desarrollo | VS Code · XAMPP 8.x · VirtualBox 7.x |
@@ -113,10 +110,10 @@ Gestión y seguimiento del transporte mediante ambulancias y otros vehículos de
 - [x] Conformación del equipo
 - [x] Propuesta de valor
 - [x] Repositorio configurado
-- [ ] Relevamiento de requerimientos (ESRE)
+- [x] Relevamiento de requerimientos (ESRE)
 - [ ] Justificación tecnológica
 - [ ] Prototipo UI/UX (Figma)
-- [ ] Modelo Entidad-Relación
+- [x] Modelo Entidad-Relación
 - [ ] Implementación Módulo Documentación
 - [ ] Implementación Módulo Ambulancias
 - [ ] Script de administración del servidor
@@ -132,4 +129,4 @@ Gestión y seguimiento del transporte mediante ambulancias y otros vehículos de
 
 ---
 
-*Proyecto académico — I.S.B.O. UTU 2026. Todos los derechos reservados al equipo QuadNet.*
+*Proyecto académico — I.S.B.O. UTU 2026.*
