@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portal del Paciente del Hospital de Clínicas: indicaciones médicas, estudios y encuestas de satisfacción.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <title>Portal del Paciente — Hospital de Clínicas</title>
+</head>
+<body>
+
+    <!-- VISTA MOBILE-FIRST: el paciente llega acá directo desde un único QR
+         genérico, sin login. Todas las reglas base del CSS están pensadas
+         para una pantalla angosta primero. -->
+    <div class="portal">
+
+        <header class="portal__header">
+            <img class="portal__header-logo" src="../../img/Logo_Hc.png" alt="Logo Hospital de Clínicas">
+            <h1 class="portal__header-titulo">Portal del Paciente</h1>
+            <p class="portal__header-subtitulo">Hospital de Clínicas</p>
+        </header>
+
+        <!-- Flexbox (flex-wrap): los enlaces se acomodan solos en una o varias
+             filas según el ancho de la pantalla. -->
+        <nav class="portal__nav" aria-label="Secciones del portal">
+            <a class="portal__nav-enlace portal__nav-enlace--activo" href="#documentos">Indicaciones</a>
+            <a class="portal__nav-enlace" href="#ubicacion">Ubicación</a>
+            <a class="portal__nav-enlace" href="#preguntas-frecuentes">Preguntas</a>
+            <a class="portal__nav-enlace" href="#encuesta">Encuesta</a>
+        </nav>
+
+        <main class="portal__main" id="contenido-principal">
+
+            <!-- ════════ BIENVENIDA / EXPLICACIÓN ════════
+                 Es lo primero que ve el paciente al entrar. Pensado para que
+                 cualquier persona —incluida gente mayor o poco acostumbrada
+                 al celular— entienda en pocos segundos qué es esto, qué puede
+                 hacer y que es gratis y seguro, sin tecnicismos. -->
+            <section class="portal__bienvenida" aria-labelledby="titulo-bienvenida">
+                <h2 class="portal__bienvenida-titulo" id="titulo-bienvenida">Bienvenido al Portal del Hospital de Clínicas</h2>
+                <p class="portal__bienvenida-texto">
+                    Acá vas a encontrar las indicaciones e información que el hospital prepara para acompañar tu atención.
+                    <strong>No necesitás usuario ni contraseña</strong> y no tiene ningún costo.
+                </p>
+                <div class="portal__pasos">
+                    <div class="portal__paso"><strong>Indicaciones médicas:</strong> recomendaciones por tema, como cardiología o nefrología.</div>
+                    <div class="portal__paso"><strong>Ubicación y horarios:</strong> dónde queda el hospital y cuándo atiende.</div>
+                    <div class="portal__paso"><strong>Encuesta de opinión:</strong> contanos cómo fue tu atención, de forma anónima.</div>
+                </div>
+                <p class="portal__bienvenida-nota">
+                    También podés entrar a este portal desde el sitio web del hospital:
+                    <a class="portal__enlace" href="https://www.hc.edu.uy" target="_blank" rel="noopener">www.hc.edu.uy</a>
+                </p>
+            </section>
+
+            <!-- ════════ PREGUNTAS FRECUENTES ════════ -->
+            <section class="portal__seccion" id="preguntas-frecuentes" aria-labelledby="titulo-faq">
+                <h2 class="portal__seccion-titulo" id="titulo-faq">Preguntas Frecuentes</h2>
+
+                <div class="acordeon">
+                    <div class="acordeon__item">
+                        <button class="acordeon__cabecera" aria-expanded="false" aria-controls="faq-1" id="boton-faq-1">
+                            <span class="faq__pregunta">¿Cómo accedo al portal?</span>
+                            <span class="acordeon__icono" aria-hidden="true">+</span>
+                        </button>
+                        <div class="acordeon__contenido" id="faq-1" role="region" aria-labelledby="boton-faq-1">
+                            <p class="acordeon__texto">Escaneando el código QR que tiene el hospital. Es un único código para todo el portal: te trae directo a esta misma página, sin necesidad de usuario ni contraseña. Desde aquí podés navegar a las indicaciones, la ubicación y la encuesta.</p>
+                        </div>
+                    </div>
+
+                    <div class="acordeon__item">
+                        <button class="acordeon__cabecera" aria-expanded="false" aria-controls="faq-2" id="boton-faq-2">
+                            <span class="faq__pregunta">¿Puedo descargar los documentos a mi celular?</span>
+                            <span class="acordeon__icono" aria-hidden="true">+</span>
+                        </button>
+                        <div class="acordeon__contenido" id="faq-2" role="region" aria-labelledby="boton-faq-2">
+                            <p class="acordeon__texto">No. Por seguridad, los documentos solo se pueden visualizar en pantalla. Podés compartir el acceso usando el ícono de compartir de cada documento.</p>
+                        </div>
+                    </div>
+
+                    <div class="acordeon__item">
+                        <button class="acordeon__cabecera" aria-expanded="false" aria-controls="faq-3" id="boton-faq-3">
+                            <span class="faq__pregunta">¿Qué hago si perdí el código QR?</span>
+                            <span class="acordeon__icono" aria-hidden="true">+</span>
+                        </button>
+                        <div class="acordeon__contenido" id="faq-3" role="region" aria-labelledby="boton-faq-3">
+                            <p class="acordeon__texto">Pedile a un funcionario administrativo que te lo vuelva a mostrar o te lo imprima. Es el mismo código para todo el hospital, no tiene costo y no caduca.</p>
+                        </div>
+                    </div>
+
+                    <div class="acordeon__item">
+                        <button class="acordeon__cabecera" aria-expanded="false" aria-controls="faq-4" id="boton-faq-4">
+                            <span class="faq__pregunta">¿Mis datos están protegidos?</span>
+                            <span class="acordeon__icono" aria-hidden="true">+</span>
+                        </button>
+                        <div class="acordeon__contenido" id="faq-4" role="region" aria-labelledby="boton-faq-4">
+                            <p class="acordeon__texto">Sí. Las indicaciones que ves son generales y no contienen datos clínicos tuyos, y las encuestas de satisfacción son completamente anónimas.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════ UBICACIÓN ════════ -->
+            <section class="portal__seccion" id="ubicacion" aria-labelledby="titulo-ubicacion">
+                <h2 class="portal__seccion-titulo" id="titulo-ubicacion">Ubicación y Contacto</h2>
+                <div class="ubicacion__lista">
+                    <div class="ubicacion__item">
+                        <p class="ubicacion__item-titulo">Dirección</p>
+                        <p class="ubicacion__item-texto">Hospital de Clínicas "Dr. Manuel Quintela"<br>Av. Italia s/n, Montevideo (CP 11600)</p>
+                    </div>
+                    <div class="ubicacion__item">
+                        <p class="ubicacion__item-titulo">Teléfono central</p>
+                        <p class="ubicacion__item-texto id-mono">1953</p>
+                    </div>
+                    <div class="ubicacion__item">
+                        <p class="ubicacion__item-titulo">Horario de atención al usuario</p>
+                        <p class="ubicacion__item-texto">Lunes a viernes de 8:00 a 13:00 y de 13:30 a 15:00 hs</p>
+                    </div>
+                    <div class="ubicacion__item">
+                        <p class="ubicacion__item-titulo">Sitio web del hospital</p>
+                        <p class="ubicacion__item-texto"><a class="portal__enlace" href="https://www.hc.edu.uy" target="_blank" rel="noopener">www.hc.edu.uy</a></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════ DOCUMENTOS E INDICACIONES ════════
+                 No son estudios médicos personales del paciente: son PDF de
+                 indicaciones generales que el administrador organiza por
+                 categoría (ver admin-panel.html). El buscador filtra por
+                 nombre y las categorías se despliegan como acordeón. -->
+            <section class="portal__seccion" id="documentos" aria-labelledby="titulo-documentos">
+                <h2 class="portal__seccion-titulo" id="titulo-documentos">Documentos e Indicaciones</h2>
+                <p class="portal__seccion-intro">Son indicaciones generales del hospital agrupadas por categoría, no tus estudios personales. Buscá por nombre o tocá una categoría para abrirla.</p>
+
+                <div class="alerta alerta--aviso" role="note">
+                    <img class="alerta__icono" src="../../img/free-informacion-icon-svg-download-png-1604565.png" alt="">
+                    <span>Por seguridad, los documentos solo se pueden <strong>visualizar</strong> o <strong>compartir</strong>. No se pueden descargar.</span>
+                </div>
+
+                <div class="formulario__grupo">
+                    <label class="formulario__etiqueta" for="buscador-documentos">Buscar documento</label>
+                    <input class="formulario__input" type="search" id="buscador-documentos" placeholder="Ej: warfarina, ecocardiograma...">
+                </div>
+
+                <div class="acordeon" id="lista-categorias-documentos">
+                    <div class="acordeon__item">
+                        <button class="acordeon__cabecera" aria-expanded="false" aria-controls="cat-imagenologia" id="boton-cat-imagenologia">
+                            <span>Imagenología y Medicina Nuclear</span>
+                            <span class="acordeon__icono" aria-hidden="true">+</span>
+                        </button>
+                        <div class="acordeon__contenido" id="cat-imagenologia" role="region" aria-labelledby="boton-cat-imagenologia">
+                            <div class="estudios__grid">
+                                <article class="documento">
+                                    <h3 class="documento__nombre">Preparación para estudios imagenológicos</h3>
+                                    <div class="documento__acciones">
+                                        <button class="documento__boton" type="button">Visualizar</button>
+                                        <button class="documento__compartir" type="button" aria-label="Compartir Preparación para estudios imagenológicos">↗</button>
+                                    </div>
+                                </article>
+                                <article class="documento">
+                                    <h3 class="documento__nombre">Estudios diagnósticos con pertecneciato</h3>
+                                    <div class="documento__acciones">
+                                        <button class="documento__boton" type="button">Visualizar</button>
+                                        <button class="documento__compartir" type="button" aria-label="Compartir Estudios diagnósticos con pertecneciato">↗</button>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acordeon__item">
+                        <button class="acordeon__cabecera" aria-expanded="false" aria-controls="cat-cardiologia" id="boton-cat-cardiologia">
+                            <span>Cardiología</span>
+                            <span class="acordeon__icono" aria-hidden="true">+</span>
+                        </button>
+                        <div class="acordeon__contenido" id="cat-cardiologia" role="region" aria-labelledby="boton-cat-cardiologia">
+                            <div class="estudios__grid">
+                                <article class="documento">
+                                    <h3 class="documento__nombre">Centellograma de perfusión miocárdica</h3>
+                                    <div class="documento__acciones">
+                                        <button class="documento__boton" type="button">Visualizar</button>
+                                        <button class="documento__compartir" type="button" aria-label="Compartir Centellograma de perfusión miocárdica">↗</button>
+                                    </div>
+                                </article>
+                                <article class="documento">
+                                    <h3 class="documento__nombre">Indicaciones ecocardiograma con dobutamina</h3>
+                                    <div class="documento__acciones">
+                                        <button class="documento__boton" type="button">Visualizar</button>
+                                        <button class="documento__compartir" type="button" aria-label="Compartir Indicaciones ecocardiograma con dobutamina">↗</button>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acordeon__item">
+                        <button class="acordeon__cabecera" aria-expanded="false" aria-controls="cat-nefrologia" id="boton-cat-nefrologia">
+                            <span>Nefrología y Trasplante</span>
+                            <span class="acordeon__icono" aria-hidden="true">+</span>
+                        </button>
+                        <div class="acordeon__contenido" id="cat-nefrologia" role="region" aria-labelledby="boton-cat-nefrologia">
+                            <div class="estudios__grid">
+                                <article class="documento">
+                                    <h3 class="documento__nombre">Indicaciones de enfermería para usuarios trasplantados</h3>
+                                    <div class="documento__acciones">
+                                        <button class="documento__boton" type="button">Visualizar</button>
+                                        <button class="documento__compartir" type="button" aria-label="Compartir Indicaciones de enfermería para usuarios trasplantados">↗</button>
+                                    </div>
+                                </article>
+                                <article class="documento">
+                                    <h3 class="documento__nombre">Plan de alta enfermería — Nefrología</h3>
+                                    <div class="documento__acciones">
+                                        <button class="documento__boton" type="button">Visualizar</button>
+                                        <button class="documento__compartir" type="button" aria-label="Compartir Plan de alta enfermería Nefrología">↗</button>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acordeon__item">
+                        <button class="acordeon__cabecera" aria-expanded="false" aria-controls="cat-tratamientos" id="boton-cat-tratamientos">
+                            <span>Tratamientos</span>
+                            <span class="acordeon__icono" aria-hidden="true">+</span>
+                        </button>
+                        <div class="acordeon__contenido" id="cat-tratamientos" role="region" aria-labelledby="boton-cat-tratamientos">
+                            <div class="estudios__grid">
+                                <article class="documento">
+                                    <h3 class="documento__nombre">Indicaciones para pacientes en tratamiento con warfarina</h3>
+                                    <div class="documento__acciones">
+                                        <button class="documento__boton" type="button">Visualizar</button>
+                                        <button class="documento__compartir" type="button" aria-label="Compartir Indicaciones para pacientes en tratamiento con warfarina">↗</button>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acordeon__item">
+                        <button class="acordeon__cabecera" aria-expanded="false" aria-controls="cat-prevencion" id="boton-cat-prevencion">
+                            <span>Prevención y Cuidados Generales</span>
+                            <span class="acordeon__icono" aria-hidden="true">+</span>
+                        </button>
+                        <div class="acordeon__contenido" id="cat-prevencion" role="region" aria-labelledby="boton-cat-prevencion">
+                            <div class="estudios__grid">
+                                <article class="documento">
+                                    <h3 class="documento__nombre">Prevención de infecciones</h3>
+                                    <div class="documento__acciones">
+                                        <button class="documento__boton" type="button">Visualizar</button>
+                                        <button class="documento__compartir" type="button" aria-label="Compartir Prevención de infecciones">↗</button>
+                                    </div>
+                                </article>
+                                <article class="documento">
+                                    <h3 class="documento__nombre">Pauta para pacientes ostomizados</h3>
+                                    <div class="documento__acciones">
+                                        <button class="documento__boton" type="button">Visualizar</button>
+                                        <button class="documento__compartir" type="button" aria-label="Compartir Pauta para pacientes ostomizados">↗</button>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="formulario__ayuda oculto" id="aviso-sin-resultados">No se encontraron documentos con ese nombre.</p>
+            </section>
+
+            <!-- ════════ ENCUESTA DE SATISFACCIÓN ════════
+                 El formulario arranca oculto con el atributo "hidden" y se
+                 muestra al tocar el botón (el JS alterna esa propiedad). No
+                 usa ventana flotante: aparece acá mismo, en línea. -->
+            <section class="portal__seccion" id="encuesta" aria-labelledby="titulo-encuesta">
+                <h2 class="portal__seccion-titulo" id="titulo-encuesta">Encuesta de Satisfacción</h2>
+                <div class="encuesta">
+                    <p>Tu opinión nos ayuda a mejorar los servicios del hospital. La encuesta es completamente anónima.</p>
+                    <button class="boton boton--primario" type="button" id="boton-abrir-encuesta" aria-expanded="false" aria-controls="form-encuesta">
+                        Completar encuesta de satisfacción
+                    </button>
+
+                    <form class="formulario oculto" id="form-encuesta" novalidate>
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="encuesta-departamento">
+                                Departamento del hospital <span class="formulario__requerido" aria-hidden="true">*</span>
+                            </label>
+                            <select class="formulario__select" id="encuesta-departamento" name="departamento" required>
+                                <option value="" selected disabled>Seleccioná un departamento</option>
+                                <option value="cardiologia">Cardiología</option>
+                                <option value="nefrologia">Nefrología y Trasplante</option>
+                                <option value="enfermeria">Enfermería</option>
+                                <option value="imagenologia">Diagnóstico por Imagen</option>
+                                <option value="administracion">Administración / Atención al usuario</option>
+                            </select>
+                            <p class="formulario__error" id="error-encuesta-departamento" role="alert"></p>
+                        </div>
+
+                        <div class="formulario__grupo">
+                            <span class="formulario__leyenda">¿Qué tan satisfecho/a estás con la atención recibida? <span class="formulario__requerido" aria-hidden="true">*</span></span>
+                            <div class="escala" role="radiogroup" aria-label="Nivel de satisfacción">
+                                <label class="escala__opcion">
+                                    <input class="escala__input" type="radio" name="satisfaccion" value="1" required>
+                                    1
+                                </label>
+                                <label class="escala__opcion">
+                                    <input class="escala__input" type="radio" name="satisfaccion" value="2">
+                                    2
+                                </label>
+                                <label class="escala__opcion">
+                                    <input class="escala__input" type="radio" name="satisfaccion" value="3">
+                                    3
+                                </label>
+                                <label class="escala__opcion">
+                                    <input class="escala__input" type="radio" name="satisfaccion" value="4">
+                                    4
+                                </label>
+                                <label class="escala__opcion">
+                                    <input class="escala__input" type="radio" name="satisfaccion" value="5">
+                                    5
+                                </label>
+                            </div>
+                            <p class="formulario__error" id="error-satisfaccion" role="alert"></p>
+                        </div>
+
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="encuesta-comentario">Comentario (opcional)</label>
+                            <textarea class="formulario__textarea" id="encuesta-comentario" name="comentario" placeholder="Contanos tu experiencia"></textarea>
+                        </div>
+
+                        <button class="boton boton--primario boton--bloque" type="submit">Enviar respuesta anónima</button>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="portal__pie">
+            <p>Hospital de Clínicas — Sistema SIGSM &copy; 2026</p>
+        </footer>
+
+    </div>
+
+    <script src="../../js/script.js"></script>
+</body>
+</html>
