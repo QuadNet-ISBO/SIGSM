@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Acceso exclusivo para funcionarios del Hospital de Clínicas al sistema SIGSM.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <title>Iniciar Sesión — SIGSM</title>
+</head>
+<body>
+
+    <!-- Acceso exclusivo para personal del hospital (informática, enfermería, transporte).
+         Los pacientes no inician sesión: acceden por QR al portal-paciente.html -->
+    <main class="login">
+        <div class="login__tarjeta">
+
+            <div class="login__logo">
+                <div class="login__logo-icono">
+                    <img src="../../img/Logo_Hc.png" alt="Logo Hospital de Clínicas" class="login__logo-imagen">
+                </div>
+                <h1 class="login__titulo">SIGSM</h1>
+                <p class="login__subtitulo">Hospital de Clínicas — Acceso exclusivo para funcionarios</p>
+            </div>
+
+            <form class="formulario formulario--login" action="#" method="POST" novalidate>
+
+                <div class="formulario__grupo">
+                    <label class="formulario__etiqueta" for="usuario">
+                        Usuario <span class="formulario__requerido" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                        class="formulario__input"
+                        type="text"
+                        id="usuario"
+                        name="usuario"
+                        placeholder="Ingresá tu usuario"
+                        autocomplete="username"
+                        required
+                    >
+                    <p class="formulario__error" id="error-usuario" role="alert"></p>
+                </div>
+
+                <div class="formulario__grupo">
+                    <label class="formulario__etiqueta" for="contrasena">
+                        Contraseña <span class="formulario__requerido" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                        class="formulario__input"
+                        type="password"
+                        id="contrasena"
+                        name="contrasena"
+                        placeholder="Ingresá tu contraseña"
+                        autocomplete="current-password"
+                        required
+                    >
+                    <p class="formulario__error" id="error-contrasena" role="alert"></p>
+                    <p class="formulario__ayuda">No se bloquea tu cuenta por intentos fallidos. Si la olvidaste, contactá a Informática.</p>
+                </div>
+
+                <button class="boton boton--primario boton--bloque" type="submit">
+                    Iniciar sesión
+                </button>
+
+            </form>
+
+            <hr class="login__separador">
+
+            <p class="login__enlace">
+                ¿Sos paciente? <a href="./portal-paciente.html">Accedé escaneando el código QR de tu sala</a>
+            </p>
+
+        </div>
+    </main>
+
+    <script src="../../js/script.js"></script>
+</body>
+</html>
