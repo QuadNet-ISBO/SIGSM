@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SIGSM - Documentos</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+
+    <div class="sidebar">
+
+        <h1 class="logo">SIGSM</h1>
+
+        <ul class="menu">
+            <li><a href="../dashboard/index.html">Dashboard</a></li>
+            <li><a href="../traslados/index.html">Traslados</a></li>
+            <li><a href="../documentos/index.html">Documentos</a></li>
+        </ul>
+
+    </div>
+
+    <div class="main">
+
+        <div class="header">
+
+            <div class="header-left">
+                <h2>Documentos</h2>
+            </div>
+
+            <div class="header-right">
+                <span class="user">Juan Pérez</span>
+                <span class="role">Operador</span>
+                <a href="../login.html">
+                    <button class="logout">Salir</button>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="content">
+
+            <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:20px;">
+                <h2>Documentos</h2>
+
+                <a href="documento_subir.html">
+                    <button class="btn-primary">+ Subir documento</button>
+                </a>
+            </div>
+
+            <div class="card card-table">
+
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Fecha</th>
+                        <th>Encuesta</th>
+                        <th>Ver</th>
+                        <th>Editar</th>
+                    </tr>
+
+                    <tr>
+                        <td>#001</td>
+                        <td>Protocolo COVID</td>
+                        <td>Salud</td>
+                        <td>10/06/2026</td>
+                        <td><span class="badge activo">Sí</span></td>
+                        <td>
+                            <button class="btn-primary btn-sm">Ver</button>
+                        </td>
+                        <td>
+                            <a href="documento_editar.html">
+                                <button class="btn-warning btn-sm">Editar</button>
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>#002</td>
+                        <td>Manual interno</td>
+                        <td>Administración</td>
+                        <td>08/06/2026</td>
+                        <td><span class="badge pendiente">No</span></td>
+                        <td>
+                            <button class="btn-primary btn-sm">Ver</button>
+                        </td>
+                        <td>
+                            <a href="documento_editar.html">
+                                <button class="btn-warning btn-sm">Editar</button>
+                            </a>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

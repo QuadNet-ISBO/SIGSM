@@ -50,7 +50,7 @@ Si tu MySQL tiene contraseña propia hay que cambiar ese tercer parámetro vací
 
 ## Cómo saber que quedó todo bien
 
-Abriendo `http://localhost/SIGSM/Modulo2/traslados.php` debería aparecer el listado de traslados de prueba, sin ningún error de PHP en la pantalla. El prototipo, por su parte, no necesita nada de XAMPP: se puede abrir directo desde `proto/frontend/html/index.html`.
+Abriendo `http://localhost/SIGSM/Modulo2/traslados.php` debería aparecer el listado de traslados de prueba, sin ningún error de PHP en la pantalla. El prototipo, por su parte, no necesita nada de XAMPP: se puede abrir directo desde `Primera Entrega/proto/index.html`.
 
 ## VS Code
 

@@ -2,17 +2,26 @@
 
 El sistema resuelve dos problemas bien distintos del Hospital de Clínicas: la entrega en papel de indicaciones y estudios a pacientes, y el seguimiento manual (básicamente por teléfono) de los traslados en ambulancia. Las tecnologías que elegimos van atadas a esos dos problemas, no a gusto personal del grupo.
 
-## Frontend: HTML, CSS y JS sin frameworks
+## Frontend: HTML, CSS y JavaScript
 
-El portal del paciente tiene que andar bien en un celular, porque a ese módulo se entra escaneando un QR desde la sala. Para resolver eso usamos CSS puro con `flex-wrap` y `grid` (`auto-fit`/`minmax`), que son las herramientas que se dieron en la Unidad 1 de la materia. No metimos Bootstrap ni nada parecido porque todavía no lo dimos en clase y para esta entrega no hacía falta — con CSS normal y un par de media queries se resuelve el responsive sin problema.
+Esta es la base que estamos viendo en la materia, así que fue la elección natural. JavaScript ya se dio en clase, pero todavía no lo metimos en este prototipo — el acordeón de preguntas frecuentes y documentos del portal, por ejemplo, se resuelve con `<details>`/`<summary>`, que es HTML5 puro y no necesita ni una línea de JS.
 
-Para que los cuatro pudiéramos tocar el mismo CSS sin pisarnos los nombres de clases, usamos BEM (`.bloque__elemento--modificador`). No es obligatorio pero ayuda bastante cuando el archivo de estilos lo edita más de una persona.
+El portal del paciente tiene que andar bien en un celular, porque a ese módulo se entra escaneando un QR desde la sala. Para el responsive usamos CSS puro con `flex-wrap` y `grid` (`auto-fit`/`minmax`) más un par de `@media`, que son las herramientas que se dieron en la Unidad 1. No metimos Bootstrap ni nada parecido porque todavía no lo dimos en clase.
 
-Lo mismo con JavaScript: todo lo que hace falta (mostrar/ocultar secciones, filtrar opciones de un select, validar un formulario, abrir y cerrar la encuesta) se resuelve con el DOM normal, sin librerías. Meter React o algo así para esto sería usar un camión para mover una caja.
+El CSS quedó dividido en `layout.css` y `components.css` para todas las pantallas del sistema (login, dashboard, admin, documentos, traslados), comentado por página/sección para que cualquiera del equipo encuentre rápido lo que busca. El portal del paciente tiene su propio `portal.css`, aparte de los otros dos: es una pantalla pública, sin login, con una identidad visual distinta, así que no tenía sentido mezclarla con el resto. Ahí sí usamos BEM (`.portal__header`, `.documento__acciones`, etc.) porque es un único archivo chico y queda prolijo; en el resto del sistema usamos nombres de clase más simples y planos (`.card`, `.btn-primary`) porque son muchas pantallas tocadas por las cuatro personas del equipo y BEM completo en todas hubiese sido más trabajo de mantener que beneficio real.
 
-## Backend: PHP + MySQL
+## Backend: PHP + MySQL/MariaDB
 
-Esto ya está armado como adelanto en la carpeta `Modulo2` de la raíz del repo (no en esta entrega, que es solo el prototipo). Elegimos PHP porque es lo que se enseña en el módulo de Full Stack y porque se conecta directo con Apache, que es el servidor que ya usa el DTI del hospital. Para la base de datos usamos MySQL/MariaDB: los datos del sistema están bastante relacionados entre sí (un documento tiene una categoría y un funcionario que lo subió, un traslado tiene un vehículo, un chofer y un enfermero asignados), así que una base relacional con claves foráneas evita que queden datos sueltos o inconsistentes. El modelo ya está normalizado a 3FN — los diagramas están en `Diagramas/` en la raíz del repo.
+Para el servidor elegimos PHP porque es lo que se viene en el módulo de Full Stack de la carrera y porque se integra directo con Apache, que es el mismo servidor que ya corre en el DTI del hospital (piso 6) — no le estamos pidiendo a una institución pública que sume una pieza nueva a su infraestructura para correr esto. Sumado a eso, PHP tiene soporte nativo para conectarse a MySQL/MariaDB (`mysqli`/`PDO`) sin depender de librerías de terceros para algo tan básico como una consulta.
+
+Para los datos elegimos una base relacional en lugar de, por ejemplo, archivos sueltos o algo tipo NoSQL, porque las relaciones entre las entidades de los dos módulos necesitan integridad real, no solo "guardar cosas":
+
+- En Documentación, un documento queda atado a una categoría y opcionalmente a una subcategoría, a una encuesta con sus preguntas, y a las respuestas que cada paciente fue dejando (`CATEGORIAS`/`SUBCATEGORIAS` → `DOCUMENTOS` → `ENCUESTAS` → `PREGUNTAS` → `RESPUESTAS`). Si se pudiera borrar una pregunta que ya tiene respuestas cargadas, o un documento que sigue asociado a una categoría, quedarían datos huérfanos sueltos por toda la base.
+- En Ambulancias/Traslados es todavía más evidente: un traslado tiene un vehículo, uno o más funcionarios con un rol distinto cada uno (`TRASLADO_FUNCIONARIO` guarda ese rol por traslado), un historial de cada cambio de estado (`HISTORIAL_ESTADOS_TRASLADO`) y una carga asociada. Esa cadena —quién hizo qué traslado, en qué vehículo, con qué historial— es la trazabilidad operativa que el sistema necesita, y es exactamente lo que las claves foráneas garantizan desde la base en vez de tener que validarlo a mano en cada pantalla.
+
+No son datos clínicos del paciente en sí (el portal solo expone indicaciones generales, no su historia clínica), pero sí son datos operativos sensibles del hospital, y la misma lógica aplica: mejor que la integridad la garantice la base de datos con sus restricciones que confiar en que nadie se olvide de validar algo en el código. El modelo entidad-relación, el pasaje a tablas y las restricciones de ambos módulos están detallados en [Modelado de Datos](04-Modelado-de-Datos.md).
+
+Esto es la justificación de la elección, no el estado actual: lo que se entrega en esta primera entrega es el prototipo en HTML/CSS de `proto/`, sin backend conectado. El avance real en PHP y MySQL está aparte, en `Modulo1/` y `Modulo2/`, y todavía no está pensado para conectarse con este prototipo.
 
 ## Acceso por QR, sin login para el paciente
 
@@ -24,14 +33,6 @@ Somos cuatro personas tocando el mismo proyecto, así que necesitamos historial 
 
 Como editor usamos VS Code: es liviano, anda igual en Windows y Linux (el equipo usa los dos) y tiene extensiones para todo lo que necesitamos (PHP, SQL, Git). El detalle de qué extensiones usamos está en [Configuración del Entorno de Desarrollo](02-Configuracion-Entorno-Desarrollo.md).
 
-## XAMPP como entorno local
-
-XAMPP empaqueta Apache, PHP y MariaDB en un solo instalador, así que cada uno puede levantar exactamente el mismo entorno en su máquina sin instalar cada cosa por separado. Es además el mismo tipo de stack (LAMP/WAMP) que se va a usar después en el servidor real del hospital.
-
 ## Lo que queda para más adelante
 
-Para producción se planea usar Docker sobre GNU/Linux, con acceso por SSH a los servidores del DTI (piso 6 del hospital). Esto es para más adelante: empaquetar el backend en un contenedor permite levantar exactamente el mismo entorno ahí que en la máquina de cada uno, evitando el clásico "en mi compu funciona". No es parte de esta entrega.
-
-## Por qué esta entrega es solo el prototipo
-
-El curso todavía no dio PHP de forma oficial — uno de los integrantes lo aprendió por su cuenta y armó un adelanto funcional, pero la consigna real de la materia pide que para esta primera entrega nos enfoquemos en la parte visual. Por eso lo que se entrega ahora es el prototipo en HTML/CSS/JS (carpeta `proto/`), y el backend que ya tenemos avanzado va a ser la base para conectar con este mismo diseño en la segunda entrega.
+Para producción la idea es usar Docker sobre GNU/Linux, con acceso por SSH a los servidores del DTI (piso 6 del hospital). Esto ya lo estamos armando, pero como parte de otra materia, no de esta entrega: empaquetar el backend en un contenedor permite levantar exactamente el mismo entorno ahí que en la máquina de cada uno, evitando el clásico "en mi compu funciona".

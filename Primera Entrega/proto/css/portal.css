@@ -1,0 +1,242 @@
+/*
+   PORTAL.CSS
+   Estilos exclusivos de portal-paciente.html (acceso público por QR, sin login).
+   Es una página aparte del sistema interno, por eso no usa layout.css ni
+   components.css: tiene su propio reset y sus propios componentes,
+   basados en una versión simplificada del diseño original del portal.
+*/
+
+/* ================= VARIABLES =================
+   Colores principales del portal, para no repetirlos en cada regla */
+:root {
+    --color-primario: #005B8E;
+    --color-oscuro: #004570;
+    --color-fondo: #F3F6FA;
+    --color-alerta: #FF6A3B;
+    --color-borde: #d9e2ec;
+    --radio: 10px;
+}
+
+/* ================= BASE ================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background-color: var(--color-fondo);
+    color: #1e293b;
+}
+
+/* ================= PORTAL__HEADER ================= */
+.portal__header {
+    text-align: center;
+    padding: 25px 20px;
+    background-color: var(--color-oscuro);
+    color: white;
+}
+
+.portal__header-logo {
+    height: 50px;
+    margin-bottom: 10px;
+}
+
+.portal__header-titulo {
+    font-size: 22px;
+    margin-bottom: 4px;
+}
+
+.portal__header-subtitulo {
+    font-size: 13px;
+    opacity: 0.85;
+}
+
+/* ================= PORTAL__NAV ================= */
+.portal__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    background-color: white;
+    padding: 12px;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.portal__nav-enlace {
+    text-decoration: none;
+    color: var(--color-oscuro);
+    padding: 8px 14px;
+    border-radius: 20px;
+    background-color: var(--color-fondo);
+    font-size: 14px;
+}
+
+.portal__nav-enlace:hover {
+    background-color: var(--color-borde);
+}
+
+/* ================= PORTAL__MAIN ================= */
+.portal__main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.portal__seccion {
+    background-color: white;
+    border-radius: var(--radio);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.portal__seccion-titulo {
+    color: var(--color-oscuro);
+    margin-bottom: 10px;
+}
+
+.portal__seccion-intro {
+    margin-bottom: 15px;
+}
+
+/* ================= ALERTA ================= */
+.alerta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #fff4ec;
+    color: #9a3b12;
+    border: 1px solid var(--color-alerta);
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.alerta img {
+    width: 22px;
+    height: 22px;
+}
+
+/* ================= FORMULARIO =================
+   Buscador de documentos y formulario de la encuesta */
+.formulario__campo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.formulario__campo label {
+    font-weight: 500;
+}
+
+.formulario__campo input,
+.formulario__campo select,
+.formulario__campo textarea {
+    padding: 9px;
+    border-radius: 6px;
+    border: 1px solid var(--color-borde);
+    font-family: inherit;
+    font-size: 14px;
+}
+
+/* ================= ACORDEON =================
+   Usa <details>/<summary> nativo de HTML, sin trucos de CSS:
+   la flecha que se ve es la que trae el navegador por defecto. */
+.acordeon {
+    border: 1px solid var(--color-borde);
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.acordeon summary {
+    padding: 14px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: var(--color-fondo);
+}
+
+.acordeon__contenido {
+    padding: 14px;
+    border-top: 1px solid var(--color-borde);
+}
+
+/* ================= DOCUMENTO ================= */
+.documento {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.documento:last-child {
+    border-bottom: none;
+}
+
+.documento__acciones {
+    display: flex;
+    gap: 8px;
+}
+
+/* ================= ESCALA =================
+   Fila de opciones de la encuesta de satisfacción */
+.escala {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.escala label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--color-borde);
+    cursor: pointer;
+}
+
+/* ================= BOTON ================= */
+.boton {
+    background-color: var(--color-primario);
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.boton:hover {
+    background-color: var(--color-oscuro);
+}
+
+.boton--secundario {
+    background-color: white;
+    color: var(--color-oscuro);
+    border: 1px solid var(--color-borde);
+}
+
+.boton--secundario:hover {
+    background-color: var(--color-fondo);
+}
+
+.boton--ancho {
+    width: 100%;
+    padding: 12px;
+}
+
+/* ================= PORTAL__PIE ================= */
+.portal__pie {
+    text-align: center;
+    padding: 15px;
+    color: #64748b;
+    font-size: 13px;
+}
+

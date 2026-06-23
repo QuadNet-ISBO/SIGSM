@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal del Paciente - SIGSM</title>
+    <link rel="stylesheet" href="css/portal.css">
+</head>
+
+<body>
+
+    <div class="portal__header">
+        <img class="portal__header-logo" src="img/Logo_Hc.png" alt="Logo Hospital de Clínicas">
+        <h1 class="portal__header-titulo">Portal del Paciente</h1>
+        <p class="portal__header-subtitulo">Hospital de Clínicas</p>
+    </div>
+
+    <nav class="portal__nav">
+        <a class="portal__nav-enlace" href="#documentos">Indicaciones</a>
+        <a class="portal__nav-enlace" href="#ubicacion">Ubicación</a>
+        <a class="portal__nav-enlace" href="#preguntas">Preguntas</a>
+        <a class="portal__nav-enlace" href="#encuesta">Encuesta</a>
+    </nav>
+
+    <div class="portal__main">
+
+        <div class="portal__seccion">
+            <h2 class="portal__seccion-titulo">Bienvenido</h2>
+            <p>Acá vas a encontrar las indicaciones e información que el hospital prepara para acompañar tu atención. No necesitás usuario ni contraseña y no tiene ningún costo.</p>
+        </div>
+
+        <div class="portal__seccion" id="documentos">
+            <h2 class="portal__seccion-titulo">Documentos e Indicaciones</h2>
+            <p class="portal__seccion-intro">Son indicaciones generales del hospital agrupadas por categoría, no tus estudios personales.</p>
+
+            <div class="alerta">
+                <img src="img/free-informacion-icon-svg-download-png-1604565.png" alt="">
+                <span>Por seguridad, los documentos solo se pueden visualizar o compartir. No se pueden descargar.</span>
+            </div>
+
+            <div class="formulario__campo">
+                <label for="buscador">Buscar documento</label>
+                <input type="search" id="buscador" placeholder="Ej: warfarina, ecocardiograma...">
+            </div>
+
+            <details class="acordeon">
+                <summary>Imagenología y Medicina Nuclear</summary>
+                <div class="acordeon__contenido">
+                    <div class="documento">
+                        <span>Preparación para estudios imagenológicos</span>
+                        <div class="documento__acciones">
+                            <button class="boton">Visualizar</button>
+                            <button class="boton boton--secundario">Compartir</button>
+                        </div>
+                    </div>
+                    <div class="documento">
+                        <span>Estudios diagnósticos con pertecneciato</span>
+                        <div class="documento__acciones">
+                            <button class="boton">Visualizar</button>
+                            <button class="boton boton--secundario">Compartir</button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <details class="acordeon">
+                <summary>Cardiología</summary>
+                <div class="acordeon__contenido">
+                    <div class="documento">
+                        <span>Centellograma de perfusión miocárdica</span>
+                        <div class="documento__acciones">
+                            <button class="boton">Visualizar</button>
+                            <button class="boton boton--secundario">Compartir</button>
+                        </div>
+                    </div>
+                    <div class="documento">
+                        <span>Indicaciones ecocardiograma con dobutamina</span>
+                        <div class="documento__acciones">
+                            <button class="boton">Visualizar</button>
+                            <button class="boton boton--secundario">Compartir</button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <details class="acordeon">
+                <summary>Nefrología y Trasplante</summary>
+                <div class="acordeon__contenido">
+                    <div class="documento">
+                        <span>Indicaciones de enfermería para usuarios trasplantados</span>
+                        <div class="documento__acciones">
+                            <button class="boton">Visualizar</button>
+                            <button class="boton boton--secundario">Compartir</button>
+                        </div>
+                    </div>
+                    <div class="documento">
+                        <span>Plan de alta enfermería - Nefrología</span>
+                        <div class="documento__acciones">
+                            <button class="boton">Visualizar</button>
+                            <button class="boton boton--secundario">Compartir</button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <details class="acordeon">
+                <summary>Tratamientos</summary>
+                <div class="acordeon__contenido">
+                    <div class="documento">
+                        <span>Indicaciones para pacientes en tratamiento con warfarina</span>
+                        <div class="documento__acciones">
+                            <button class="boton">Visualizar</button>
+                            <button class="boton boton--secundario">Compartir</button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <details class="acordeon">
+                <summary>Prevención y Cuidados Generales</summary>
+                <div class="acordeon__contenido">
+                    <div class="documento">
+                        <span>Prevención de infecciones</span>
+                        <div class="documento__acciones">
+                            <button class="boton">Visualizar</button>
+                            <button class="boton boton--secundario">Compartir</button>
+                        </div>
+                    </div>
+                    <div class="documento">
+                        <span>Pauta para pacientes ostomizados</span>
+                        <div class="documento__acciones">
+                            <button class="boton">Visualizar</button>
+                            <button class="boton boton--secundario">Compartir</button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div class="portal__seccion" id="ubicacion">
+            <h2 class="portal__seccion-titulo">Ubicación y Contacto</h2>
+            <p><strong>Dirección:</strong> Hospital de Clínicas "Dr. Manuel Quintela", Av. Italia s/n, Montevideo (CP 11600)</p>
+            <p><strong>Teléfono central:</strong> 1953</p>
+            <p><strong>Horario de atención al usuario:</strong> Lunes a viernes de 8:00 a 13:00 y de 13:30 a 15:00 hs</p>
+            <p><strong>Sitio web:</strong> <a href="https://www.hc.edu.uy" target="_blank" rel="noopener">www.hc.edu.uy</a></p>
+        </div>
+
+        <div class="portal__seccion" id="preguntas">
+            <h2 class="portal__seccion-titulo">Preguntas Frecuentes</h2>
+
+            <details class="acordeon">
+                <summary>¿Cómo accedo al portal?</summary>
+                <div class="acordeon__contenido">
+                    <p>Escaneando el código QR que tiene el hospital. Te trae directo a esta misma página, sin necesidad de usuario ni contraseña.</p>
+                </div>
+            </details>
+
+            <details class="acordeon">
+                <summary>¿Puedo descargar los documentos a mi celular?</summary>
+                <div class="acordeon__contenido">
+                    <p>No. Por seguridad, los documentos solo se pueden visualizar en pantalla. Podés compartirlos con el botón de cada documento.</p>
+                </div>
+            </details>
+
+            <details class="acordeon">
+                <summary>¿Qué hago si perdí el código QR?</summary>
+                <div class="acordeon__contenido">
+                    <p>Pedile a un funcionario administrativo que te lo vuelva a mostrar o te lo imprima. Es el mismo código para todo el hospital, no tiene costo y no caduca.</p>
+                </div>
+            </details>
+
+            <details class="acordeon">
+                <summary>¿Mis datos están protegidos?</summary>
+                <div class="acordeon__contenido">
+                    <p>Sí. Las indicaciones que ves son generales y no contienen datos clínicos tuyos, y las encuestas de satisfacción son completamente anónimas.</p>
+                </div>
+            </details>
+        </div>
+
+        <div class="portal__seccion" id="encuesta">
+            <h2 class="portal__seccion-titulo">Encuesta de Satisfacción</h2>
+            <p class="portal__seccion-intro">Tu opinión nos ayuda a mejorar los servicios del hospital. La encuesta es completamente anónima.</p>
+
+            <form>
+                <div class="formulario__campo">
+                    <label for="departamento">Departamento del hospital</label>
+                    <select id="departamento">
+                        <option value="" selected disabled>Seleccioná un departamento</option>
+                        <option value="cardiologia">Cardiología</option>
+                        <option value="nefrologia">Nefrología y Trasplante</option>
+                        <option value="enfermeria">Enfermería</option>
+                        <option value="imagenologia">Diagnóstico por Imagen</option>
+                        <option value="administracion">Administración / Atención al usuario</option>
+                    </select>
+                </div>
+
+                <div class="formulario__campo">
+                    <label>¿Qué tan satisfecho/a estás con la atención recibida?</label>
+                    <div class="escala">
+                        <label><input type="radio" name="satisfaccion" value="1"> 1</label>
+                        <label><input type="radio" name="satisfaccion" value="2"> 2</label>
+                        <label><input type="radio" name="satisfaccion" value="3"> 3</label>
+                        <label><input type="radio" name="satisfaccion" value="4"> 4</label>
+                        <label><input type="radio" name="satisfaccion" value="5"> 5</label>
+                    </div>
+                </div>
+
+                <div class="formulario__campo">
+                    <label for="comentario">Comentario (opcional)</label>
+                    <textarea id="comentario" placeholder="Contanos tu experiencia"></textarea>
+                </div>
+
+                <button type="button" class="boton boton--ancho">Enviar respuesta anónima</button>
+            </form>
+        </div>
+
+    </div>
+
+    <div class="portal__pie">
+        Hospital de Clínicas — Sistema SIGSM &copy; 2026
+    </div>
+
+</body>
+</html>

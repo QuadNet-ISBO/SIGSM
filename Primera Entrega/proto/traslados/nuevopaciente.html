@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SIGSM - Traslado Paciente</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h1 class="logo">SIGSM</h1>
+    <ul class="menu">
+        <li><a href="../dashboard/index.html">Dashboard</a></li>
+        <li><a href="../traslados/index.html">Traslados</a></li>
+        <li><a href="../documentos/index.html">Documentos</a></li>
+    </ul>
+</div>
+
+<div class="main">
+
+    <div class="header">
+        <div class="header-left">
+            <h2>Nuevo Traslado - Paciente</h2>
+        </div>
+
+        <div class="header-right">
+            <span class="user">Juan Pérez</span>
+            <span class="role">Operador</span>
+            <a href="../login.html">
+                <button class="logout">Salir</button>
+            </a>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <h2>Crear traslado de paciente</h2>
+
+
+<div class="card card-medium">
+
+    <form class="form">
+
+        <div class="form-group">
+            <label>Origen</label>
+            <input type="text">
+        </div>
+
+        <div class="form-group">
+            <label>Destino</label>
+            <input type="text">
+        </div>
+
+        <div class="form-group">
+            <label>Nombre</label>
+            <input type="text">
+        </div>
+
+        <div class="form-group">
+            <label>Cédula</label>
+            <input type="text">
+        </div>
+
+        <div class="form-group">
+            <label>Teléfono</label>
+            <input type="text">
+        </div>
+
+        <div class="form-group">
+            <label>Piso</label>
+            <input type="text">
+        </div>
+
+        <div class="form-group">
+            <label>Sala</label>
+            <input type="text">
+        </div>
+
+        <div class="form-group">
+            <label>Puerta</label>
+            <input type="text">
+        </div>
+
+        <div class="form-group">
+            <label>Requiere</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox"> Camilla</label>
+                <label><input type="checkbox"> Oxígeno</label>
+                <label><input type="checkbox"> Aislamiento</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Vehículo</label>
+            <select>
+                <option>Ambulancia ABC123</option>
+                <option>Ambulancia XYZ789</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Chofer</label>
+            <select>
+                <option>Carlos López</option>
+                <option>Juan Pérez</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Enfermero</label>
+            <select>
+                <option>Ana Gómez</option>
+                <option>María Silva</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Prioridad</label>
+            <select>
+                <option>Baja</option>
+                <option>Media</option>
+                <option>Alta</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Hora solicitada</label>
+            <input type="datetime-local">
+        </div>
+
+        <div class="form-group">
+            <label>Observaciones</label>
+            <textarea></textarea>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn-primary">Crear traslado</button>
+            <a href="index.html">
+                <button type="button" class="btn-secondary">Cancelar</button>
+            </a>
+        </div>
+
+    </form>
+
+</div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

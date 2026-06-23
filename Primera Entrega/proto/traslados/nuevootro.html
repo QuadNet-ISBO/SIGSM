@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SIGSM - Traslado Carga</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h1 class="logo">SIGSM</h1>
+    <ul class="menu">
+        <li><a href="../dashboard/index.html">Dashboard</a></li>
+        <li><a href="../traslados/index.html">Traslados</a></li>
+        <li><a href="../documentos/index.html">Documentos</a></li>
+    </ul>
+</div>
+
+<div class="main">
+
+    <div class="header">
+        <div class="header-left">
+            <h2>Nuevo Traslado - Carga</h2>
+        </div>
+
+        <div class="header-right">
+            <span class="user">Juan Pérez</span>
+            <span class="role">Operador</span>
+            <a href="../login.html">
+                <button class="logout">Salir</button>
+            </a>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <h2>Crear traslado de carga / otros</h2>
+
+
+<div class="card card-medium">
+
+    <form class="form">
+
+        <div class="form-group">
+            <label>Origen</label>
+            <input type="text">
+        </div>
+
+        <div class="form-group">
+            <label>Destino</label>
+            <input type="text">
+        </div>
+
+        <div class="form-group">
+            <label>Descripción</label>
+            <textarea></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Tipo de carga</label>
+            <select>
+                <option>Equipamiento</option>
+                <option>Medicamentos</option>
+                <option>Otros</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Vehículo</label>
+            <select>
+                <option>Camioneta ABC123</option>
+                <option>Camioneta XYZ789</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Chofer</label>
+            <select>
+                <option>Carlos López</option>
+                <option>Juan Pérez</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Prioridad</label>
+            <select>
+                <option>Baja</option>
+                <option>Media</option>
+                <option>Alta</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Hora solicitada</label>
+            <input type="datetime-local">
+        </div>
+
+        <div class="form-group">
+            <label>Observaciones</label>
+            <textarea></textarea>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn-primary">Crear traslado</button>
+            <a href="index.html">
+                <button type="button" class="btn-secondary">Cancelar</button>
+            </a>
+        </div>
+
+    </form>
+
+</div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
