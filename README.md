@@ -1,132 +1,35 @@
-# S.I.G.S.M. — Sistema Informático de Gestión de Servicios Médicos
+# S.I.G.S.M. — Primera Entrega
 
-Proyecto de Egreso — BT Tecnologías de la Información 2026
-Cliente: **Hospital de Clínicas** | Empresa desarrolladora: **QuadNet**
-Institución: I.S.B.O. Instituto Superior Brazo Oriental
----
+Sistema Informático de Gestión de Servicios Médicos, proyecto de egreso de QuadNet para el Hospital de Clínicas.
 
-## ¿Qué es S.I.G.S.M.?
+Esta carpeta contiene lo que corresponde a la primera entrega: el prototipo de interfaz y la documentación técnica pedida.
 
-Plataforma a medida que transforma la ineficiencia documental y la logística de traslados del Hospital de Clínicas en **transparencia operativa y accesibilidad inmediata** para todos los usuarios.
+## Qué hay acá
 
-El sistema se compone de dos módulos integrados al panel institucional existente del hospital (piso 6, servidores del DTI), accesibles con las credenciales habituales del personal.
+- **`proto/`** – prototipo en HTML y CSS, sin JavaScript (ya lo dimos en clase, pero todavía no lo metimos en este prototipo). Adentro:
+  - `index.html` → `login.html` — pantalla de entrada y login.
+  - `dashboard/` — resumen general una vez logueado.
+  - `admin/` — alta, edición y listado de categorías, funcionarios, usuarios y vehículos.
+  - `documentos/` — gestión de documentos, asociar encuestas y el acceso de prueba al portal del paciente.
+  - `traslados/` — listado, solicitud y alta de traslados en ambulancia.
+  - `portal-paciente.html` — portal mobile-first al que se entra escaneando un QR, sin login.
+  - `css/` — `layout.css` y `components.css` para todas las pantallas internas (login, dashboard, admin, documentos, traslados), y `portal.css` aparte solo para el portal del paciente, porque es una pantalla pública con su propio diseño.
+- **`Documentacion/`** – justificación tecnológica, modelado de datos, cómo armar el entorno de desarrollo y cómo manejamos el repositorio y los commits.
+- **DER y MR de ambos módulos** (`.drawio`) y `Modelado de Datos.pdf` — diagramas y restricciones de la base, detallados en [Modelado de Datos](Documentacion/04-Modelado-de-Datos.md).
 
----
+## Cómo ver el prototipo
 
-## Módulos del sistema
+No hace falta instalar nada. Se puede abrir directo `proto/index.html` en el navegador, aunque para que los enlaces entre páginas funcionen bien conviene abrirlo con la extensión Live Server de VS Code en vez de doble clic.
 
-### 📄 Módulo 1 — Gestión digital de documentación para pacientes
+El recorrido normal es `index.html` → `login.html` → `dashboard/`, `admin/`, `documentos/` o `traslados/`. El portal del paciente se prueba aparte, abriendo directo `portal-paciente.html` como si hubieras escaneado el QR.
 
-Permite a funcionarios administrativos cargar y gestionar documentos en el servidor. Los pacientes acceden a ellos escaneando un **código QR** desde su celular, sin necesidad de recibir copias impresas ni instalar aplicaciones.
+## Documentación
 
-Tipos de documentos contemplados:
-- Indicaciones médicas (IVE, prostatectomía, warfarina, trasplante, etc.)
-- Preparación para estudios imagenológicos y diagnósticos
-- Indicaciones de enfermería (nefrología, ostomizados, trasplantados)
-- **Encuestas de satisfacción anónimas** (almacenadas para análisis de indicadores)
+- [Justificación Tecnológica](Documentacion/01-Justificacion-Tecnologica.md)
+- [Configuración del Entorno de Desarrollo](Documentacion/02-Configuracion-Entorno-Desarrollo.md)
+- [Control de Versiones y Repositorio](Documentacion/03-Control-Versiones-Repositorio.md)
+- [Modelado de Datos](Documentacion/04-Modelado-de-Datos.md)
 
-### 🚑 Módulo 2 — Trazabilidad de ambulancias y traslados
+## Equipo
 
-Gestión y seguimiento del transporte mediante ambulancias y otros vehículos del hospital. Registra cada solicitud de traslado e incluye:
-
-- Conductor, enfermero responsable y paciente/elemento a trasladar
-- Origen, destino, hora de salida y hora de llegada
-- Datos del paciente consumidos desde API externa por C.I.
-- Gestión de rutas en el circuito nacional
-- Reglas de negocio: no todos los traslados son válidos para cualquier vehículo
-- Seguimiento en tiempo real del estado del traslado
-
-> Workflow del hospital: https://drive.google.com/file/d/19_1YgPe1Mb0ivRz6KpNEd70nGylTIFI0/view?usp=sharing
-
----
-
-## Propuesta de valor
-
-| Impacto | Cifra |
-|---------|-------|
-| Hojas eliminadas/año | **105.600 hojas** |
-| Ahorro estimado en papel e insumos | **~USD 4.520/año** |
-| Horas administrativas liberadas/año | **660 horas** (seguimiento telefónico de traslados) |
-| Encuestas digitalizadas/mes | **+8.800 encuestas** en papel reemplazadas |
-| Tiempo evitado por re-consultas | **~29 horas administrativas/mes** |
-
-**Diferenciadores clave:**
-- Diseñado sobre el workflow real del hospital
-- Acceso con credenciales institucionales existentes (cero curva de adopción)
-- Reglas de negocio incorporadas (impide errores operativos)
-- Acceso del paciente por QR: sin apps, sin cuentas
-
----
-
-## Stack tecnológico
-
-| Capa | Tecnología |
-|------|-----------|
-| Frontend | HTML · CSS |
-| Backend | PHP |
-| Base de datos | MySQL |
-| Infraestructura | GNU/Linux · Docker · SSH |
-| Control de versiones | Git · GitHub |
-| Entorno de desarrollo | VS Code · XAMPP 8.x · VirtualBox 7.x |
-
----
-
-## Equipo QuadNet
-
-| Rol | Nombre | GitHub |
-|-----|--------|--------|
-| Coordinador | Guillermo Raffetto | [@guillermoraffetto](https://github.com/guillermoraffetto) |
-| Subcoordinador | Matias Rossello | [@elmandress](https://github.com/elmandress) |
-| Integrante | Thiago Blengini | [@Snufkhin](https://github.com/Snufkhin) |
-| Integrante | Luciano Maciel | — |
-
-📧 quadnet.contacto@gmail.com
-
----
-
-## Misión y Visión
-
-**MISIÓN:** Digitalizar y optimizar los procesos administrativos y logísticos del Hospital de Clínicas, asegurando que cada paciente y funcionario disponga de acceso inmediato a información crítica en tiempo real. Transformar la ineficiencia documental y de traslados en transparencia y control operacional.
-
-**VISIÓN:** Ser la solución de software institucional de referencia para la gestión de la salud pública en Uruguay, escalable a otros centros asistenciales y reconocida por maximizar la eficiencia de los recursos hospitalarios mediante innovación tecnológica continua.
-
----
-
-## Cronograma de entregas
-
-| Entrega | Fecha |
-|---------|-------|
-| Conformación de grupos | 11/05/2026 |
-| **Primera entrega** | 24/06/2026 |
-| **Segunda entrega** | 02/09/2026 |
-| **Documentación final** | 09/11/2026 |
-| Instalación del proyecto | 11/11/2026 |
-| Defensa de proyecto | 20–24/11/2026 |
-
----
-
-## Estado del proyecto
-
-- [x] Conformación del equipo
-- [x] Propuesta de valor
-- [x] Repositorio configurado
-- [x] Relevamiento de requerimientos (ESRE)
-- [ ] Justificación tecnológica
-- [ ] Prototipo UI/UX (Figma)
-- [x] Modelo Entidad-Relación
-- [ ] Implementación Módulo Documentación
-- [ ] Implementación Módulo Ambulancias
-- [ ] Script de administración del servidor
-- [ ] Docker Compose deploy
-- [ ] Deploy en servidores del DTI
-
----
-
-## Recursos institucionales
-
-- 🌐 Institución: https://isbo.utu.edu.uy/bt-tecnologias-de-la-informacion
-- 📋 Workflow de traslados: https://drive.google.com/file/d/19_1YgPe1Mb0ivRz6KpNEd70nGylTIFI0/view?usp=sharing
-
----
-
-*Proyecto académico — I.S.B.O. UTU 2026.*
+Guillermo Raffetto (coordinador), Matias Rossello, Thiago Blengini y Luciano Maciel — QuadNet, ISBO 2026.
