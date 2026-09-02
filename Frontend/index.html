@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<!--
+    Portal de entrada del sistema. Muestra 3 accesos (Operador,
+    Administrador, Administración del Sistema) que llevan cada uno a
+    login.html con un parámetro ?destino= distinto en la URL. Esta
+    página en sí no valida nada: quien realmente controla los permisos
+    es el backend (ver login.html y API/usuarios/login.php).
+-->
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SIGSM</title>
+
+    <link
+        rel="stylesheet"
+        href="css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/components.css"
+    >
+
+</head>
+
+
+<body class="login-container">
+
+
+<div class="login-card portal-card">
+
+    <h2>SIGSM</h2>
+
+    <p class="portal-subtitle">
+        Sistema Integral de Gestión de Servicios Médicos
+    </p>
+
+    <p class="portal-hospital">
+        Hospital de Clínicas
+    </p>
+
+
+    <div class="portal-options">
+
+        <a
+            href="login.html?destino=operador"
+            class="btn-primary btn-big portal-button"
+        >
+            Ingresar como Operador
+        </a>
+
+
+        <a
+            href="login.html?destino=admin"
+            class="btn-primary btn-big portal-button"
+        >
+            Ingresar como Administrador
+        </a>
+
+
+        <a
+            href="login.html?destino=admin-sistema"
+            class="btn-secondary btn-big portal-button"
+        >
+            Administración del Sistema
+        </a>
+
+    </div>
+
+
+    <div class="portal-info">
+
+        <h3>Proyecto SIGSM</h3>
+
+        <p>
+            Sistema desarrollado para la gestión
+            de servicios médicos, documentación
+            y traslados del Hospital de Clínicas.
+        </p>
+
+        <p>
+            Desarrollo: Equipo QuadNet · 2026
+        </p>
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>

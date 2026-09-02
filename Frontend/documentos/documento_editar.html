@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<!--
+    Pantalla de edición de un documento existente, dentro del módulo de documentos.
+    Protegida por auth.js (cualquier usuario logueado puede entrar,
+    no hace falta ser Administrador). Es una maqueta de interfaz:
+    todavía no está conectada a ningún endpoint de la API.
+-->
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SIGSM - Editar Documento</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+
+    <div class="sidebar">
+
+        <h1 class="logo">SIGSM</h1>
+
+        <ul class="menu">
+            <li><a href="../dashboard/index.html">Dashboard</a></li>
+            <li><a href="../traslados/index.html">Traslados</a></li>
+            <li><a href="../documentos/index.html">Documentos</a></li>
+        </ul>
+
+    </div>
+
+    <div class="main">
+
+        <div class="header">
+
+            <div class="header-left">
+                <h2>Editar Documento</h2>
+            </div>
+
+            <div class="header-right">
+                <span class="user">Juan Pérez</span>
+                <span class="role">Operador</span>
+                <a href="../login.html">
+                    <button class="logout">Salir</button>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="content">
+
+            <h2 class="titulo-seccion">Editar Documento</h2>
+
+            <div class="card card-medium">
+
+                <form class="form">
+
+                    <div class="form-group">
+                        <label>Nombre del documento</label>
+                        <input type="text" value="Protocolo COVID">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select>
+                            <option selected>Salud</option>
+                            <option>Administración</option>
+                            <option>Operativo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Subcategoría</label>
+                        <select>
+                            <option selected>General</option>
+                            <option>Urgencias</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Reemplazar archivo (opcional)</label>
+                        <input type="file">
+                    </div>
+
+                    <button type="button" class="btn-primary btn-big">
+                        Guardar cambios
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =========================================================
+     AUTENTICACION
+     ========================================================= -->
+
+<script src="../js/auth.js"></script>
+
+
+<script>
+
+/*
+ * ============================================================
+ * INICIO
+ * ============================================================
+ */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    async () => {
+
+        const autorizado =
+            await verificarSesion();
+
+
+        if (!autorizado) {
+
+            return;
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Login - SIGSM</title>
+
+    <link
+        rel="stylesheet"
+        href="css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/components.css"
+    >
+
+</head>
+
+
+<body class="login-container">
+
+
+<div class="login-card">
+
+    <h2>
+        Login
+    </h2>
+
+
+    <form
+        class="form"
+        id="loginForm"
+    >
+
+        <div class="form-group">
+
+            <label for="usuario">
+                Usuario
+            </label>
+
+            <input
+                type="text"
+                id="usuario"
+                name="usuario"
+                autocomplete="username"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="password">
+                Contraseña
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="current-password"
+                required
+            >
+
+        </div>
+
+
+        <p
+            id="mensaje"
+            role="alert"
+        ></p>
+
+
+        <button
+            type="submit"
+            class="btn-primary"
+            id="btnIngresar"
+        >
+            Ingresar
+        </button>
+
+    </form>
+
+</div>
+
+
+<script>
+
+/*
+ * ============================================================
+ * ELEMENTOS DEL DOM
+ * ============================================================
+ */
+
+const formulario =
+    document.getElementById(
+        'loginForm'
+    );
+
+
+const mensaje =
+    document.getElementById(
+        'mensaje'
+    );
+
+
+const botonIngresar =
+    document.getElementById(
+        'btnIngresar'
+    );
+
+
+/*
+ * ============================================================
+ * DESTINO SELECCIONADO DESDE EL PORTAL
+ * ============================================================
+ *
+ * Cuando alguien viene del portal principal (index.html), llega
+ * aca con algo como "login.html?destino=admin" en la URL. Ese
+ * "destino" nos dice para que acceso esta tratando de loguearse
+ * la persona.
+ * 
+ * Si alguien entra directo a login.html sin pasar por el
+ * portal, "destino" va a ser null, y ahi se aplica un
+ * comportamiento por defecto (ver el bloque "SIN DESTINO").
+ */
+
+const parametros =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const destino =
+    parametros.get('destino');
+
+
+/*
+ * ============================================================
+ * LOGIN
+ * ============================================================
+ */
+
+formulario.addEventListener(        // Ejecuta la funcion despues del submit
+    'submit',
+    async (evento) => {
+
+        // Frena el comportamiento por defecto del form (que
+        // seria recargar la pagina), porque el envio lo vamos a
+        // manejar con fetch.
+
+        evento.preventDefault();
+
+        // Borra cualquier mensaje que estuviera apareciendo
+
+        mensaje.textContent = '';
+
+        // Busca el campo id="usuario", value obtiene lo que escribio, trim borra espacios en banco al principio y fin y se guarda en usuario
+        
+        const usuario =
+            document
+                .getElementById('usuario')
+                .value
+                .trim();
+
+        // Busca el campo id="password", value obtiene lo que escribio y se guarda en password
+
+        const password =
+            document
+                .getElementById('password')
+                .value;
+
+
+        /*
+         * ====================================================
+         * VALIDACIÓN BÁSICA
+         * ====================================================
+         *
+         * Esto es solo para dar feedback rapido sin gastar un
+         * viaje al servidor por algo obvio. La validación que
+         * realmente importa (usuario y contraseña correctos)
+         * la hace login.php del lado del backend, no aca.
+         * 
+         * 
+         * Valida que no sean null y deshabilita el boton ingresar para evitar
+         * que el usuario haga clics mientras se esta procesando el login
+         */
+
+        if (
+            usuario === '' ||
+            password === ''
+        ) {
+
+            mensaje.textContent =
+                'Ingrese usuario y contraseña.';
+
+            return;
+
+        }
+
+
+        botonIngresar.disabled = true;
+
+
+        try {
+
+            /*
+             * =================================================
+             * ENVÍA LAS CREDENCIALES AL BACKEND
+             * =================================================
+             *
+             * Notar que el body va como JSON.stringify(...),
+             * no como un FormData: por eso del lado de
+             * login.php se lee con file_get_contents('php://input')
+             * en vez de leer $_POST directamente.
+             */
+
+            const respuesta =           // Realiza peticion HTTP al endpoint -> la respuesta se guarda en respuesta
+                await fetch(
+                    '../API/usuarios/login.php',
+                    {
+                        method: 'POST',     // Metodo POST
+
+                        headers: {          // 
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        // Importante para que si el login sale
+                        // bien, la cookie de sesión que devuelve
+                        // el servidor quede guardada en el
+                        // navegador para los próximos requests.
+                        credentials:
+                            'same-origin',
+
+                        cache:
+                            'no-store',
+
+                        body:                       // Datos que estamos enviando al servidor
+                            JSON.stringify({        // convierte un objeto de JS en texto JSON
+                                user:
+                                    usuario,
+
+                                password:
+                                    password
+                            })
+                    }
+                );
+
+                                // Recibe la respuesta
+            const datos =
+                await respuesta.json();
+
+
+            /*
+             * =================================================
+             * LOGIN INCORRECTO
+             * =================================================
+             * 
+             * Comprueba si la respuesta HTTP fue incorrecta,
+             * si es asi muestra el mensaje que envio el servidor
+             * si no existe utiliza el de respaldo
+             */
+
+            if (
+                !respuesta.ok ||
+                !datos.ok
+            ) {
+
+                mensaje.textContent =
+                    datos.mensaje ||
+                    'No se pudo iniciar sesión.';
+
+                botonIngresar.disabled =
+                    false;
+
+                return;
+
+            }
+
+
+            /*
+             * =================================================
+             * VERIFICACIÓN DEL USUARIO
+             * =================================================
+             * 
+             * Comprueba que la respuesta tenga usuario y rol, 
+             * si no hay uno de ambos muestra el error y vuelve a
+             * habilitar el boton y termina la funcion.
+             */
+
+            if (
+                !datos.usuario ||
+                !datos.usuario.rol
+            ) {
+
+                mensaje.textContent =
+                    'No se pudo determinar el rol del usuario.';
+
+                botonIngresar.disabled =
+                    false;
+
+                return;
+
+            }
+
+            // Guarda el rol en la variable rol
+
+            const rol =
+                datos.usuario.rol;
+
+
+            /*
+             * =================================================
+             * ADMINISTRACIÓN DEL SISTEMA
+             * =================================================
+             *
+             * Este acceso es exclusivo para Administradores.
+             *
+             * Las credenciales pueden ser perfectamente correctas, 
+             * pero si la persona es un  Operador tratando de entrar por la 
+             * puerta de "Administración del Sistema", igual no la deja pasar. 
+             * Y como el backend ya la logueo (el login.php no sabe nada
+             * de "destino", eso es una idea puramente del
+             * frontend), hay que deshacer ese login
+             * llamando a logout.php antes de mostrar el error.
+             * 
+             * Si no se hiciera ese logout, la persona quedaria
+             * con una sesión activa pero sin haber llegado a ningun
+             * lado, lo cual seria un estado raro e inconsistente.
+             */
+
+            if (
+                destino === 'admin-sistema'         // Verifica si se quiere entrar al acceso del administrador
+            ) {
+
+                if (                            
+                    rol !== 'Administrador'         // Verifica si el usuario no es un administrador
+                ) {
+
+                    /*
+                     * El usuario se autentico correctamente,
+                     * pero no tiene permisos para este acceso.
+                     */
+
+                    try {
+
+                        await fetch(                            // Se hace una peticion al endpoint logout.php
+                            '../API/usuarios/logout.php',
+                            {
+                                method: 'POST',
+
+                                credentials:
+                                    'same-origin',
+
+                                cache:
+                                    'no-store'
+                            }
+                        );
+
+                    } catch (error) {                           // Si falla el logout muestra en consola el error
+
+                        console.error(
+                            'Error al cerrar la sesión:',
+                            error
+                        );
+
+                    }
+
+
+                    mensaje.textContent =
+                        'Este acceso es exclusivo para Administradores.';   // Le infroma al usuario del error
+
+                    botonIngresar.disabled =            // Vuelve a habilitar el boton
+                        false;
+
+                    return;
+
+                }
+
+
+                /*
+                 * Administrador autorizado.            // Si el rol es Administrador, lo manda al area de administracion
+                 */
+
+                window.location.replace(
+                    'admin/index.html'
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * =================================================
+             * DASHBOARD
+             * =================================================
+             *
+             * Tanto el Administrador como el Operador
+             * pueden acceder al dashboard.
+             */
+
+            if (
+                destino === 'operador' ||           // Verifica si el usuario llego a alguno de estos accesos y avanza
+                destino === 'admin'
+            ) {
+
+                if (
+                    rol === 'Administrador' ||      // Verifica si el usuario es alguno de esos roles y lo manda al dashboard
+                    rol === 'Operador'
+                ) {
+
+                    window.location.replace(
+                        'dashboard/index.html'
+                    );
+
+                    return;
+
+                }
+
+            }
+
+
+            /*
+             * =================================================
+             * SIN DESTINO
+             * =================================================
+             *
+             * Si alguien entra directamente a login.html
+             * sin pasar por el portal, ambos roles van
+             * al dashboard.
+             */
+
+            if (
+                destino === null
+            ) {
+
+                if (
+                    rol === 'Administrador' ||
+                    rol === 'Operador'
+                ) {
+
+                    window.location.replace(
+                        'dashboard/index.html'
+                    );
+
+                    return;
+
+                }
+
+            }
+
+
+            /*
+             * =================================================
+             * DESTINO DESCONOCIDO
+             * =================================================
+             *
+             * Si "destino" tiene algun valor que no reconocemos
+             * (por ejemplo, alguien editó la URL a mano y puso
+             * algo raro), no adivinamos a donde mandarla 
+             * avisamos que ese acceso no es válido.
+             */
+
+            mensaje.textContent =
+                'El acceso seleccionado no es válido.';
+
+            botonIngresar.disabled =            // Vuelve a habilitar el boton
+                false;
+
+
+        } catch (error) {               // Si falla la comunicacion con el login
+
+            console.error(
+                'Error en login:',      // Muestra error en la consola
+                error
+            );
+
+
+            mensaje.textContent =
+                'No se pudo conectar con el servidor.';     // Avisa al usuario
+
+
+            botonIngresar.disabled =            // Vuelve a habilitar el boton
+                false;
+
+        }
+
+    }
+);
+
+
+</script>
+
+</body>
+
+</html>

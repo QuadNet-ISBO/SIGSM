@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<!--
+    Panel principal para Operadores y Administradores, protegido por
+    auth.js (ver ese archivo para el detalle de cómo se valida la
+    sesión). Las tarjetas de resumen y la tabla de traslados son por
+    ahora una maqueta visual: todavía no hay un endpoint en API/ que
+    traiga los traslados reales, por eso la tabla se queda mostrando
+    "Cargando traslados...".
+-->
+
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+    SIGSM - Dashboard
+</title>
+
+<link
+    rel="stylesheet"
+    href="../css/layout.css"
+>
+
+<link
+    rel="stylesheet"
+    href="../css/components.css"
+>
+
+</head>
+
+<body>
+
+<!-- =========================================================
+     SIDEBAR
+     ========================================================= -->
+
+<div class="sidebar">
+
+<h1 class="logo">
+    SIGSM
+</h1>
+
+
+<ul class="menu">
+
+    <li>
+
+        <a href="index.html">
+            Dashboard
+        </a>
+
+    </li>
+
+
+    <li>
+
+        <a href="../traslados/index.html">
+            Traslados
+        </a>
+
+    </li>
+
+
+    <li>
+
+        <a href="../documentos/index.html">
+            Documentos
+        </a>
+
+    </li>
+
+</ul>
+
+</div>
+
+<!-- =========================================================
+     MAIN
+     ========================================================= -->
+
+<div class="main">
+
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+
+<div class="header">
+
+
+    <div class="header-left">
+
+        <h2>
+            Dashboard
+        </h2>
+
+    </div>
+
+
+
+    <div class="header-right">
+
+
+        <span
+            class="user"
+            id="usuario"
+        >
+            Cargando...
+        </span>
+
+
+        <span
+            class="role"
+            id="rol"
+        >
+            Cargando...
+        </span>
+
+
+        <button
+            class="logout"
+            id="btnLogout"
+            type="button"
+        >
+            Salir
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     CONTENIDO
+     ===================================================== -->
+
+<div class="content">
+
+
+    <h2 class="titulo-seccion">
+        Dashboard
+    </h2>
+
+
+
+    <!-- =================================================
+         RESUMEN
+         ================================================= -->
+
+    <div class="grid">
+
+
+        <div class="card">
+
+            <h3>
+                Traslados Activos
+            </h3>
+
+            <p
+                class="number"
+                id="trasladosActivos"
+            >
+                0
+            </p>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <h3>
+                Pendientes
+            </h3>
+
+            <p
+                class="number"
+                id="trasladosPendientes"
+            >
+                0
+            </p>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <h3>
+                Finalizados Hoy
+            </h3>
+
+            <p
+                class="number"
+                id="finalizadosHoy"
+            >
+                0
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =================================================
+         TRASLADOS ACTIVOS Y PENDIENTES
+         ================================================= -->
+
+    <div class="card">
+
+
+        <h3>
+            Traslados activos y pendientes
+        </h3>
+
+
+        <div style="overflow-x:auto;">
+
+
+            <table>
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Origen
+                        </th>
+
+                        <th>
+                            Destino
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                        <th>
+                            Paciente / Carga
+                        </th>
+
+                        <th>
+                            Fecha y hora de entrega
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+
+                <tbody id="tablaTraslados">
+
+                    <tr>
+
+                        <td colspan="5">
+                            Cargando traslados...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+
+            </table>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+</div>
+
+<!-- =========================================================
+     AUTENTICACION GENERAL
+     ========================================================= -->
+
+<script src="../js/auth.js"></script>
+
+<script>
+    
+/*
+ * ============================================================
+ * INICIO
+ * ============================================================
+ */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    async () => {
+
+        const autorizado =
+            await verificarSesion();
+
+
+        if (!autorizado) {
+
+            return;
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

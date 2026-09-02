@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<!--
+    Formulario de alta de un traslado de paciente. Sus campos calzan con
+    las columnas de las tablas "traslados" + "paciente" (ver bd.sql),
+    pensado para conectarse más adelante a un futuro endpoint tipo
+    API/traslados/crear.php. Por ahora es una maqueta: el <form> no
+    tiene ningún JavaScript que lo envíe.
+-->
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        SIGSM - Nuevo Traslado de Paciente
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SIDEBAR
+     ========================================================= -->
+
+<div class="sidebar">
+
+    <h1 class="logo">
+        SIGSM
+    </h1>
+
+
+    <ul class="menu">
+
+        <li>
+
+            <a href="../dashboard/index.html">
+                Dashboard
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="index.html">
+                Traslados
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="../documentos/index.html">
+                Documentos
+            </a>
+
+        </li>
+
+    </ul>
+
+</div>
+
+
+
+<!-- =========================================================
+     MAIN
+     ========================================================= -->
+
+<div class="main">
+
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2>
+                Nuevo traslado - Paciente
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span
+                class="user"
+                id="usuario"
+            >
+                Cargando...
+            </span>
+
+
+            <span
+                class="role"
+                id="rol"
+            >
+                Cargando...
+            </span>
+
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         CONTENIDO
+         ===================================================== -->
+
+    <div class="content">
+
+
+        <h2 class="titulo-seccion">
+            Crear traslado de paciente
+        </h2>
+
+
+        <div class="card card-medium">
+
+
+            <div
+                id="mensaje"
+                style="display:none;"
+            ></div>
+
+
+            <form
+                id="formTraslado"
+                class="form"
+            >
+
+
+                <!-- ORIGEN -->
+
+                <div class="form-group">
+
+                    <label for="origen">
+                        Origen
+                    </label>
+
+                    <input
+                        type="text"
+                        id="origen"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- DESTINO -->
+
+                <div class="form-group">
+
+                    <label for="destino">
+                        Destino
+                    </label>
+
+                    <input
+                        type="text"
+                        id="destino"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- FECHA Y HORA -->
+
+                <div class="form-group">
+
+                    <label for="fechaHoraDestino">
+                        Fecha y hora prevista de destino
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="fechaHoraDestino"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- PACIENTE -->
+
+                <div class="form-group">
+
+                    <label for="ciPaciente">
+                        Cédula del paciente
+                    </label>
+
+                    <input
+                        type="text"
+                        id="ciPaciente"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="nombrePaciente">
+                        Nombre completo
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nombrePaciente"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="telefonoPaciente">
+                        Teléfono
+                    </label>
+
+                    <input
+                        type="text"
+                        id="telefonoPaciente"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="quienRecibe">
+                        Quién recibe
+                    </label>
+
+                    <input
+                        type="text"
+                        id="quienRecibe"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="puerta">
+                        Puerta
+                    </label>
+
+                    <input
+                        type="text"
+                        id="puerta"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="piso">
+                        Piso
+                    </label>
+
+                    <input
+                        type="text"
+                        id="piso"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="sala">
+                        Sala
+                    </label>
+
+                    <input
+                        type="text"
+                        id="sala"
+                    >
+
+                </div>
+
+
+                <!-- AMBULANCIA -->
+
+                <div class="form-group">
+
+                    <label for="vehiculo">
+                        Ambulancia
+                    </label>
+
+                    <select
+                        id="vehiculo"
+                        required
+                    >
+
+                        <option value="">
+                            Cargando ambulancias...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- CHOFER -->
+
+                <div class="form-group">
+
+                    <label for="chofer">
+                        Chofer
+                    </label>
+
+                    <select
+                        id="chofer"
+                        required
+                    >
+
+                        <option value="">
+                            Cargando choferes...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- ENFERMERO -->
+
+                <div class="form-group">
+
+                    <label for="enfermero">
+                        Enfermero
+                    </label>
+
+                    <select
+                        id="enfermero"
+                        required
+                    >
+
+                        <option value="">
+                            Cargando enfermeros...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PRIORIDAD -->
+
+                <div class="form-group">
+
+                    <label for="prioridad">
+                        Prioridad
+                    </label>
+
+                    <select
+                        id="prioridad"
+                        required
+                    >
+
+                        <option value="">
+                            Seleccioná una prioridad
+                        </option>
+
+                        <option value="baja">
+                            Baja
+                        </option>
+
+                        <option value="media">
+                            Media
+                        </option>
+
+                        <option value="alta">
+                            Alta
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- OBSERVACIONES -->
+
+                <div class="form-group">
+
+                    <label for="observaciones">
+                        Observaciones
+                    </label>
+
+                    <textarea
+                        id="observaciones"
+                    ></textarea>
+
+                </div>
+
+
+                <!-- BOTONES -->
+
+                <div class="grupo-botones">
+
+                    <button
+                        type="submit"
+                        class="btn-primary"
+                        id="btnCrear"
+                    >
+                        Crear traslado
+                    </button>
+
+
+                    <a
+                        href="index.html"
+                        class="btn-secondary"
+                    >
+                        Cancelar
+                    </a>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     AUTENTICACION GENERAL
+     ========================================================= -->
+
+<script src="../js/auth.js"></script>
+
+
+<script>
+
+/*
+ * ============================================================
+ * INICIO
+ * ============================================================
+ */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    async () => {
+
+        const autenticado =
+            await verificarSesion();
+
+
+        if (!autenticado) {
+
+            return;
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<!--
+    Listado de traslados con filtro por estado, y accesos para cargar uno
+    nuevo (de paciente o de "otro" tipo). Protegida por auth.js. Es una
+    maqueta: la tabla todavía no trae datos reales de la tabla
+    "traslados", y el filtro no está conectado a ningún endpoint.
+-->
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        SIGSM - Gestión de Traslados
+    </title>
+
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SIDEBAR
+     ========================================================= -->
+
+<div class="sidebar">
+
+    <h1 class="logo">
+        SIGSM
+    </h1>
+
+
+    <ul class="menu">
+
+        <li>
+
+            <a href="../dashboard/index.html">
+                Dashboard
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="index.html">
+                Traslados
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="../documentos/index.html">
+                Documentos
+            </a>
+
+        </li>
+
+    </ul>
+
+</div>
+
+
+
+<!-- =========================================================
+     MAIN
+     ========================================================= -->
+
+<div class="main">
+
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <div class="header">
+
+
+        <div class="header-left">
+
+            <h2>
+                Traslados
+            </h2>
+
+        </div>
+
+
+
+        <div class="header-right">
+
+            <span
+                class="user"
+                id="usuario"
+            >
+                Cargando...
+            </span>
+
+
+            <span
+                class="role"
+                id="rol"
+            >
+                Cargando...
+            </span>
+
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         CONTENIDO
+         ===================================================== -->
+
+    <div class="content">
+
+
+        <!-- =================================================
+             TITULO + BOTONES
+             ================================================= -->
+
+        <div class="top-bar">
+
+
+            <h2>
+                Gestión de Traslados
+            </h2>
+
+
+
+            <div class="grupo-botones">
+
+
+                <a
+                    href="nuevootro.html"
+                    class="btn-primary"
+                >
+                    + Nuevo traslado
+                </a>
+
+
+                <a
+                    href="nuevopaciente.html"
+                    class="btn-primary"
+                >
+                    + Nuevo traslado de paciente
+                </a>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             FILTRO
+             ================================================= -->
+
+        <div class="card">
+
+
+            <div class="form-group">
+
+
+                <label for="filtroEstado">
+                    Filtrar por estado
+                </label>
+
+
+                <select id="filtroEstado">
+
+
+                    <option value="">
+                        Todos
+                    </option>
+
+
+                    <option value="solicitado">
+                        Solicitado
+                    </option>
+
+
+                    <option value="aprobado">
+                        Aprobado
+                    </option>
+
+
+                    <option value="en_curso">
+                        En curso
+                    </option>
+
+
+                    <option value="llegado">
+                        Llegado
+                    </option>
+
+
+                    <option value="regreso">
+                        Regreso
+                    </option>
+
+
+                    <option value="retornado">
+                        Retornado
+                    </option>
+
+
+                    <option value="finalizado">
+                        Finalizado
+                    </option>
+
+
+                    <option value="cancelado">
+                        Cancelado
+                    </option>
+
+
+                    <option value="abortado">
+                        Abortado
+                    </option>
+
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             TABLA
+             ================================================= -->
+
+        <div class="card">
+
+
+            <div style="overflow-x:auto;">
+
+
+                <table id="tablaTraslados">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Paciente</th>
+                            <th>Origen</th>
+                            <th>Destino</th>
+                            <th>Fecha prevista</th>
+                            <th>Vehículo</th>
+                            <th>Prioridad</th>
+                            <th>Creado</th>
+                            <th>Salida</th>
+                            <th>Llegada</th>
+                            <th>Regreso</th>
+                            <th>Retorno</th>
+                            <th>Finalizado</th>
+                            <th>Estado</th>
+                            <th>Avanzar</th>
+                            <th>Cancelar / Abortar</th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody id="tablaTrasladosBody">
+
+
+                        <tr>
+
+                            <td colspan="17">
+                                Cargando traslados...
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     AUTENTICACION
+     ========================================================= -->
+
+<script src="../js/auth.js"></script>
+
+
+<script>
+
+/*
+ * ============================================================
+ * INICIO
+ * ============================================================
+ */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    async () => {
+
+        const autorizado =
+            await verificarSesion();
+
+
+        if (!autorizado) {
+
+            return;
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

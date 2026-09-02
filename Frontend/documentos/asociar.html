@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<!--
+    Pantalla de asociación de una encuesta a una subcategoría, dentro del módulo de documentos.
+    Protegida por auth.js (cualquier usuario logueado puede entrar,
+    no hace falta ser Administrador). Es una maqueta de interfaz:
+    todavía no está conectada a ningún endpoint de la API.
+-->
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SIGSM - Asociar Encuesta</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <h1 class="logo">SIGSM</h1>
+
+    <ul class="menu">
+        <li><a href="../dashboard/index.html">Dashboard</a></li>
+        <li><a href="../traslados/index.html">Traslados</a></li>
+        <li><a href="../documentos/index.html">Documentos</a></li>
+    </ul>
+
+</div>
+
+
+<div class="main">
+
+    <div class="header">
+
+        <div class="header-left">
+            <h2>Asociar Encuesta</h2>
+        </div>
+
+        <div class="header-right">
+            <span class="user">Juan Pérez</span>
+            <span class="role">Operador</span>
+
+            <a href="../login.html">
+                <button class="logout">Salir</button>
+            </a>
+        </div>
+
+    </div>
+
+
+    <div class="content">
+
+        <h2 class="titulo-seccion">Asociar Encuesta a Subcategoría</h2>
+
+        <div class="card card--info">
+            <p>
+                Seleccioná una categoría para visualizar sus subcategorías.
+                Luego seleccioná una subcategoría y la encuesta que querés asociar.
+            </p>
+        </div>
+
+
+        <!-- ================= CATEGORÍA ================= -->
+
+        <div class="card">
+
+            <h3>1. Seleccionar categoría</h3>
+
+            <label for="buscarCategoria">Buscar categoría</label>
+
+            <input
+                type="text"
+                id="buscarCategoria"
+                placeholder="Buscar categoría..."
+                class="campo-buscador"
+            >
+
+            <select id="categoria" size="5" class="campo-full">
+
+                <option value="1">Salud</option>
+                <option value="2">Administración</option>
+                <option value="3">Nefrología</option>
+                <option value="4">Cardiología</option>
+                <option value="5">Trasplantes</option>
+
+            </select>
+
+        </div>
+
+
+        <!-- ================= SUBCATEGORÍA ================= -->
+
+        <div class="card">
+
+            <h3>2. Seleccionar subcategoría</h3>
+
+            <p id="mensajeSubcategoria">
+                Primero seleccioná una categoría.
+            </p>
+
+            <label for="subcategoria">Subcategoría</label>
+
+            <select
+                id="subcategoria"
+                class="campo-full"
+                disabled
+            >
+                <option value="">Seleccionar subcategoría...</option>
+            </select>
+
+        </div>
+
+
+        <!-- ================= ENCUESTA ================= -->
+
+        <div class="card">
+
+            <h3>3. Seleccionar encuesta</h3>
+
+            <label for="buscarEncuesta">Buscar encuesta</label>
+
+            <input
+                type="text"
+                id="buscarEncuesta"
+                placeholder="Buscar encuesta..."
+                class="campo-buscador"
+            >
+
+            <select
+                id="encuesta"
+                size="5"
+                class="campo-full"
+                disabled
+            >
+
+                <option value="10" data-subcategoria="1">
+                    Encuesta de satisfacción
+                </option>
+
+                <option value="11" data-subcategoria="1">
+                    Encuesta de calidad
+                </option>
+
+                <option value="12" data-subcategoria="2">
+                    Encuesta sobre atención
+                </option>
+
+                <option value="13" data-subcategoria="3">
+                    Encuesta de satisfacción del usuario trasplantado
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- ================= RESUMEN ================= -->
+
+        <div class="card">
+
+            <h3>Confirmación</h3>
+
+            <p>
+                <b>Categoría:</b>
+                <span id="resumenCategoria">—</span>
+            </p>
+
+            <p>
+                <b>Subcategoría:</b>
+                <span id="resumenSubcategoria">—</span>
+            </p>
+
+            <p>
+                <b>Encuesta:</b>
+                <span id="resumenEncuesta">—</span>
+            </p>
+
+            <button
+                type="button"
+                class="btn-primary"
+                id="btnConfirmar"
+                disabled
+            >
+                Confirmar asociación
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================================================
+     AUTENTICACION
+     ========================================================= -->
+
+<script src="../js/auth.js"></script>
+
+
+<script>
+
+/*
+ * ============================================================
+ * INICIO
+ * ============================================================
+ */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    async () => {
+
+        const autorizado =
+            await verificarSesion();
+
+
+        if (!autorizado) {
+
+            return;
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

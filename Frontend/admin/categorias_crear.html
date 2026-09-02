@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<!--
+    Pantalla de alta de una categoría nueva, dentro del panel de administración.
+    Protegida por admin-auth.js (exige rol Administrador). Es una
+    maqueta de interfaz: el formulario/tabla todavía no está
+    conectado a ningún endpoint de la API, así que por ahora no
+    guarda ni trae datos reales de la base.
+-->
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>SIGSM - Crear Categoría</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<div class="sidebar">
+
+    <h1 class="logo">
+        SIGSM
+    </h1>
+
+
+    <ul class="menu">
+
+        <li class="menu-section">
+            Dashboard
+        </li>
+
+        <li>
+            <a href="index.html">
+                Dashboard
+            </a>
+        </li>
+
+
+        <li class="menu-section">
+            Usuarios
+        </li>
+
+        <li>
+            <a href="usuarios.html">
+                Gestionar usuarios
+            </a>
+        </li>
+
+
+        <li class="menu-section">
+            Funcionarios
+        </li>
+
+        <li>
+            <a href="funcionarios.html">
+                Ver funcionarios
+            </a>
+        </li>
+
+        <li>
+            <a href="funcionarios_crear.html">
+                Agregar funcionario
+            </a>
+        </li>
+
+
+        <li class="menu-section">
+            Vehículos
+        </li>
+
+        <li>
+            <a href="vehiculos.html">
+                Ver vehículos
+            </a>
+        </li>
+
+        <li>
+            <a href="vehiculos_crear.html">
+                Agregar vehículo
+            </a>
+        </li>
+
+
+        <li class="menu-section">
+            Categorías
+        </li>
+
+        <li>
+            <a href="categorias.html">
+                Gestionar categorías
+            </a>
+        </li>
+
+        <li>
+            <a href="categorias_crear.html">
+                Agregar categoría
+            </a>
+        </li>
+
+        <li>
+            <a href="subcategorias_crear.html">
+                Agregar subcategoría
+            </a>
+        </li>
+
+    </ul>
+
+</div>
+
+
+<div class="main">
+
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2>
+                Crear Categoría
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span class="user">
+                Cargando...
+            </span>
+
+            <span class="role">
+                Cargando...
+            </span>
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="content">
+
+        <h2 class="titulo-seccion">
+            Crear Categoría
+        </h2>
+
+
+        <div class="card card-medium">
+
+            <form
+                class="form"
+                id="formCategoria"
+            >
+
+                <div class="form-group">
+
+                    <label for="nombre">
+                        Nombre
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        placeholder="Nombre de la categoría"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="acciones-form">
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="btnCrearCategoria"
+                >
+                    Crear categoría
+                </button>
+
+
+                    <a href="categorias.html">
+
+                        <button
+                            type="button"
+                            class="btn-secondary"
+                        >
+                            Volver
+                        </button>
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="../js/admin-auth.js"></script>
+
+</body>
+
+</html>
