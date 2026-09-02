@@ -1,0 +1,197 @@
+/*
+   LAYOUT.CSS
+   Estructura general (esqueleto) de las páginas internas del sistema:
+   admin/*, dashboard/, documentos/*, traslados/*, login.html, index.html
+   No tiene estilos de componentes (cards, botones, tablas) — eso está en components.css
+*/
+
+/* ================= RESET ================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ================= BODY ================= */
+body {
+    display: flex;
+    background-color: #f4f6f9;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+/* ================= SIDEBAR =================
+   Menú lateral fijo. Se usa en todas las páginas internas
+   (admin/*, dashboard/, documentos/*, traslados/*) */
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    background-color: #1e293b;
+    color: white;
+    padding: 20px;
+    position: fixed;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.menu {
+    list-style: none;
+}
+
+.menu li {
+    margin: 15px 0;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #cbd5e1;
+    display: block;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 400;
+    font-size: 14px;
+    opacity: 0.7;
+    transition: 0.2s;
+}
+
+.menu a:hover {
+    background-color: #334155;
+    color: white;
+}
+
+.menu-section {
+    margin-top: 15px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    opacity: 0.9;
+}
+
+/* ================= MAIN =================
+   Columna derecha (todo lo que no es el sidebar) */
+.main {
+    margin-left: 240px;
+    width: 100%;
+}
+
+/* ================= HEADER =================
+   Barra superior con título de la página + usuario logueado */
+.header {
+    height: 70px;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+    border-bottom: 1px solid #ddd;
+}
+
+.header h2 {
+    font-size: 20px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user {
+    font-weight: bold;
+}
+
+.role {
+    font-size: 12px;
+    background-color: #e2e8f0;
+    padding: 5px 10px;
+    border-radius: 10px;
+}
+
+.logout {
+    padding: 6px 12px;
+    border: none;
+    background-color: #ef4444;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.logout:hover {
+    background-color: #dc2626;
+}
+
+/* ================= CONTENT =================
+   Zona donde va el contenido propio de cada página, dentro de .main */
+.content {
+    padding: 20px;
+}
+
+/* ================= TOP BAR =================
+   Fila de título + acciones que se repite arriba del contenido en varias páginas */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* ================= LOGIN =================
+   Centra la tarjeta de login en la pantalla. Se usa en login.html e index.html */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* ================= RESPONSIVE =================
+   En pantallas chicas el sidebar deja de ser fijo y pasa
+   arriba de todo, ocupando el ancho completo */
+@media (max-width: 768px) {
+    body {
+        display: block;
+    }
+
+    .sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+        padding: 15px;
+    }
+
+    .menu {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .menu li {
+        margin: 0;
+    }
+
+    .main {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .header {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .content {
+        padding: 12px;
+    }
+
+    .login-card {
+        width: 90%;
+    }
+}

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SIGSM - Vehículos</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+
+    <div class="sidebar">
+
+        <h1 class="logo">SIGSM</h1>
+
+        <ul class="menu">
+            <li class="menu-section">Dashboard</li>
+            <li><a href="index.html">Dashboard</a></li>
+
+            <li class="menu-section">Usuarios</li>
+            <li><a href="usuarios.html">Gestionar usuarios</a></li>
+
+            <li class="menu-section">Funcionarios</li>
+            <li><a href="funcionarios.html">Ver funcionarios</a></li>
+            <li><a href="funcionarios_crear.html">Agregar funcionario</a></li>
+
+            <li class="menu-section">Vehículos</li>
+            <li><a href="vehiculos.html">Ver vehículos</a></li>
+            <li><a href="vehiculos_crear.html">Agregar vehículo</a></li>
+
+            <li class="menu-section">Categorías</li>
+            <li><a href="categorias.html">Ver categorías</a></li>
+            <li><a href="categorias_crear.html">Agregar categoría</a></li>
+            <li><a href="subcategorias_crear.html">Agregar subcategoría</a></li>
+        </ul>
+
+    </div>
+
+    <div class="main">
+
+        <div class="header">
+
+            <div class="header-left">
+                <h2>Vehículos</h2>
+            </div>
+
+            <div class="header-right">
+                <span class="user">Juan Pérez</span>
+                <span class="role">Admin</span>
+                <a href="../login.html">
+                    <button class="logout">Salir</button>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="content">
+
+            <h2 class="titulo-seccion">Vehículos</h2>
+
+            <div class="card card-medium">
+                <a href="vehiculos_crear.html">
+                    <button class="btn-primary">+ Agregar vehículo</button>
+                </a>
+            </div>
+
+            <div class="card" style="margin-top:15px;">
+                <h3>Flota de vehículos</h3>
+
+                <table>
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Matrícula</th>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                        <th>Editar</th>
+                        <th>Desvincular</th>
+                    </tr>
+
+                    <tr>
+                        <td>1</td>
+                        <td>ABC-123</td>
+                        <td>Ambulancia</td>
+                        <td><span class="estado disponible">Disponible</span></td>
+                        <td>
+                            <a href="vehiculos_editar.html">
+                                <button class="btn-secondary">Editar</button>
+                            </a>
+                        </td>
+                        <td>
+                            <button class="btn-danger">
+                                Desvincular
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>2</td>
+                        <td>DEF-456</td>
+                        <td>Ambulancia</td>
+                        <td><span class="estado ocupado">Ocupado</span></td>
+                        <td>
+                            <a href="vehiculos_editar.html">
+                                <button class="btn-secondary">Editar</button>
+                            </a>
+                        </td>
+                        <td>
+                            <button class="btn-danger">
+                                Desvincular
+                            </button>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gestión de traslados en ambulancia del Hospital de Clínicas.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <title>Gestión de Traslados — SIGSM</title>
+</head>
+<body>
+
+    <div class="panel">
+
+        <!-- Cabecera superior: marca + navegación + usuario. Con flex-wrap se
+             acomoda sola en una o varias filas según el ancho de la pantalla
+             (responsive sin barra lateral ni botón hamburguesa). -->
+        <header class="panel__header">
+            <div class="panel__marca">
+                <img class="panel__logo-imagen" src="../../img/Logo_Hc.png" alt="Logo Hospital de Clínicas">
+                <span class="panel__header-titulo">SIGSM — Traslados</span>
+            </div>
+            <nav class="panel__nav" aria-label="Navegación principal">
+                <a class="panel__nav-enlace panel__nav-enlace--activo" href="#" aria-current="page">Traslados</a>
+                <a class="panel__nav-enlace" href="./admin-panel.html">Documentos</a>
+                <a class="panel__nav-enlace panel__nav-enlace--salir" href="./index.html">Cerrar sesión</a>
+            </nav>
+            <span class="panel__header-usuario id-mono">enfermeria.turno@hc</span>
+        </header>
+
+        <main class="panel__main" id="contenido-principal">
+
+            <div class="resumen">
+                <div class="resumen__tarjeta">
+                    <p class="resumen__numero">3</p>
+                    <p class="resumen__etiqueta">Pedidos pendientes</p>
+                </div>
+                <div class="resumen__tarjeta">
+                    <p class="resumen__numero">2</p>
+                    <p class="resumen__etiqueta">Traslados en curso</p>
+                </div>
+                <div class="resumen__tarjeta">
+                    <p class="resumen__numero">1</p>
+                    <p class="resumen__etiqueta">Prioridad diálisis hoy</p>
+                </div>
+                <div class="resumen__tarjeta">
+                    <p class="resumen__numero">4</p>
+                    <p class="resumen__etiqueta">Vehículos de flota propia (2 ambulancias + 2 autos)</p>
+                </div>
+            </div>
+
+            <!-- ════════ FORMULARIO DE SOLICITUD ════════ -->
+            <section class="panel__seccion" aria-labelledby="titulo-nuevo-pedido">
+                <h2 class="panel__seccion-titulo" id="titulo-nuevo-pedido">Nueva Solicitud de Traslado</h2>
+
+                <form class="formulario" id="form-traslado" novalidate>
+
+                    <p class="formulario__ayuda">
+                        La solicitud se puede registrar las 24 horas. El traslado se ejecuta dentro del horario del servicio de transporte: <strong>lunes a sábado de 6:00 a 20:30 hs.</strong>
+                    </p>
+
+                    <!-- Grid de 2 columnas (a partir de 640px) para los campos
+                         cortos. Los textos largos van full-width fuera del grid. -->
+                    <div class="traslado__grid">
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="tipo-traslado">Qué se traslada <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                            <select class="formulario__select" id="tipo-traslado" name="tipo-traslado" required>
+                                <option value="" selected disabled>Seleccioná una opción</option>
+                                <option value="paciente">Paciente</option>
+                                <option value="organo">Órgano para trasplante</option>
+                                <option value="equipamiento">Equipamiento médico / insumos</option>
+                            </select>
+                            <p class="formulario__error" id="error-tipo-traslado" role="alert"></p>
+                            <p class="formulario__ayuda">Los traslados de órgano tienen prioridad total: requieren ambulancia, enfermero/a y procedimiento especial.</p>
+                        </div>
+
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="via-traslado">Vía de ejecución <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                            <select class="formulario__select" id="via-traslado" name="via-traslado" required>
+                                <option value="" selected disabled>Seleccioná una opción</option>
+                                <option value="flota-propia">Flota propia del hospital</option>
+                                <option value="sae-105">Coordinación SAE / 105</option>
+                            </select>
+                            <p class="formulario__error" id="error-via-traslado" role="alert"></p>
+                        </div>
+
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="chofer-asignado">Conductor asignado <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                            <select class="formulario__select" id="chofer-asignado" name="chofer-asignado" required>
+                                <option value="" selected disabled>Seleccioná un conductor</option>
+                                <option value="silva">Pedro Silva</option>
+                                <option value="nunez">Marcos Núñez</option>
+                                <option value="cabrera">Ana Cabrera</option>
+                            </select>
+                            <p class="formulario__error" id="error-chofer-asignado" role="alert"></p>
+                        </div>
+
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="enfermero-asignado">Enfermero/a acompañante <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                            <select class="formulario__select" id="enfermero-asignado" name="enfermero-asignado" required>
+                                <option value="" selected disabled>Seleccioná un/a enfermero/a</option>
+                                <option value="quintero">Valeria Quintero</option>
+                                <option value="cruz">Claudia Cruz</option>
+                                <option value="ramos">Joaquín Ramos</option>
+                            </select>
+                            <p class="formulario__error" id="error-enfermero-asignado" role="alert"></p>
+                            <p class="formulario__ayuda">El conductor nunca viaja solo: siempre lo acompaña un enfermero/a, que es el único responsable del paciente durante el traslado.</p>
+                        </div>
+
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="vehiculo-asignado">Vehículo asignado <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                            <select class="formulario__select" id="vehiculo-asignado" name="vehiculo-asignado" required>
+                                <option value="" selected disabled>Seleccioná un vehículo</option>
+                                <option value="amb-1" data-tipo-vehiculo="ambulancia">Ambulancia 1 — SBO 1234</option>
+                                <option value="amb-2" data-tipo-vehiculo="ambulancia">Ambulancia 2 — SBO 5678</option>
+                                <option value="auto-1" data-tipo-vehiculo="auto">Auto 1 — SBP 1111</option>
+                                <option value="auto-2" data-tipo-vehiculo="auto">Auto 2 — SBP 2222</option>
+                            </select>
+                            <p class="formulario__error" id="error-vehiculo-asignado" role="alert"></p>
+                            <p class="formulario__ayuda oculto" id="aviso-restriccion-vehiculo">No todos los traslados se pueden hacer en cualquier vehículo: con paciente en Zona Roja u órgano, solo se habilitan ambulancias.</p>
+                        </div>
+
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="origen">Origen (piso / sala) <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                            <input class="formulario__input" type="text" id="origen" name="origen" placeholder="Ej: Piso 8, Sala 3" required>
+                            <p class="formulario__error" id="error-origen" role="alert"></p>
+                        </div>
+
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="destino">Destino <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                            <input class="formulario__input" type="text" id="destino" name="destino" placeholder="Ej: Centro de Nefrología, Av. Italia 2829" required>
+                            <p class="formulario__error" id="error-destino" role="alert"></p>
+                        </div>
+
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="puerta">Puerta <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                            <input class="formulario__input" type="text" id="puerta" name="puerta" placeholder="Ej: Puerta 3" required>
+                            <p class="formulario__error" id="error-puerta" role="alert"></p>
+                        </div>
+
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="medico-receptor">Médico que recibe <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                            <input class="formulario__input" type="text" id="medico-receptor" name="medico-receptor" placeholder="Nombre del médico" required>
+                            <p class="formulario__error" id="error-medico-receptor" role="alert"></p>
+                        </div>
+
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="telefono-contacto">Teléfono de contacto <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                            <input class="formulario__input" type="tel" id="telefono-contacto" name="telefono-contacto" placeholder="Ej: 099123456" required>
+                            <p class="formulario__error" id="error-telefono-contacto" role="alert"></p>
+                        </div>
+
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="limite-horario">Límite de horario</label>
+                            <input class="formulario__input" type="time" id="limite-horario" name="limite-horario">
+                        </div>
+
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="tipo-aislamiento">Aislamiento / protección requerida</label>
+                            <select class="formulario__select" id="tipo-aislamiento" name="tipo-aislamiento">
+                                <option value="ninguno" selected>Ninguno</option>
+                                <option value="respiratorio">Aislamiento respiratorio</option>
+                                <option value="contacto">Aislamiento de contacto</option>
+                            </select>
+                            <p class="formulario__ayuda">El médico tratante define si el traslado necesita ambulancia, camilla, oxígeno o alguna barrera de aislamiento.</p>
+                        </div>
+                    </div>
+
+                    <!-- Texto largo: full-width fuera del grid de 2 columnas -->
+                    <div class="formulario__grupo">
+                        <label class="formulario__etiqueta" for="diagnostico">Diagnóstico <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                        <textarea class="formulario__textarea" id="diagnostico" name="diagnostico" placeholder="Describí brevemente el diagnóstico del paciente" required></textarea>
+                        <p class="formulario__error" id="error-diagnostico" role="alert"></p>
+                    </div>
+
+                    <!-- Visible solo cuando "Qué se traslada" = Paciente. Los datos del
+                         paciente no se tipean: se buscan por C.I. porque en producción
+                         se consumen desde la API externa del hospital (ver script.js). -->
+                    <fieldset class="formulario__grupo formulario__grupo--destacado oculto" id="grupo-datos-paciente">
+                        <legend class="formulario__leyenda">Datos del paciente</legend>
+                        <div class="traslado__grid">
+                            <div class="formulario__grupo">
+                                <label class="formulario__etiqueta" for="paciente-ci">Cédula del paciente</label>
+                                <div class="formulario__acciones formulario__acciones--en-linea">
+                                    <input class="formulario__input" type="text" id="paciente-ci" name="paciente-ci" placeholder="Ej: 12345678" inputmode="numeric">
+                                    <button class="boton boton--secundario boton--chico" type="button" id="boton-buscar-paciente">Buscar paciente</button>
+                                </div>
+                                <p class="formulario__ayuda">Se busca en el registro del hospital por número de cédula.</p>
+                            </div>
+                            <div class="formulario__grupo">
+                                <label class="formulario__etiqueta" for="paciente-nombre">Nombre</label>
+                                <input class="formulario__input formulario__input--solo-lectura" type="text" id="paciente-nombre" name="paciente-nombre" readonly>
+                            </div>
+                            <div class="formulario__grupo">
+                                <label class="formulario__etiqueta" for="paciente-edad">Edad</label>
+                                <input class="formulario__input formulario__input--solo-lectura" type="text" id="paciente-edad" name="paciente-edad" readonly>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="formulario__grupo">
+                        <legend class="formulario__leyenda">Movilidad del paciente <span class="formulario__requerido" aria-hidden="true">*</span></legend>
+                        <!-- Flexbox (wrap): las 3 opciones de movilidad, mutuamente
+                             excluyentes, se acomodan en fila o columna según el ancho. -->
+                        <div class="formulario__caja-checks" role="radiogroup" aria-label="Movilidad del paciente">
+                            <label class="formulario__grupo formulario__grupo--checkbox">
+                                <input class="formulario__radio" type="radio" name="movilidad" value="propios-medios">
+                                Camina por sus propios medios
+                            </label>
+                            <label class="formulario__grupo formulario__grupo--checkbox">
+                                <input class="formulario__radio" type="radio" name="movilidad" value="silla-ruedas">
+                                Silla de ruedas
+                            </label>
+                            <label class="formulario__grupo formulario__grupo--checkbox">
+                                <input class="formulario__radio" type="radio" name="movilidad" value="camilla">
+                                Camilla
+                            </label>
+                        </div>
+                        <p class="formulario__error" id="error-movilidad" role="alert"></p>
+                    </fieldset>
+
+                    <fieldset class="formulario__grupo">
+                        <legend class="formulario__leyenda">Equipamiento necesario</legend>
+                        <div class="formulario__caja-checks">
+                            <label class="formulario__grupo formulario__grupo--checkbox">
+                                <input class="formulario__checkbox" type="checkbox" id="check-oxigeno" name="oxigeno">
+                                Oxígeno
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <div class="formulario__zona-roja">
+                        <input class="formulario__checkbox" type="checkbox" id="zona-roja" name="zona-roja">
+                        <label class="formulario__zona-roja-etiqueta" for="zona-roja">Paciente en Zona Roja / puesto crítico (prioridad alta)</label>
+                    </div>
+
+                    <div class="formulario__grupo">
+                        <label class="formulario__etiqueta" for="observaciones">Observaciones</label>
+                        <textarea class="formulario__textarea" id="observaciones" name="observaciones" placeholder="Solo para algo puntual que no entre en los campos anteriores"></textarea>
+                    </div>
+
+                    <div class="formulario__acciones">
+                        <button class="boton boton--primario" type="submit">Registrar Pedido</button>
+                        <button class="boton boton--whatsapp" type="button" id="boton-whatsapp">Exportar a WhatsApp</button>
+                    </div>
+                </form>
+
+                <!-- ════════ CHECKLIST PARA HABILITAR EL TRASLADO ════════
+                     Lista de criterios que el equipo debe cumplir antes de
+                     ejecutar el traslado. Es independiente del formulario de
+                     arriba y se puede compartir por WhatsApp con el equipo. -->
+                <div class="formulario__grupo">
+                    <span class="formulario__leyenda">Checklist para habilitar el traslado</span>
+                    <div class="formulario__caja-checks formulario__caja-checks--columna" id="checklist-traslado">
+                        <label class="formulario__grupo formulario__grupo--checkbox">
+                            <input class="formulario__checkbox" type="checkbox" id="check-paciente-estable" name="check-paciente-estable">
+                            Paciente estable para el traslado
+                        </label>
+                        <label class="formulario__grupo formulario__grupo--checkbox">
+                            <input class="formulario__checkbox" type="checkbox" id="check-historia-clinica" name="check-historia-clinica">
+                            Historia clínica y estudios listos para acompañar al paciente
+                        </label>
+                        <label class="formulario__grupo formulario__grupo--checkbox">
+                            <input class="formulario__checkbox" type="checkbox" id="check-personal-disponible" name="check-personal-disponible">
+                            Enfermero/a disponible para acompañar (obligatorio si es órgano)
+                        </label>
+                        <label class="formulario__grupo formulario__grupo--checkbox">
+                            <input class="formulario__checkbox" type="checkbox" id="check-vehiculo-acorde" name="check-vehiculo-acorde">
+                            Vehículo acorde a la movilidad y el equipamiento solicitado
+                        </label>
+                    </div>
+                    <div class="formulario__acciones">
+                        <button class="boton boton--whatsapp" type="button" id="boton-whatsapp-checklist">Exportar checklist a WhatsApp</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════ TRASLADOS ACTIVOS / PENDIENTES ════════
+                 Cada traslado es una tarjeta. En grid con auto-fit/minmax se
+                 ven en una columna en celular y en varias en pantalla ancha. -->
+            <section class="panel__seccion" aria-labelledby="titulo-traslados-activos">
+                <h2 class="panel__seccion-titulo" id="titulo-traslados-activos">Traslados Activos y Pendientes</h2>
+
+                <div class="lista-tarjetas" id="lista-traslados">
+                    <article class="tarjeta tarjeta--zona-roja">
+                        <h3 class="tarjeta__titulo">Piso 5, Sala 2 → Centro de Nefrología (diálisis)</h3>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Tipo:</span> <span class="badge badge--rol">Paciente</span></p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Vía:</span> <span class="badge badge--via">Flota propia</span></p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Diagnóstico:</span> Insuficiencia renal crónica</p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Médico que recibe:</span> Dra. Pereyra</p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Estado:</span> <span class="badge badge--camino">En camino al destino</span></p>
+                        <div class="tarjeta__acciones"><button class="boton boton--secundario boton--chico" type="button">Ver detalle</button></div>
+                    </article>
+
+                    <article class="tarjeta">
+                        <h3 class="tarjeta__titulo">Piso 8, Sala 3 → Imagenología</h3>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Tipo:</span> <span class="badge badge--rol">Paciente</span></p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Vía:</span> <span class="badge badge--via">Flota propia</span></p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Diagnóstico:</span> Control post-quirúrgico</p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Médico que recibe:</span> Dr. Fagúndez</p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Estado:</span> <span class="badge badge--asignado">Asignado</span></p>
+                        <div class="tarjeta__acciones"><button class="boton boton--secundario boton--chico" type="button">Ver detalle</button></div>
+                    </article>
+
+                    <article class="tarjeta">
+                        <h3 class="tarjeta__titulo">Centro de Nefrología → Hospital de Clínicas</h3>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Tipo:</span> <span class="badge badge--rol">Paciente</span></p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Vía:</span> <span class="badge badge--via">Flota propia</span></p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Diagnóstico:</span> Control post-diálisis</p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Médico que recibe:</span> Dra. Pereyra</p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Estado:</span> <span class="badge badge--retorno">Retornando al hospital</span></p>
+                        <div class="tarjeta__acciones"><button class="boton boton--secundario boton--chico" type="button">Ver detalle</button></div>
+                    </article>
+
+                    <article class="tarjeta">
+                        <h3 class="tarjeta__titulo">Emergencia → CTI</h3>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Tipo:</span> <span class="badge badge--rol">Paciente</span></p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Vía:</span> <span class="badge badge--via">SAE / 105</span></p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Diagnóstico:</span> Politraumatizado</p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Médico que recibe:</span> Dr. Barboza</p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Estado:</span> <span class="badge badge--finalizado">Finalizado</span></p>
+                        <div class="tarjeta__acciones"><button class="boton boton--secundario boton--chico" type="button">Ver detalle</button></div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ════════ FLOTA DE VEHÍCULOS ════════ -->
+            <section class="panel__seccion" aria-labelledby="titulo-flota">
+                <h2 class="panel__seccion-titulo" id="titulo-flota">Flota de Vehículos</h2>
+                <p class="formulario__ayuda panel__seccion-ayuda">Los conductores del hospital pueden manejar cualquier vehículo de la flota, sea ambulancia o auto.</p>
+
+                <div class="lista-tarjetas">
+                    <article class="tarjeta">
+                        <h3 class="tarjeta__titulo id-mono">Ambulancia 1 — SBO 1234</h3>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Tipo:</span> Ambulancia</p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Estado:</span> <span class="badge badge--curso">En uso</span></p>
+                    </article>
+                    <article class="tarjeta">
+                        <h3 class="tarjeta__titulo id-mono">Ambulancia 2 — SBO 5678</h3>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Tipo:</span> Ambulancia</p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Estado:</span> <span class="badge badge--finalizado">Disponible</span></p>
+                    </article>
+                    <article class="tarjeta">
+                        <h3 class="tarjeta__titulo id-mono">Auto 1 — SBP 1111</h3>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Tipo:</span> Auto</p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Estado:</span> <span class="badge badge--finalizado">Disponible</span></p>
+                    </article>
+                    <article class="tarjeta">
+                        <h3 class="tarjeta__titulo id-mono">Auto 2 — SBP 2222</h3>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Tipo:</span> Auto</p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Estado:</span> <span class="badge badge--mantenimiento">Mantenimiento</span></p>
+                    </article>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="../../js/script.js"></script>
+</body>
+</html>

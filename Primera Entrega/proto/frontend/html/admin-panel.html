@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel de administración de documentos y usuarios del sistema SIGSM.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <title>Panel de Administración — SIGSM</title>
+</head>
+<body>
+
+    <div class="panel">
+
+        <!-- Cabecera superior con navegación que se acomoda sola (flex-wrap),
+             igual que en ambulancias.html. -->
+        <header class="panel__header">
+            <div class="panel__marca">
+                <img class="panel__logo-imagen" src="../../img/Logo_Hc.png" alt="Logo Hospital de Clínicas">
+                <span class="panel__header-titulo">SIGSM — Administración</span>
+            </div>
+            <nav class="panel__nav" aria-label="Navegación principal">
+                <a class="panel__nav-enlace" href="#documentos">Documentos</a>
+                <a class="panel__nav-enlace" href="#usuarios">Usuarios</a>
+                <a class="panel__nav-enlace" href="./ambulancias.html">Traslados</a>
+                <a class="panel__nav-enlace panel__nav-enlace--salir" href="./index.html">Cerrar sesión</a>
+            </nav>
+            <span class="panel__header-usuario id-mono">informatica.dti@hc</span>
+        </header>
+
+        <main class="panel__main" id="contenido-principal">
+
+            <!-- ════════ GESTIÓN DE DOCUMENTOS PDF ════════ -->
+            <section class="panel__seccion" id="documentos" aria-labelledby="titulo-documentos">
+                <h2 class="panel__seccion-titulo" id="titulo-documentos">Gestión de Documentos PDF</h2>
+                <p class="formulario__ayuda panel__seccion-ayuda">
+                    Estos documentos son indicaciones generales por categoría (no estudios personales de un paciente). Son los que se ven en el Portal del Paciente al escanear el código QR.
+                </p>
+
+                <!-- Grid de dos columnas (≥900px): lista de documentos + visor -->
+                <div class="pdf-panel">
+
+                    <nav aria-label="Listado de documentos cargados">
+                        <div class="formulario__grupo">
+                            <label class="formulario__etiqueta" for="filtro-categoria-pdf">Filtrar por categoría</label>
+                            <select class="formulario__select" id="filtro-categoria-pdf">
+                                <option value="todas" selected>Todas las categorías</option>
+                                <option value="imagenologia">Imagenología y Medicina Nuclear</option>
+                                <option value="cardiologia">Cardiología</option>
+                                <option value="nefrologia">Nefrología y Trasplante</option>
+                                <option value="tratamientos">Tratamientos</option>
+                                <option value="prevencion">Prevención y Cuidados Generales</option>
+                            </select>
+                        </div>
+                        <div class="pdf-visor__lista">
+                            <button class="pdf-visor__item pdf-visor__item--activo" type="button" data-categoria="imagenologia"><span class="pdf-visor__item-nombre">Preparación para estudios imagenológicos</span> <span class="badge badge--rol">Imagenología</span></button>
+                            <button class="pdf-visor__item" type="button" data-categoria="imagenologia"><span class="pdf-visor__item-nombre">Estudios diagnósticos con pertecneciato</span> <span class="badge badge--rol">Imagenología</span></button>
+                            <button class="pdf-visor__item" type="button" data-categoria="cardiologia"><span class="pdf-visor__item-nombre">Centellograma de perfusión miocárdica</span> <span class="badge badge--rol">Cardiología</span></button>
+                            <button class="pdf-visor__item" type="button" data-categoria="cardiologia"><span class="pdf-visor__item-nombre">Indicaciones ecocardiograma con dobutamina</span> <span class="badge badge--rol">Cardiología</span></button>
+                            <button class="pdf-visor__item" type="button" data-categoria="tratamientos"><span class="pdf-visor__item-nombre">Indicaciones para pacientes con warfarina</span> <span class="badge badge--rol">Tratamientos</span></button>
+                            <button class="pdf-visor__item" type="button" data-categoria="nefrologia"><span class="pdf-visor__item-nombre">Plan de alta enfermería — Nefrología</span> <span class="badge badge--rol">Nefrología</span></button>
+                            <button class="pdf-visor__item" type="button" data-categoria="prevencion"><span class="pdf-visor__item-nombre">Pauta para pacientes ostomizados</span> <span class="badge badge--rol">Prevención</span></button>
+                        </div>
+                    </nav>
+
+                    <div class="pdf-visor__panel">
+                        <!-- Flexbox: la barra superior alinea el nombre de archivo
+                             y los botones de acción en una misma fila. -->
+                        <div class="pdf-visor__barra">
+                            <span class="pdf-visor__nombre-archivo">Preparación para estudios imagenológicos.pdf</span>
+                            <div class="formulario__acciones formulario__acciones--en-linea">
+                                <button class="boton boton--peligro boton--chico" type="button">Eliminar</button>
+                            </div>
+                        </div>
+
+                        <!-- Simulación del visor de PDF: en producción aquí se incrusta
+                             el documento real. -->
+                        <div class="pdf-visor__lienzo" role="img" aria-label="Vista previa simulada del documento PDF seleccionado">
+                            <span class="pdf-visor__icono">📄</span>
+                            <span>Vista previa del documento seleccionado</span>
+                        </div>
+
+                        <form class="formulario" id="form-subir-pdf">
+                            <div class="formulario__grupo">
+                                <label class="formulario__etiqueta" for="categoria-nuevo-pdf">Categoría del nuevo documento <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                                <div class="formulario__acciones formulario__acciones--en-linea">
+                                    <select class="formulario__select" id="categoria-nuevo-pdf" name="categoria-nuevo-pdf" required>
+                                        <option value="imagenologia">Imagenología y Medicina Nuclear</option>
+                                        <option value="cardiologia">Cardiología</option>
+                                        <option value="nefrologia">Nefrología y Trasplante</option>
+                                        <option value="tratamientos">Tratamientos</option>
+                                        <option value="prevencion">Prevención y Cuidados Generales</option>
+                                    </select>
+                                    <button class="boton boton--secundario boton--chico" type="button" id="boton-nueva-categoria">+ Nueva categoría</button>
+                                </div>
+                            </div>
+                            <div class="formulario__acciones">
+                                <label class="boton boton--secundario boton--chico pdf-visor__subir" for="input-subir-pdf">
+                                    Subir nuevo PDF
+                                    <input class="pdf-visor__input-archivo" type="file" id="input-subir-pdf" accept="application/pdf">
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════ GESTIÓN DE USUARIOS ════════
+                 El alta de funcionario es un formulario que aparece en línea
+                 (arranca con "hidden" y el botón lo muestra/oculta). Cada
+                 funcionario es una tarjeta en grid responsivo. -->
+            <section class="panel__seccion" id="usuarios" aria-labelledby="titulo-usuarios">
+                <div class="panel__seccion-cabecera">
+                    <h2 class="panel__seccion-titulo panel__seccion-titulo--en-linea" id="titulo-usuarios">Gestión de Usuarios</h2>
+                    <button class="boton boton--primario boton--chico" type="button" id="boton-agregar-usuario" aria-expanded="false" aria-controls="form-funcionario">+ Agregar funcionario</button>
+                </div>
+                <p class="formulario__ayuda panel__seccion-ayuda">
+                    Cada funcionario tiene un rol (Administrador, Informática, Enfermería, Transporte, Médico, Social) que define qué partes del sistema puede usar. Este panel no es para pacientes: solo accede personal del hospital.
+                </p>
+
+                <form class="formulario formulario__grupo--destacado oculto" id="form-funcionario" novalidate>
+                    <div class="formulario__grupo">
+                        <label class="formulario__etiqueta" for="func-nombre">Nombre completo <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                        <input class="formulario__input" type="text" id="func-nombre" name="func-nombre" placeholder="Ej: Ana Cabrera" required>
+                        <p class="formulario__error" id="error-func-nombre" role="alert"></p>
+                    </div>
+                    <div class="formulario__grupo">
+                        <label class="formulario__etiqueta" for="func-usuario">Usuario de acceso <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                        <input class="formulario__input" type="text" id="func-usuario" name="func-usuario" placeholder="Ej: a.cabrera" required>
+                        <p class="formulario__error" id="error-func-usuario" role="alert"></p>
+                    </div>
+                    <div class="formulario__grupo">
+                        <label class="formulario__etiqueta" for="func-rol">Rol <span class="formulario__requerido" aria-hidden="true">*</span></label>
+                        <select class="formulario__select" id="func-rol" name="func-rol" required>
+                            <option value="" selected disabled>Seleccioná un rol</option>
+                            <option value="Administrador">Administrador</option>
+                            <option value="Informática">Informática</option>
+                            <option value="Enfermería">Enfermería</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Médico">Médico</option>
+                            <option value="Social">Social</option>
+                        </select>
+                        <p class="formulario__error" id="error-func-rol" role="alert"></p>
+                    </div>
+                    <p class="formulario__ayuda">Al crear el funcionario, el sistema le envía una contraseña temporal a su correo institucional para el primer ingreso.</p>
+                    <div class="formulario__acciones">
+                        <button class="boton boton--primario" type="submit">Crear funcionario</button>
+                        <button class="boton boton--secundario" type="button" id="boton-cancelar-funcionario">Cancelar</button>
+                    </div>
+                </form>
+
+                <div class="lista-tarjetas" id="lista-usuarios">
+                    <article class="tarjeta">
+                        <h3 class="tarjeta__titulo">Luis Fagúndez</h3>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Usuario:</span> <span class="id-mono">l.fagundez</span></p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Rol:</span> <span class="badge badge--rol">Administrador</span></p>
+                        <div class="tarjeta__acciones">
+                            <button class="boton boton--secundario boton--chico" type="button">Resetear Contraseña</button>
+                            <button class="boton boton--peligro boton--chico" type="button">Eliminar</button>
+                        </div>
+                    </article>
+                    <article class="tarjeta">
+                        <h3 class="tarjeta__titulo">Gabriel Barboza</h3>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Usuario:</span> <span class="id-mono">g.barboza</span></p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Rol:</span> <span class="badge badge--rol">Informática</span></p>
+                        <div class="tarjeta__acciones">
+                            <button class="boton boton--secundario boton--chico" type="button">Resetear Contraseña</button>
+                            <button class="boton boton--peligro boton--chico" type="button">Eliminar</button>
+                        </div>
+                    </article>
+                    <article class="tarjeta">
+                        <h3 class="tarjeta__titulo">Enfermería — Turno Mañana</h3>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Usuario:</span> <span class="id-mono">enfermeria.turno</span></p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Rol:</span> <span class="badge badge--rol">Enfermería</span></p>
+                        <div class="tarjeta__acciones">
+                            <button class="boton boton--secundario boton--chico" type="button">Resetear Contraseña</button>
+                            <button class="boton boton--peligro boton--chico" type="button">Eliminar</button>
+                        </div>
+                    </article>
+                    <article class="tarjeta">
+                        <h3 class="tarjeta__titulo">Transporte — Choferes</h3>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Usuario:</span> <span class="id-mono">transporte.flota</span></p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Rol:</span> <span class="badge badge--rol">Transporte</span></p>
+                        <div class="tarjeta__acciones">
+                            <button class="boton boton--secundario boton--chico" type="button">Resetear Contraseña</button>
+                            <button class="boton boton--peligro boton--chico" type="button">Eliminar</button>
+                        </div>
+                    </article>
+                    <article class="tarjeta">
+                        <h3 class="tarjeta__titulo">Dra. Valentina Pereyra</h3>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Usuario:</span> <span class="id-mono">v.pereyra</span></p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Rol:</span> <span class="badge badge--rol">Médico</span></p>
+                        <div class="tarjeta__acciones">
+                            <button class="boton boton--secundario boton--chico" type="button">Resetear Contraseña</button>
+                            <button class="boton boton--peligro boton--chico" type="button">Eliminar</button>
+                        </div>
+                    </article>
+                    <article class="tarjeta">
+                        <h3 class="tarjeta__titulo">Trabajo Social — Asistentes</h3>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Usuario:</span> <span class="id-mono">social.asistentes</span></p>
+                        <p class="tarjeta__dato"><span class="tarjeta__etiqueta">Rol:</span> <span class="badge badge--rol">Social</span></p>
+                        <div class="tarjeta__acciones">
+                            <button class="boton boton--secundario boton--chico" type="button">Resetear Contraseña</button>
+                            <button class="boton boton--peligro boton--chico" type="button">Eliminar</button>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="../../js/script.js"></script>
+</body>
+</html>

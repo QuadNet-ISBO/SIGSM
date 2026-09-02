@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SIGSM - Asociar Encuesta</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+
+    <div class="sidebar">
+
+        <h1 class="logo">SIGSM</h1>
+
+        <ul class="menu">
+            <li><a href="../dashboard/index.html">Dashboard</a></li>
+            <li><a href="../traslados/index.html">Traslados</a></li>
+            <li><a href="../documentos/index.html">Documentos</a></li>
+        </ul>
+
+    </div>
+
+    <div class="main">
+
+        <div class="header">
+
+            <div class="header-left">
+                <h2>Asociar Encuesta</h2>
+            </div>
+
+            <div class="header-right">
+                <span class="user">Juan Pérez</span>
+                <span class="role">Operador</span>
+                <a href="../login.html">
+                    <button class="logout">Salir</button>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="content">
+
+            <h2>Asociar Encuesta a Documento</h2>
+
+            <div class="card" style="margin-bottom:20px; background:#f1f5f9;">
+                <p>
+                    Seleccioná un documento y una encuesta para vincularlos.
+                    Esta asociación permitirá que el documento tenga encuestas disponibles para los usuarios.
+                </p>
+            </div>
+
+            <!-- ================= DOCUMENTOS ================= -->
+            <div class="card">
+                <h3>Seleccionar documento</h3>
+
+                <table id="tablaDocumentos">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                    </tr>
+
+                    <tr>
+                        <td>#001</td>
+                        <td>Protocolo COVID</td>
+                        <td>Salud</td>
+                    </tr>
+
+                    <tr>
+                        <td>#002</td>
+                        <td>Manual interno</td>
+                        <td>Administración</td>
+                    </tr>
+
+                </table>
+            </div>
+
+            <!-- ================= ENCUESTAS ================= -->
+            <div class="card" style="margin-top:20px;">
+                <h3>Seleccionar encuesta</h3>
+
+                <table id="tablaEncuestas">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Preguntas</th>
+                    </tr>
+
+                    <tr>
+                        <td>#010</td>
+                        <td>Satisfacción</td>
+                        <td>5</td>
+                    </tr>
+
+                    <tr>
+                        <td>#011</td>
+                        <td>Calidad</td>
+                        <td>8</td>
+                    </tr>
+
+                </table>
+            </div>
+
+            <!-- ================= RESUMEN ================= -->
+            <div class="card" style="margin-top:20px;">
+                <h3>Confirmación</h3>
+
+                <p><b>Documento:</b> <span>Protocolo COVID</span></p>
+                <p><b>Encuesta:</b> <span>Satisfacción</span></p>
+
+                <button type="button" class="btn-primary">Confirmar asociación</button>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

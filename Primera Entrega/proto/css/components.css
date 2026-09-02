@@ -1,0 +1,359 @@
+/*
+   COMPONENTS.CSS
+   Piezas reutilizables dentro de .content (definido en layout.css):
+   cards, tablas, botones, badges, formularios, login.
+   Usado por: admin/*, dashboard/, documentos/*, traslados/*, login.html
+   (el portal del paciente NO usa este archivo, tiene su propio css/portal.css)
+*/
+
+/* ================= CARD =================
+   Caja blanca base. Se usa en casi todas las páginas internas */
+.card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    overflow-x: auto;
+}
+
+/* Card angosta para formularios de alta/edición:
+   admin/*_crear.html, admin/*_editar.html, documentos/documento_subir.html,
+   documentos/documento_editar.html */
+.card-medium {
+    max-width: 550px;
+    padding: 18px;
+}
+
+/* Cards del menú principal de administración: admin/index.html */
+.card-admin {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 150px;
+}
+
+.card-admin h3 {
+    margin-bottom: 5px;
+}
+
+.card-admin p {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 10px;
+}
+
+.grid-admin {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+/* Cards de accesos rápidos: documentos/index.html */
+.card-accion {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-accion p {
+    font-size: 14px;
+    color: #64748b;
+    margin: 10px 0 15px 0;
+}
+
+.card-accion:hover {
+    transform: translateY(-3px);
+    transition: 0.2s;
+}
+
+.acciones-cards {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* ================= TABLAS =================
+   Listados: admin/categorias.html, admin/funcionarios.html, admin/usuarios.html,
+   admin/vehiculos.html, traslados/index.html, documentos/documentos.html */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #f1f5f9;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+}
+
+tbody tr {
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+/* ================= GRID DASHBOARD =================
+   Fila de cards con números/resumen: dashboard/index.html,
+   admin/index.html, documentos/index.html */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.number {
+    font-size: 32px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ================= BOTONES =================
+   Usados en todas las páginas internas */
+.btn-primary {
+    background-color: #3b82f6;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb;
+}
+
+.btn-secondary {
+    background-color: #e5e7eb;
+    color: #111827;
+    border: 1px solid #d1d5db;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #d1d5db;
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
+.btn-warning {
+    background-color: #f59e0b;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-warning:hover {
+    background-color: #d97706;
+}
+
+.btn-big {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+}
+
+/* ================= BOTÓN ESTADO =================
+   Botón de cambio de estado: traslados/index.html */
+.btn-estado {
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    font-size: 12px;
+}
+
+.estado-solicitado { background-color: #f59e0b; } /* amarillo */
+.estado-curso { background-color: #3b82f6; } /* azul */
+.estado-llego { background-color: #10b981; } /* verde */
+.estado-regreso { background-color: #38bdf8; } /* celeste */
+.estado-finalizado { background-color: #6b7280; } /* gris */
+
+.acciones {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+}
+
+/* ================= BADGES =================
+   Etiquetas de rol/estado: admin/usuarios.html, dashboard/index.html,
+   documentos/documentos.html, traslados/nuevo.html, traslados/solicitar.html */
+.badge {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.badge.activo { background-color: #d1fae5; color: #065f46; }
+.badge.pendiente { background-color: #fef3c7; color: #92400e; }
+.badge.finalizado { background-color: #e0e7ff; color: #3730a3; }
+.badge.admin { background: #ef4444; color: white; }
+.badge.operador { background: #3b82f6; color: white; }
+.badge.medico { background: #10b981; color: white; }
+
+/* Prioridad de traslado (se usa junto con .badge): traslados/nuevo.html, traslados/solicitar.html */
+.badge.prioridad-alta { background-color: #ef4444; color: white; }
+.badge.prioridad-media { background-color: #f59e0b; color: white; }
+.badge.prioridad-baja { background-color: #10b981; color: white; }
+
+/* ================= ESTADO =================
+   Etiquetas de estado de funcionarios/vehículos/categorías:
+   admin/categorias.html, admin/funcionarios.html, admin/vehiculos.html,
+   admin/index.html, traslados/index.html, traslados/solicitar.html */
+.estado {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.estado.pendiente { background: #facc15; }
+.estado.curso { background: #38bdf8; }
+.estado.finalizado { background: #4ade80; }
+.estado.activo { background: #4ade80; }
+.estado.inactivo { background: #ef4444; color: white; }
+.estado.disponible { background: #4ade80; }
+.estado.ocupado { background: #38bdf8; }
+.estado.fuera { background: #ef4444; color: white; }
+.estado.desvinculado { background: #6b7280; color: white; }
+
+/* ================= FORMULARIOS =================
+   Usado en todos los formularios de alta/edición y en login.html */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.form-group label {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 9px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+}
+
+input, select, textarea {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+}
+
+/* ================= CAMPOS DE TRASLADO =================
+   Específico de traslados/nuevopaciente.html */
+.checkbox-group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* ================= ACCIONES DE FORMULARIO =================
+   Fila de botones al pie de un formulario o card */
+.acciones-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+/* Específico de admin/categorias.html */
+.acciones-categorias {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.acciones-categorias .btn-primary {
+    min-width: 160px;
+}
+
+/* ================= LOGIN =================
+   login.html e index.html */
+.login-card {
+    width: 320px;
+    padding: 25px;
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.login-card h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-card .form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.login-card input {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: 0.2s;
+}
+
+.login-card input:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.login-card button {
+    margin-top: 10px;
+    width: 100%;
+}
+
+.bloque {
+    display: none;
+}

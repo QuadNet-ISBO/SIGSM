@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SIGSM - Gestión de Traslados</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+
+    <div class="sidebar">
+
+        <h1 class="logo">SIGSM</h1>
+
+        <ul class="menu">
+            <li><a href="../dashboard/index.html">Dashboard</a></li>
+            <li><a href="../traslados/index.html">Traslados</a></li>
+            <li><a href="../documentos/index.html">Documentos</a></li>
+        </ul>
+
+    </div>
+
+    <div class="main">
+
+        <div class="header">
+
+            <div class="header-left">
+                <h2>Traslado</h2>
+            </div>
+
+            <div class="header-right">
+                <span class="user">Juan Pérez</span>
+                <span class="role">Operador</span>
+                <a href="../login.html">
+                    <button class="logout">Salir</button>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="content">
+
+            <div class="top-bar">
+                <h2>Gestión de Traslados</h2>
+                <div style="display:flex; gap:10px;">
+                    <a href="nuevootro.html">
+                        <button class="btn-primary">+ Nuevo Traslado otro</button>
+                    </a>
+                    <a href="nuevopaciente.html">
+                        <button class="btn-primary">+ Nuevo Traslado paciente</button>
+                    </a>
+                </div>
+            </div>
+
+            <div class="card">
+
+                <table id="tablaTraslados">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Origen</th>
+                            <th>Destino</th>
+                            <th>Carga</th>
+                            <th>Salida</th>
+                            <th>Llegada</th>
+                            <th>Regreso</th>
+                            <th>Finalizado</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>#001</td>
+                            <td>Hospital A</td>
+                            <td>Hospital B</td>
+                            <td>Paciente</td>
+                            <td>2023-10-01 08:00</td>
+                            <td>2023-10-01 10:00</td>
+                            <td>2023-10-01 12:00</td>
+                            <td>2023-10-01 12:00</td>
+                            <td>
+                                <button class="btn-estado estado-curso">
+                                    En curso
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>#002</td>
+                            <td>Clínica X</td>
+                            <td>Hospital Central</td>
+                            <td>Carga médica</td>
+                            <td>2023-10-01 08:00</td>
+                            <td>2023-10-01 10:00</td>
+                            <td>2023-10-01 12:00</td>
+                            <td>2023-10-01 12:00</td>
+                            <td>
+                                <button class="btn-estado estado-solicitado">
+                                    Solicitado
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- ACCIONES -->
+            <div class="acciones">
+                <button class="btn-danger">Cancelar</button>
+                <button class="btn-warning">Abortar</button>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

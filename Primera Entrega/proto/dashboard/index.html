@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SIGSM - Dashboard</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+
+    <div class="sidebar">
+
+        <h1 class="logo">SIGSM</h1>
+
+        <ul class="menu">
+            <li><a href="../dashboard/index.html">Dashboard</a></li>
+            <li><a href="../traslados/index.html">Traslados</a></li>
+            <li><a href="../documentos/index.html">Documentos</a></li>
+        </ul>
+
+    </div>
+
+    <div class="main">
+
+        <div class="header">
+
+            <div class="header-left">
+                <h2>Dashboard</h2>
+            </div>
+
+            <div class="header-right">
+                <span class="user">Juan Pérez</span>
+                <span class="role">Operador</span>
+                <a href="../login.html">
+                    <button class="logout">Salir</button>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="content">
+
+            <h2>Dashboard</h2>
+
+            <div class="grid">
+
+                <div class="card">
+                    <h3>Traslados Activos</h3>
+                    <p class="number">5</p>
+                </div>
+
+                <div class="card">
+                    <h3>Pendientes</h3>
+                    <p class="number">3</p>
+                </div>
+
+                <div class="card">
+                    <h3>Finalizados Hoy</h3>
+                    <p class="number">12</p>
+                </div>
+
+            </div>
+
+            <br>
+
+            <div class="card">
+                <h3>Actividad reciente</h3>
+
+                <table>
+                    <tr>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                        <th>Estado</th>
+                    </tr>
+
+                    <tr>
+                        <td>Hospital A</td>
+                        <td>Hospital B</td>
+                        <td><span class="badge activo">En curso</span></td>
+                    </tr>
+
+                    <tr>
+                        <td>Clínica X</td>
+                        <td>Hospital Central</td>
+                        <td><span class="badge pendiente">Pendiente</span></td>
+                    </tr>
+
+                    <tr>
+                        <td>Centro Y</td>
+                        <td>Hospital Norte</td>
+                        <td><span class="badge finalizado">Finalizado</span></td>
+                    </tr>
+
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

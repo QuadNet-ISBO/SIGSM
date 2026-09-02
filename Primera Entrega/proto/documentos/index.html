@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SIGSM - Gestión de Documentos</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+
+    <div class="sidebar">
+
+        <h1 class="logo">SIGSM</h1>
+
+        <ul class="menu">
+            <li><a href="../dashboard/index.html">Dashboard</a></li>
+            <li><a href="../traslados/index.html">Traslados</a></li>
+            <li><a href="../documentos/index.html">Documentos</a></li>
+        </ul>
+
+    </div>
+
+    <div class="main">
+
+        <div class="header">
+
+            <div class="header-left">
+                <h2>Gestión de Documentos</h2>
+            </div>
+
+            <div class="header-right">
+                <span class="user">Juan Pérez</span>
+                <span class="role">Operador</span>
+                <a href="../login.html">
+                    <button class="logout">Salir</button>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="content">
+
+            <h2>Gestion de Documentos</h2>
+
+            <!-- ================= CARDS ================= -->
+            <div class="grid">
+
+                <div class="card">
+                    <h3>Documentos</h3>
+                    <p class="number">12</p>
+                </div>
+
+                <div class="card">
+                    <h3>Encuestas</h3>
+                    <p class="number">5</p>
+                </div>
+
+                <div class="card">
+                    <h3>Respuestas</h3>
+                    <p class="number">38</p>
+                </div>
+
+            </div>
+
+            <br>
+
+            <!-- ================= ACCESOS RÁPIDOS ================= -->
+            <div class="acciones-cards">
+
+                <div class="card card-accion">
+                    <h3>Gestión de documentos</h3>
+                    <p>Subir y organizar documentos</p>
+                    <a href="documentos.html">
+                        <button class="btn-primary btn-big">Ir</button>
+                    </a>
+                </div>
+
+                <div class="card card-accion">
+                    <h3>Asociar encuesta</h3>
+                    <p>Vincular encuesta con documento</p>
+                    <a href="asociar.html">
+                        <button class="btn-primary btn-big">Ir</button>
+                    </a>
+                </div>
+
+                <div class="card card-accion">
+                    <h3>Portal del paciente</h3>
+                    <p>Ver cómo el paciente accede a los documentos por QR</p>
+                    <a href="../portal-paciente.html">
+                        <button class="btn-secondary btn-big">Ver</button>
+                    </a>
+                </div>
+
+            </div>
+
+            <br>
+
+            <!-- ================= ACTIVIDAD ================= -->
+            <div class="card">
+                <h3>Actividad reciente</h3>
+
+                <table>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Encuesta</th>
+                        <th>Respuestas</th>
+                    </tr>
+
+                    <tr>
+                        <td>Protocolo COVID</td>
+                        <td>Satisfacción traslado</td>
+                        <td>15</td>
+                    </tr>
+
+                    <tr>
+                        <td>Guía médica</td>
+                        <td>Evaluación servicio</td>
+                        <td>8</td>
+                    </tr>
+
+                    <tr>
+                        <td>Normativa interna</td>
+                        <td>-</td>
+                        <td>0</td>
+                    </tr>
+
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
