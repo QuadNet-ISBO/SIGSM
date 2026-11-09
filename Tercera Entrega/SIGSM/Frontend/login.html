@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Login - SIGSM</title>
+
+    <link
+        rel="stylesheet"
+        href="css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/components.css"
+    >
+    <link rel="stylesheet" href="css/tema.css">
+
+    <script src="js/csrf.js"></script>
+</head>
+
+
+<body class="login-container">
+
+
+<div class="login-card">
+
+    <h2>
+        Login
+    </h2>
+
+
+    <form
+        class="form"
+        id="loginForm"
+    >
+
+        <div class="form-group">
+
+            <label for="usuario">
+                Usuario
+            </label>
+
+            <input
+                type="text"
+                id="usuario"
+                name="usuario"
+                autocomplete="username"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="password">
+                Contraseña
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="current-password"
+                required
+            >
+
+        </div>
+
+
+        <p
+            id="mensaje"
+            role="alert"
+        ></p>
+
+
+        <button
+            type="submit"
+            class="btn-primary"
+            id="btnIngresar"
+        >
+            Ingresar
+        </button>
+
+    </form>
+
+</div>
+
+
+<script>
+
+
+/*
+ * ============================================================
+ * ELEMENTOS DEL DOM
+ * ============================================================
+ */
+
+const formulario =
+    document.getElementById(
+        'loginForm'
+    );
+
+
+const mensaje =
+    document.getElementById(
+        'mensaje'
+    );
+
+
+const botonIngresar =
+    document.getElementById(
+        'btnIngresar'
+    );
+
+
+/*
+ * ============================================================
+ * DESTINO SELECCIONADO DESDE EL PORTAL
+ * ============================================================
+ *
+ * Ejemplos:
+ *
+ * login.html?destino=operador
+ * login.html?destino=admin
+ * login.html?destino=admin-sistema
+ *
+ */
+
+const parametros =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const destino =
+    parametros.get('destino');
+
+
+/*
+ * ============================================================
+ * LOGIN
+ * ============================================================
+ */
+
+formulario.addEventListener(
+    'submit',
+    async (evento) => {
+
+        evento.preventDefault();
+
+
+        mensaje.textContent = '';
+
+
+        const usuario =
+            document
+                .getElementById('usuario')
+                .value
+                .trim();
+
+
+        const password =
+            document
+                .getElementById('password')
+                .value;
+
+
+        /*
+         * ====================================================
+         * VALIDACIÓN BÁSICA
+         * ====================================================
+         */
+
+        if (
+            usuario === '' ||
+            password === ''
+        ) {
+
+            mensaje.textContent =
+                'Ingrese usuario y contraseña.';
+
+            return;
+
+        }
+
+
+        botonIngresar.disabled = true;
+
+
+        try {
+
+            /*
+             * =================================================
+             * ENVÍA LAS CREDENCIALES AL BACKEND
+             * =================================================
+             */
+
+            const respuesta =
+                await fetch(
+                    '../API/usuarios/login.php',
+                    {
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        credentials:
+                            'same-origin',
+
+                        cache:
+                            'no-store',
+
+                        body:
+                            JSON.stringify({
+                                user:
+                                    usuario,
+
+                                password:
+                                    password
+                            })
+                    }
+                );
+
+
+            const datos =
+                await respuesta.json();
+
+
+            /*
+             * =================================================
+             * LOGIN INCORRECTO
+             * =================================================
+             */
+
+            if (
+                !respuesta.ok ||
+                !datos.ok
+            ) {
+
+                mensaje.textContent =
+                    datos.mensaje ||
+                    'No se pudo iniciar sesión.';
+
+                botonIngresar.disabled =
+                    false;
+
+                return;
+
+            }
+
+
+            /*
+             * =================================================
+             * VERIFICACIÓN DEL USUARIO
+             * =================================================
+             */
+
+            if (
+                !datos.usuario ||
+                !datos.usuario.rol
+            ) {
+
+                mensaje.textContent =
+                    'No se pudo determinar el rol del usuario.';
+
+                botonIngresar.disabled =
+                    false;
+
+                return;
+
+            }
+
+
+            const rol =
+                datos.usuario.rol;
+
+
+            /*
+             * =================================================
+             * ADMINISTRACIÓN DEL SISTEMA
+             * =================================================
+             *
+             * Este acceso es exclusivo para Administradores.
+             */
+
+            if (
+                destino === 'admin-sistema'
+            ) {
+
+                if (
+                    rol !== 'Administrador'
+                ) {
+
+                    /*
+                     * El usuario se autenticó correctamente,
+                     * pero no tiene permisos para este acceso.
+                     */
+
+                    try {
+
+                        await fetch(
+                            '../API/usuarios/logout.php',
+                            {
+                                method: 'POST',
+
+                                credentials:
+                                    'same-origin',
+
+                                cache:
+                                    'no-store'
+                            }
+                        );
+
+                    } catch (error) {
+
+                        console.error(
+                            'Error al cerrar la sesión:',
+                            error
+                        );
+
+                    }
+
+
+                    mensaje.textContent =
+                        'Este acceso es exclusivo para Administradores.';
+
+                    botonIngresar.disabled =
+                        false;
+
+                    return;
+
+                }
+
+
+                /*
+                 * Administrador autorizado.
+                 */
+
+                window.location.replace(
+                    'admin/index.html'
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * =================================================
+             * DASHBOARD
+             * =================================================
+             *
+             * Tanto el Administrador como el Operador
+             * pueden acceder al dashboard.
+             */
+
+            if (
+                destino === 'operador' ||
+                destino === 'admin'
+            ) {
+
+                if (
+                    rol === 'Administrador' ||
+                    rol === 'Operador'
+                ) {
+
+                    window.location.replace(
+                        'dashboard/index.html'
+                    );
+
+                    return;
+
+                }
+
+            }
+
+
+            /*
+             * =================================================
+             * SIN DESTINO
+             * =================================================
+             *
+             * Si alguien entra directamente a login.html
+             * sin pasar por el portal, ambos roles van
+             * al dashboard.
+             */
+
+            if (
+                destino === null
+            ) {
+
+                if (
+                    rol === 'Administrador' ||
+                    rol === 'Operador'
+                ) {
+
+                    window.location.replace(
+                        'dashboard/index.html'
+                    );
+
+                    return;
+
+                }
+
+            }
+
+
+            /*
+             * =================================================
+             * DESTINO DESCONOCIDO
+             * =================================================
+             */
+
+            mensaje.textContent =
+                'El acceso seleccionado no es válido.';
+
+            botonIngresar.disabled =
+                false;
+
+
+        } catch (error) {
+
+            console.error(
+                'Error en login:',
+                error
+            );
+
+
+            mensaje.textContent =
+                'No se pudo conectar con el servidor.';
+
+
+            botonIngresar.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+</script>
+
+
+    <script src="./js/preferencias.js"></script>
+    <script src="./js/header.js"></script>
+</body>
+
+</html>

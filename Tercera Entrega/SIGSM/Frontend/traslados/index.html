@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        SIGSM - Gestión de Traslados
+    </title>
+
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SIDEBAR
+     ========================================================= -->
+
+<div class="sidebar"></div>
+
+
+
+<!-- =========================================================
+     MAIN
+     ========================================================= -->
+
+<div class="main">
+
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <div class="header">
+
+
+        <div class="header-left">
+
+            <h2>
+                Traslados
+            </h2>
+
+        </div>
+
+
+
+        <div class="header-right">
+
+            <span
+                class="user"
+                id="usuario"
+            >
+                Cargando...
+            </span>
+
+
+            <span
+                class="role"
+                id="rol"
+            >
+                Cargando...
+            </span>
+
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         CONTENIDO
+         ===================================================== -->
+
+    <div class="content">
+
+
+        <!-- =================================================
+             TITULO + BOTONES
+             ================================================= -->
+
+        <div class="top-bar">
+
+
+            <h2>
+                Gestión de Traslados
+            </h2>
+
+
+
+            <div class="grupo-botones">
+
+
+                <a
+                    href="nuevootro.html"
+                    class="btn-primary"
+                >
+                    + Nuevo traslado
+                </a>
+
+
+                <a
+                    href="nuevopaciente.html"
+                    class="btn-primary"
+                >
+                    + Nuevo traslado de paciente
+                </a>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             FILTRO
+             ================================================= -->
+
+        <div class="card">
+
+
+            <div class="form-group">
+
+
+                <label for="filtroEstado">
+                    Filtrar por estado
+                </label>
+
+
+                <select id="filtroEstado">
+
+
+                    <option value="">
+                        Todos
+                    </option>
+
+
+                    <option value="solicitado">
+                        Solicitado
+                    </option>
+
+
+                    <option value="aprobado">
+                        Aprobado
+                    </option>
+
+
+                    <option value="en_curso">
+                        En curso
+                    </option>
+
+
+                    <option value="llegado">
+                        Llegado
+                    </option>
+
+
+                    <option value="regreso">
+                        Regreso
+                    </option>
+
+
+                    <option value="retornado">
+                        Retornado
+                    </option>
+
+
+                    <option value="finalizado">
+                        Finalizado
+                    </option>
+
+
+                    <option value="cancelado">
+                        Cancelado
+                    </option>
+
+
+                    <option value="abortado">
+                        Abortado
+                    </option>
+
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             TABLA
+             ================================================= -->
+
+        <div class="card">
+
+
+            <div style="overflow-x:auto;">
+
+
+                <table id="tablaTraslados">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Paciente</th>
+                            <th>Origen</th>
+                            <th>Destino</th>
+                            <th>Partida prevista</th>
+                            <th>Llegada prevista</th>
+                            <th>Vehículo</th>
+                            <th>Prioridad</th>
+                            <th>Creado</th>
+                            <th>Salida</th>
+                            <th>Llegada</th>
+                            <th>Regreso</th>
+                            <th>Retorno</th>
+                            <th>Finalizado</th>
+                            <th>Estado</th>
+                            <th>Avanzar</th>
+                            <th>Cancelar / Abortar</th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody id="tablaTrasladosBody">
+
+
+                        <tr>
+
+                            <td colspan="18">
+                                Cargando traslados...
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/auth.js"></script>
+
+<!-- ================= SIDEBAR ================= -->
+
+<script src="../js/operator-sidebar.js"></script>
+
+<!-- ================= JS PROPIO ================= -->
+
+<script>
+
+
+/*
+ * ============================================================
+ * ELEMENTOS
+ * ============================================================
+ */
+
+const tablaBody =
+    document.getElementById(
+        'tablaTrasladosBody'
+    );
+
+
+const filtroEstado =
+    document.getElementById(
+        'filtroEstado'
+    );
+
+
+let traslados = [];
+
+
+
+/*
+ * ============================================================
+ * FORMATEAR FECHA
+ * ============================================================
+ */
+
+function formatearFecha(fecha) {
+
+    if (!fecha) {
+
+        return '-';
+
+    }
+
+
+    return escaparHTML(String(fecha)
+        .replace('T', ' ')
+        .substring(0, 16));
+
+}
+
+
+
+/*
+ * ============================================================
+ * ESCAPAR HTML
+ * ============================================================
+ */
+
+function escaparHTML(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined
+    ) {
+
+        return '';
+
+    }
+
+
+    return String(valor)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+}
+
+
+
+/*
+ * ============================================================
+ * MOSTRAR VALOR
+ * ============================================================
+ */
+
+function mostrarValor(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        String(valor).trim() === ''
+    ) {
+
+        return '-';
+
+    }
+
+
+    return escaparHTML(valor);
+
+}
+
+
+
+/*
+ * ============================================================
+ * TIPO
+ * ============================================================
+ */
+
+function mostrarTipo(traslado) {
+
+    if (
+        traslado.tipo_traslado === 'paciente'
+    ) {
+
+        return 'Paciente';
+
+    }
+
+
+    if (
+        traslado.tipo_traslado === 'otro'
+    ) {
+
+        return 'Otro';
+
+    }
+
+
+    return 'Desconocido';
+
+}
+
+
+
+/*
+ * ============================================================
+ * PACIENTE
+ * ============================================================
+ */
+
+function mostrarPaciente(traslado) {
+
+    if (
+        traslado.tipo_traslado !== 'paciente'
+    ) {
+
+        return '-';
+
+    }
+
+
+    if (
+        traslado.nombre_paciente
+    ) {
+
+        return escaparHTML(
+            traslado.nombre_paciente
+        );
+
+    }
+
+
+    if (
+        traslado.ci_paciente
+    ) {
+
+        return 'CI ' +
+            escaparHTML(
+                traslado.ci_paciente
+            );
+
+    }
+
+
+    return '-';
+
+}
+
+
+
+/*
+ * ============================================================
+ * TEXTO ESTADO
+ * ============================================================
+ */
+
+function textoEstado(estado) {
+
+    switch (estado) {
+
+        case 'solicitado':
+            return 'Solicitado';
+
+        case 'aprobado':
+            return 'Aprobado';
+
+        case 'en_curso':
+            return 'En curso';
+
+        case 'llegado':
+            return 'Llegado';
+
+        case 'regreso':
+            return 'Regreso';
+
+        case 'retornado':
+            return 'Retornado';
+
+        case 'finalizado':
+            return 'Finalizado';
+
+        case 'cancelado':
+            return 'Cancelado';
+
+        case 'abortado':
+            return 'Abortado';
+
+        default:
+            return mostrarValor(estado);
+
+    }
+
+}
+
+
+
+/*
+ * ============================================================
+ * CLASE ESTADO
+ * ============================================================
+ */
+
+function claseEstado(estado) {
+
+    switch (estado) {
+
+        case 'solicitado':
+            return 'estado-solicitado';
+
+        case 'aprobado':
+            return 'estado-aprobado';
+
+        case 'en_curso':
+            return 'estado-en-curso';
+
+        case 'llegado':
+            return 'estado-llegado';
+
+        case 'regreso':
+            return 'estado-regreso';
+
+        case 'retornado':
+            return 'estado-retornado';
+
+        case 'finalizado':
+            return 'estado-finalizado';
+
+        case 'cancelado':
+            return 'estado-cancelado';
+
+        case 'abortado':
+            return 'estado-abortado';
+
+        default:
+            return '';
+
+    }
+
+}
+
+
+
+/*
+ * ============================================================
+ * SIGUIENTE ESTADO
+ * ============================================================
+ */
+
+function siguienteEstado(estado) {
+
+    const siguiente = {
+
+        solicitado:
+            'aprobado',
+
+        aprobado:
+            'en_curso',
+
+        en_curso:
+            'llegado',
+
+        llegado:
+            'regreso',
+
+        regreso:
+            'retornado',
+
+        retornado:
+            'finalizado'
+
+    };
+
+
+    return siguiente[estado] || null;
+
+}
+
+
+
+/*
+ * ============================================================
+ * MOSTRAR TRASLADOS
+ * ============================================================
+ */
+
+function mostrarTraslados() {
+
+    const filtro =
+        filtroEstado.value;
+
+
+    const filtrados =
+        traslados.filter(
+            traslado => {
+
+                if (!filtro) {
+
+                    return true;
+
+                }
+
+
+                return traslado.estado === filtro;
+
+            }
+        );
+
+
+    tablaBody.innerHTML = '';
+
+
+    if (
+        filtrados.length === 0
+    ) {
+
+        tablaBody.innerHTML = `
+
+            <tr>
+
+                <td colspan="18">
+                    No hay traslados para mostrar.
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    filtrados.forEach(
+        traslado => {
+
+            const fila =
+                document.createElement('tr');
+
+
+            const siguiente =
+                siguienteEstado(
+                    traslado.estado
+                );
+
+
+            const puedeAvanzar =
+                siguiente !== null;
+
+
+            const puedeCancelar =
+                ![
+                    'finalizado',
+                    'cancelado',
+                    'abortado'
+                ].includes(
+                    traslado.estado
+                );
+
+
+            let textoAvanzar =
+                'Avanzar';
+
+
+            if (siguiente) {
+
+                textoAvanzar =
+                    'Avanzar → ' +
+                    textoEstado(
+                        siguiente
+                    );
+
+            }
+
+
+            let textoCancelar =
+                'Cancelar';
+
+
+            if (
+                traslado.hora_salida
+            ) {
+
+                textoCancelar =
+                    'Abortar';
+
+            }
+
+
+            fila.innerHTML = `
+
+                <td>
+                    #${mostrarValor(
+                        traslado.id_traslado
+                    )}
+                </td>
+
+                <td>
+                    ${mostrarTipo(
+                        traslado
+                    )}
+                </td>
+
+                <td>
+                    ${mostrarPaciente(
+                        traslado
+                    )}
+                </td>
+
+                <td>
+                    ${mostrarValor(
+                        traslado.origen
+                    )}
+                </td>
+
+                <td>
+                    ${mostrarValor(
+                        traslado.destino
+                    )}
+                </td>
+
+                <td>${formatearFecha(traslado.fecha_hora_partida)}</td>
+                <td>
+                    ${formatearFecha(
+                        traslado.fecha_hora_destino
+                    )}
+                </td>
+
+                <td>
+
+                    ${mostrarValor(
+                        traslado.matricula
+                    )}
+
+                    ${
+                        traslado.tipo_vehiculo
+                        ? `<br>
+                           <small>
+                               ${mostrarValor(
+                                   traslado.tipo_vehiculo
+                               )}
+                           </small>`
+                        : ''
+                    }
+
+                </td>
+
+                <td>
+                    ${mostrarValor(
+                        traslado.prioridad
+                    )}
+                </td>
+
+                <td>
+                    ${formatearFecha(
+                        traslado.fecha_creacion
+                    )}
+                </td>
+
+                <td>
+                    ${formatearFecha(
+                        traslado.hora_salida
+                    )}
+                </td>
+
+                <td>
+                    ${formatearFecha(
+                        traslado.hora_llegada
+                    )}
+                </td>
+
+                <td>
+                    ${formatearFecha(
+                        traslado.hora_regreso
+                    )}
+                </td>
+
+                <td>
+                    ${formatearFecha(
+                        traslado.hora_retorno
+                    )}
+                </td>
+
+                <td>
+                    ${formatearFecha(
+                        traslado.hora_finalizado
+                    )}
+                </td>
+
+                <td>
+
+                    <span
+                        class="btn-estado ${
+                            claseEstado(
+                                traslado.estado
+                            )
+                        }"
+                    >
+                        ${textoEstado(
+                            traslado.estado
+                        )}
+                    </span>
+
+                </td>
+
+                <td>
+
+                    ${
+                        puedeAvanzar
+
+                        ? `
+
+                            <button
+                                type="button"
+                                class="btn-primary btn-avanzar"
+                                data-id="${
+                                    escaparHTML(traslado.id_traslado)
+                                }"
+                            >
+                                ${textoAvanzar}
+                            </button>
+
+                          `
+
+                        : `
+
+                            <span>-</span>
+
+                          `
+                    }
+
+                </td>
+
+                <td>
+
+                    ${
+                        puedeCancelar
+
+                        ? `
+
+                            <button
+                                type="button"
+                                class="btn-secondary btn-cancelar"
+                                data-id="${
+                                    escaparHTML(traslado.id_traslado)
+                                }"
+                                data-accion="${
+                                    textoCancelar
+                                }"
+                            >
+                                ${textoCancelar}
+                            </button>
+
+                          `
+
+                        : `
+
+                            <span>-</span>
+
+                          `
+                    }
+
+                </td>
+
+            `;
+
+
+            tablaBody.appendChild(
+                fila
+            );
+
+        }
+    );
+
+
+    document
+        .querySelectorAll('.btn-avanzar')
+        .forEach(
+            boton => {
+
+                boton.addEventListener(
+                    'click',
+                    avanzarTraslado
+                );
+
+            }
+        );
+
+
+    document
+        .querySelectorAll('.btn-cancelar')
+        .forEach(
+            boton => {
+
+                boton.addEventListener(
+                    'click',
+                    cancelarTraslado
+                );
+
+            }
+        );
+
+}
+
+
+
+/*
+ * ============================================================
+ * AVANZAR TRASLADO
+ * ============================================================
+ */
+
+async function avanzarTraslado(event) {
+
+    const boton =
+        event.currentTarget;
+
+
+    const id =
+        boton.dataset.id;
+
+
+    const traslado =
+        traslados.find(
+            t =>
+                String(
+                    t.id_traslado
+                ) === String(id)
+        );
+
+
+    if (!traslado) {
+
+        alert(
+            'No se encontró el traslado.'
+        );
+
+        return;
+
+    }
+
+
+    const siguiente =
+        siguienteEstado(
+            traslado.estado
+        );
+
+
+    if (!siguiente) {
+
+        alert(
+            'Este traslado ya no puede avanzar.'
+        );
+
+        return;
+
+    }
+
+
+    const confirmar =
+        confirm(
+            '¿Avanzar el traslado #' +
+            id +
+            ' de "' +
+            textoEstado(
+                traslado.estado
+            ) +
+            '" a "' +
+            textoEstado(
+                siguiente
+            ) +
+            '"?'
+        );
+
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+
+    boton.disabled =
+        true;
+
+
+    try {
+
+        const respuesta =
+            await fetch(
+                '../../API/traslados/estado.php',
+                {
+
+                    method:
+                        'PUT',
+
+                    credentials:
+                        'same-origin',
+
+                    headers: {
+
+                        'Content-Type':
+                            'application/json'
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            id_traslado:
+                                Number(id),
+
+                            estado_actual:
+                                traslado.estado
+
+                        })
+
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        if (respuesta.status === 409) {
+            // La pantalla estaba desactualizada: recargar antes de permitir otro avance.
+            await cargarTraslados();
+            alert(datos.mensaje || 'El traslado cambió de estado. Se actualizó la lista.');
+            return;
+        }
+
+        if (
+            !respuesta.ok ||
+            !datos.ok
+        ) {
+
+            throw new Error(
+                datos.mensaje ||
+                'No se pudo avanzar el traslado.'
+            );
+
+        }
+
+
+        alert(
+            'Traslado #' +
+            id +
+            ' actualizado a "' +
+            textoEstado(
+                datos.estado_nuevo
+            ) +
+            '".'
+        );
+
+
+        await cargarTraslados();
+
+
+    } catch (error) {
+
+        console.error(
+            'Error al avanzar traslado:',
+            error
+        );
+
+
+        alert(
+            error.message
+        );
+
+
+        boton.disabled =
+            false;
+
+    }
+
+}
+
+
+
+/*
+ * ============================================================
+ * CANCELAR / ABORTAR
+ * ============================================================
+ */
+
+async function cancelarTraslado(event) {
+
+    const boton =
+        event.currentTarget;
+
+
+    const id =
+        boton.dataset.id;
+
+
+    const accion =
+        boton.dataset.accion;
+
+
+    const confirmar =
+        confirm(
+            '¿Está seguro de que desea ' +
+            accion.toLowerCase() +
+            ' el traslado #' +
+            id +
+            '?'
+        );
+
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+
+    boton.disabled =
+        true;
+
+
+    try {
+
+        const respuesta =
+            await fetch(
+                '../../API/traslados/cancelar.php',
+                {
+
+                    method:
+                        'PUT',
+
+                    credentials:
+                        'same-origin',
+
+                    headers: {
+
+                        'Content-Type':
+                            'application/json'
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            id_traslado:
+                                Number(id)
+
+                        })
+
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        if (
+            !respuesta.ok ||
+            !datos.ok
+        ) {
+
+            throw new Error(
+                datos.mensaje ||
+                'No se pudo cancelar el traslado.'
+            );
+
+        }
+
+
+        alert(
+            datos.mensaje
+        );
+
+
+        await cargarTraslados();
+
+
+    } catch (error) {
+
+        console.error(
+            'Error al cancelar/abortar traslado:',
+            error
+        );
+
+
+        alert(
+            error.message
+        );
+
+
+        boton.disabled =
+            false;
+
+    }
+
+}
+
+
+
+/*
+ * ============================================================
+ * CARGAR TRASLADOS
+ * ============================================================
+ */
+
+async function cargarTraslados() {
+
+    tablaBody.innerHTML = `
+
+        <tr>
+
+            <td colspan="18">
+                Cargando traslados...
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try {
+
+        const respuesta =
+            await fetch(
+                '../../API/traslados/listar.php',
+                {
+
+                    method:
+                        'GET',
+
+                    credentials:
+                        'same-origin',
+
+                    cache:
+                        'no-store'
+
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        if (
+            !respuesta.ok ||
+            !datos.ok
+        ) {
+
+            throw new Error(
+                datos.mensaje ||
+                'No se pudieron cargar los traslados.'
+            );
+
+        }
+
+
+        traslados =
+            Array.isArray(
+                datos.traslados
+            )
+            ? datos.traslados
+            : [];
+
+
+        mostrarTraslados();
+
+
+    } catch (error) {
+
+        console.error(
+            'Error al cargar traslados:',
+            error
+        );
+
+
+        tablaBody.innerHTML = `
+
+            <tr>
+
+                <td colspan="18">
+
+                    Error:
+
+                    ${escaparHTML(
+                        error.message
+                    )}
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+
+/*
+ * ============================================================
+ * FILTRO
+ * ============================================================
+ */
+
+filtroEstado.addEventListener(
+    'change',
+    mostrarTraslados
+);
+
+
+
+/*
+ * ============================================================
+ * INICIO
+ * ============================================================
+ */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    async () => {
+
+        const autorizado =
+            await verificarSesion();
+
+
+        if (!autorizado) {
+
+            return;
+
+        }
+
+
+        await cargarTraslados();
+
+    }
+);
+
+</script>
+
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+
+</html>

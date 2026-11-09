@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGSM - Subir Documento</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/tema.css">
+    <script src="../js/csrf.js"></script>
+</head>
+<body>
+
+    <div class="sidebar"></div>
+
+    <div class="main">
+        <div class="header">
+            <div class="header-left">
+                <h2>Subir Documento</h2>
+            </div>
+
+            <div class="header-right">
+                <span class="user" id="usuario">Cargando...</span>
+                <span class="role" id="rol">Cargando...</span>
+                <button type="button" class="logout" id="btnLogout">
+                    Salir
+                </button>
+            </div>
+        </div>
+
+        <div class="content">
+            <h2 class="titulo-seccion">Subir Documento</h2>
+
+            <div class="card card-medium">
+                <form id="form-subir-documento" class="form"
+                      enctype="multipart/form-data">
+
+                    <div class="form-group">
+                        <label for="titulo">Nombre del documento</label>
+                        <input
+                            type="text"
+                            id="titulo"
+                            name="titulo"
+                            placeholder="Ej.: Protocolo de atención"
+                            maxlength="200"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoria">Categoría</label>
+                        <select id="categoria" name="categoria" required>
+                            <option value="">Cargando categorías...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subcategoria">Subcategoría</label>
+                        <select
+                            id="subcategoria"
+                            name="id_subcategoria"
+                            required
+                            disabled
+                        >
+                            <option value="">
+                                Seleccioná una categoría primero
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="archivo">Archivo PDF</label>
+                        <input
+                            type="file"
+                            id="archivo"
+                            name="archivo"
+                            accept=".pdf,application/pdf"
+                            required
+                        >
+                        <small>Seleccioná un archivo PDF de hasta 10 MB.</small>
+                    </div>
+
+                    <div id="mensaje-subir"
+                         role="status"
+                         aria-live="polite"></div>
+
+                    <div class="grupo-botones">
+                        <button
+                            type="submit"
+                            class="btn-primary"
+                            id="btnSubir">
+                            Subir documento
+                        </button>
+
+                        <a href="./index.html" class="btn-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/auth.js"></script>
+
+<!-- ================= SIDEBAR ================= -->
+
+<script src="../js/operator-sidebar.js"></script>
+
+<!-- ================= JS PROPIO ================= -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+
+        const API_CATEGORIAS = '../../API/categorias/listar.php';
+        const API_SUBCATEGORIAS = '../../API/subcategorias/listar.php';
+        const API_CREAR_DOCUMENTO = '../../API/documentos/crear.php';
+
+        const formulario = document.getElementById('form-subir-documento');
+        const categoria = document.getElementById('categoria');
+        const subcategoria = document.getElementById('subcategoria');
+        const archivo = document.getElementById('archivo');
+        const mensaje = document.getElementById('mensaje-subir');
+        const btnSubir = document.getElementById('btnSubir');
+
+        let todasLasSubcategorias = [];
+
+        function mostrarMensaje(texto, error = false) {
+            mensaje.textContent = texto;
+            mensaje.style.color = error ? '#c62828' : '#2e7d32';
+        }
+
+        async function consultarAPI(url, opciones = {}) {
+            const respuesta = await fetch(url, {
+                credentials: 'same-origin',
+                cache: 'no-store',
+                ...opciones
+            });
+
+            const datos = await respuesta.json();
+
+            if (!respuesta.ok || datos.ok === false) {
+                throw new Error(
+                    datos.mensaje || 'Error al comunicarse con el servidor.'
+                );
+            }
+
+            return datos;
+        }
+
+        // Cargar categorías y subcategorías.
+        async function cargarDatos() {
+            categoria.disabled = true;
+            subcategoria.disabled = true;
+
+            try {
+                const datosCategorias =
+                    await consultarAPI(API_CATEGORIAS);
+
+                const datosSubcategorias =
+                    await consultarAPI(API_SUBCATEGORIAS);
+
+                const categorias = datosCategorias.categorias || [];
+
+                todasLasSubcategorias =
+                    datosSubcategorias.subcategorias || [];
+
+                categoria.replaceChildren(
+                    new Option('Seleccioná una categoría', '')
+                );
+
+                categorias
+                    .filter(item =>
+                        String(item.estado).toLowerCase() === 'activa'
+                    )
+                    .forEach(item => {
+                        categoria.add(
+                            new Option(item.nombre, item.id_categoria)
+                        );
+                    });
+
+                if (categoria.options.length === 1) {
+                    categoria.replaceChildren(
+                        new Option('No hay categorías activas', '')
+                    );
+
+                    mostrarMensaje(
+                        'No hay categorías activas disponibles.',
+                        true
+                    );
+                    return;
+                }
+
+                categoria.disabled = false;
+
+            } catch (error) {
+                console.error('Error al cargar categorías:', error);
+
+                categoria.replaceChildren(
+                    new Option('Error al cargar categorías', '')
+                );
+
+                mostrarMensaje(error.message, true);
+            }
+        }
+
+        // Filtrar subcategorías por categoría.
+        categoria.addEventListener('change', function () {
+            const idCategoria = this.value;
+
+            subcategoria.replaceChildren(
+                new Option('Seleccioná una subcategoría', '')
+            );
+
+            subcategoria.disabled = true;
+            mostrarMensaje('');
+
+            if (!idCategoria) {
+                subcategoria.replaceChildren(
+                    new Option('Seleccioná una categoría primero', '')
+                );
+                return;
+            }
+
+            const filtradas = todasLasSubcategorias.filter(item =>
+                String(item.id_categoria) === String(idCategoria) &&
+                String(item.estado).toLowerCase() === 'activa'
+            );
+
+            filtradas.forEach(item => {
+                subcategoria.add(
+                    new Option(item.nombre, item.id_subcategoria)
+                );
+            });
+
+            if (filtradas.length === 0) {
+                subcategoria.replaceChildren(
+                    new Option('No hay subcategorías activas', '')
+                );
+                return;
+            }
+
+            subcategoria.disabled = false;
+        });
+
+        // Validar el archivo seleccionado.
+        archivo.addEventListener('change', function () {
+            mostrarMensaje('');
+
+            const seleccionado = this.files[0];
+
+            if (!seleccionado) {
+                return;
+            }
+
+            if (!seleccionado.name.toLowerCase().endsWith('.pdf')) {
+                mostrarMensaje('Solo se permiten archivos PDF.', true);
+                this.value = '';
+                return;
+            }
+
+            if (seleccionado.size > 10 * 1024 * 1024) {
+                mostrarMensaje(
+                    'El archivo no puede superar los 10 MB.',
+                    true
+                );
+                this.value = '';
+            }
+        });
+
+        // Enviar el documento a la API.
+        formulario.addEventListener('submit', async function (evento) {
+            evento.preventDefault();
+            mostrarMensaje('');
+
+            if (!categoria.value) {
+                mostrarMensaje('Seleccioná una categoría.', true);
+                return;
+            }
+
+            if (!subcategoria.value) {
+                mostrarMensaje('Seleccioná una subcategoría.', true);
+                return;
+            }
+
+            const seleccionado = archivo.files[0];
+
+            if (!seleccionado) {
+                mostrarMensaje('Seleccioná un archivo PDF.', true);
+                return;
+            }
+
+            if (!seleccionado.name.toLowerCase().endsWith('.pdf')) {
+                mostrarMensaje('Solo se permiten archivos PDF.', true);
+                return;
+            }
+
+            if (seleccionado.size > 10 * 1024 * 1024) {
+                mostrarMensaje(
+                    'El archivo no puede superar los 10 MB.',
+                    true
+                );
+                return;
+            }
+
+            const datosFormulario = new FormData(formulario);
+
+            // La API utiliza id_subcategoria.
+            datosFormulario.delete('categoria');
+
+            btnSubir.disabled = true;
+            btnSubir.textContent = 'Subiendo...';
+
+            try {
+                const datos = await consultarAPI(API_CREAR_DOCUMENTO, {
+                    method: 'POST',
+                    body: datosFormulario
+                });
+
+                mostrarMensaje(
+                    datos.mensaje || 'Documento subido correctamente.'
+                );
+
+                window.location.href = './index.html';
+
+            } catch (error) {
+                console.error('Error al subir documento:', error);
+                mostrarMensaje(error.message, true);
+
+            } finally {
+                btnSubir.disabled = false;
+                btnSubir.textContent = 'Subir documento';
+            }
+        });
+
+        // Verificar la sesión antes de cargar los datos.
+        const autorizado = await verificarSesion();
+
+        if (!autorizado) {
+            return;
+        }
+
+        await cargarDatos();
+
+    });
+    </script>
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+</html>

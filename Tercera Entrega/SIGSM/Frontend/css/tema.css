@@ -1,0 +1,491 @@
+/* ============================================================
+   TEMA GLOBAL SIGSM
+   Se carga DESPUES de layout.css, components.css o portal.css.
+   No reemplaza el diseño: centraliza los colores de ambos temas.
+   ============================================================ */
+
+:root {
+    color-scheme: light;
+
+    /* Superficies */
+    --tema-fondo: #f4f6f9;
+    --tema-superficie: #ffffff;
+    --tema-superficie-secundaria: #f1f5f9;
+    --tema-superficie-terciaria: #e2e8f0;
+
+    /* Texto */
+    --tema-texto: #1e293b;
+    --tema-texto-secundario: #64748b;
+    --tema-texto-suave: #94a3b8;
+
+    /* Bordes y estados neutros */
+    --tema-borde: #d1d5db;
+    --tema-borde-suave: #e5e7eb;
+    --tema-hover: #f8fafc;
+    --tema-campo: #ffffff;
+    --tema-placeholder: #94a3b8;
+
+    /* Elementos del portal público */
+    --tema-portal-titulo: #173f56;
+    --tema-portal-acento: #28708d;
+    --tema-portal-texto: #52636d;
+    --tema-portal-fondo-suave: #f0f6f8;
+    --tema-portal-borde: #dfe6ea;
+
+    --tema-sombra: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+    /* Variables compartidas que ya utiliza layout.css/components.css */
+    --color-gris-texto: #64748b;
+    --color-borde: #d1d5db;
+    --color-fondo-suave: #f1f5f9;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --tema-fondo: #0f172a;
+    --tema-superficie: #1e293b;
+    --tema-superficie-secundaria: #334155;
+    --tema-superficie-terciaria: #3b4658;
+
+    --tema-texto: #e2e8f0;
+    --tema-texto-secundario: #cbd5e1;
+    --tema-texto-suave: #94a3b8;
+
+    --tema-borde: #475569;
+    --tema-borde-suave: #334155;
+    --tema-hover: #3b4658;
+    --tema-campo: #0f172a;
+    --tema-placeholder: #94a3b8;
+
+    --tema-portal-titulo: #e2e8f0;
+    --tema-portal-acento: #7dd3fc;
+    --tema-portal-texto: #cbd5e1;
+    --tema-portal-fondo-suave: #26384a;
+    --tema-portal-borde: #475569;
+
+    --tema-sombra: 0 4px 14px rgba(0, 0, 0, 0.22);
+
+    /* Actualiza también los componentes que usan variables antiguas */
+    --color-gris-texto: #cbd5e1;
+    --color-borde: #475569;
+    --color-fondo-suave: #334155;
+}
+
+/* =========================
+   BASE GENERAL
+   ========================= */
+html {
+    color-scheme: light;
+}
+
+html[data-theme="dark"] {
+    color-scheme: dark;
+}
+
+body {
+    background-color: var(--tema-fondo);
+    color: var(--tema-texto);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* =========================
+   ESTRUCTURA Y NAVEGACIÓN
+   ========================= */
+.main,
+.content {
+    color: var(--tema-texto);
+}
+
+
+/* ==========================================
+   HEADER - TEMA CLARO Y OSCURO
+   ========================================== */
+
+:root .header,
+:root[data-theme="dark"] .header {
+    background-color: #263449 !important;
+    color: #ffffff !important;
+    border-bottom: 1px solid #3b4b63;
+}
+
+:root .header h2,
+:root .header .user,
+:root .header .role,
+:root[data-theme="dark"] .header h2,
+:root[data-theme="dark"] .header .user,
+:root[data-theme="dark"] .header .role {
+    color: #ffffff !important;
+}
+
+
+/* ==========================================
+   ELEMENTOS DEL HEADER - AMBOS TEMAS
+   ========================================== */
+
+:root .header .role,
+:root[data-theme="dark"] .header .role {
+    background-color: #334155;
+    color: #ffffff !important;
+}
+
+:root .header .btn-preferencia,
+:root[data-theme="dark"] .header .btn-preferencia {
+    background-color: #334155;
+    color: #ffffff !important;
+    border: 1px solid #475569;
+}
+
+:root .header .btn-preferencia:hover,
+:root[data-theme="dark"] .header .btn-preferencia:hover {
+    background-color: #475569;
+}
+
+:root .header .logout,
+:root[data-theme="dark"] .header .logout {
+    background-color: #ef4444;
+    color: #ffffff !important;
+}
+
+
+.header h2,
+.titulo-seccion,
+.user {
+    color: var(--tema-texto);
+}
+
+.role {
+    background-color: var(--tema-superficie-terciaria);
+    color: var(--tema-texto);
+}
+
+/* Se conserva el sidebar oscuro como identidad visual del sistema. */
+.sidebar {
+    background-color: #1e293b;
+    color: #ffffff;
+}
+
+.sidebar .menu a {
+    color: #cbd5e1;
+}
+
+.sidebar .menu a:hover {
+    background-color: #334155;
+    color: #ffffff;
+}
+
+/* =========================
+   TARJETAS Y CONTENEDORES
+   ========================= */
+.card,
+.card-admin,
+.card-accion,
+.login-card,
+.portal-card,
+.form-container,
+.resultado-pregunta,
+.pregunta-encuesta,
+fieldset.pregunta-encuesta,
+.modal,
+.tabla-documentos-contenedor,
+.encuesta-placeholder,
+.bienvenida,
+.portal-seccion {
+    background-color: var(--tema-superficie);
+    color: var(--tema-texto);
+    border-color: var(--tema-borde);
+}
+
+.card,
+.card-admin,
+.login-card,
+.portal-card,
+.form-container,
+.resultado-pregunta {
+    box-shadow: var(--tema-sombra);
+}
+
+.card--info {
+    background-color: var(--tema-superficie-secundaria);
+}
+
+/* =========================
+   TEXTOS
+   ========================= */
+body,
+body h1,
+body h2,
+body h3,
+body h4,
+body h5,
+body h6,
+body p,
+body label,
+body legend,
+body td,
+body th,
+body li,
+body small,
+body strong {
+    color: inherit;
+}
+
+.portal-subtitle,
+.portal-hospital,
+.login-card p,
+.portal-info,
+.portal-info h3,
+.portal-info p,
+.card-accion p,
+.resultado-total,
+.resultado-opcion-votos,
+.form-group small,
+#archivo-actual,
+#sinPreguntas {
+    color: var(--tema-texto-secundario);
+}
+
+/* =========================
+   TABLAS
+   ========================= */
+table {
+    background-color: var(--tema-superficie);
+    color: var(--tema-texto);
+}
+
+table tr:first-child,
+table th {
+    background-color: var(--tema-superficie-secundaria);
+    color: var(--tema-texto);
+}
+
+table td,
+table th,
+tbody tr {
+    border-color: var(--tema-borde);
+}
+
+tbody tr:hover,
+tr:hover {
+    background-color: var(--tema-hover);
+}
+
+/* =========================
+   FORMULARIOS
+   ========================= */
+input,
+select,
+textarea {
+    background-color: var(--tema-campo);
+    color: var(--tema-texto);
+    border-color: var(--tema-borde);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--tema-placeholder);
+    opacity: 1;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+    background-color: var(--tema-superficie-secundaria);
+    color: var(--tema-texto-secundario);
+}
+
+/* =========================
+   BOTONES NEUTROS Y PREFERENCIAS
+   ========================= */
+.btn-secondary {
+    background-color: var(--tema-superficie-terciaria);
+    color: var(--tema-texto);
+    border-color: var(--tema-borde);
+}
+
+.btn-secondary:hover {
+    background-color: var(--tema-hover);
+}
+
+.btn-preferencia {
+    background-color: var(--tema-superficie-secundaria);
+    color: var(--tema-texto);
+    border-color: var(--tema-borde);
+}
+
+.btn-preferencia:hover {
+    background-color: var(--tema-superficie-terciaria);
+}
+
+.preferencias-flotantes {
+    background-color: var(--tema-superficie);
+    border-color: var(--tema-borde);
+    box-shadow: var(--tema-sombra);
+}
+
+/* Los colores de botones de acción y badges de estado se conservan. */
+
+/* =========================
+   MENSAJES Y RESULTADOS
+   ========================= */
+.resultado-barra-fondo {
+    background-color: var(--tema-superficie-terciaria);
+}
+
+/* =========================
+   PORTAL PÚBLICO: portal.html
+   ========================= */
+.portal-header,
+.portal-footer {
+    background-color: var(--tema-superficie);
+    color: var(--tema-texto-secundario);
+    border-color: var(--tema-portal-borde);
+}
+
+.portal-header h1,
+.bienvenida h2,
+.seccion-cabecera h2,
+.encuesta-placeholder h3,
+.informacion h2 {
+    color: var(--tema-portal-titulo);
+}
+
+.portal-header p,
+.bienvenida p,
+.seccion-cabecera p,
+.buscador label,
+.aviso p,
+.encuesta-placeholder p,
+.informacion__grid p {
+    color: var(--tema-portal-texto);
+}
+
+.bienvenida,
+.portal-seccion {
+    border-color: var(--tema-portal-borde);
+}
+
+.bienvenida__etiqueta,
+.seccion-cabecera__numero,
+.encuesta-placeholder__icono,
+.ruta,
+.servicio__flecha,
+.servicio__icono,
+.subservicio span:last-child,
+.encuesta-placeholder span,
+.informacion__grid strong {
+    color: var(--tema-portal-acento);
+}
+
+.seccion-cabecera__numero,
+.servicio__icono,
+.encuesta-placeholder__icono {
+    background-color: var(--tema-portal-fondo-suave);
+}
+
+.servicio,
+.subservicio {
+    background-color: var(--tema-superficie);
+    color: var(--tema-texto);
+    border-color: var(--tema-borde);
+}
+
+.servicio__texto,
+.subservicio {
+    color: var(--tema-texto);
+}
+
+.servicio:hover,
+.subservicio:hover {
+    background-color: var(--tema-hover);
+    border-color: var(--tema-portal-acento);
+}
+
+.aviso {
+    background-color: var(--tema-portal-fondo-suave);
+    border-color: var(--tema-portal-borde);
+}
+
+.encuesta-placeholder {
+    background-color: var(--tema-superficie-secundaria);
+    border-color: var(--tema-borde);
+}
+
+.informacion__grid div {
+    background-color: var(--tema-superficie-secundaria);
+}
+
+.buscador input {
+    background-color: var(--tema-campo);
+    color: var(--tema-texto);
+    border-color: var(--tema-borde);
+}
+
+.portal-footer {
+    border-top-color: var(--tema-borde);
+}
+
+/* El visor PDF conserva el fondo propio del visor; el documento interno
+   lo representa el navegador y no puede recolorearse desde esta hoja. */
+.pdf-container {
+    border-color: var(--tema-borde);
+}
+
+/* =========================
+   TRANSICIONES
+   ========================= */
+.header,
+.card,
+.card-admin,
+.login-card,
+.portal-card,
+.form-container,
+.resultado-pregunta,
+.portal-header,
+.portal-footer,
+.bienvenida,
+.portal-seccion,
+.servicio,
+.subservicio,
+input,
+select,
+textarea {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* =========================
+   TABLAS INTEGRADAS EN TARJETAS
+   ========================= */
+/* Sin divisores horizontales entre filas en ambos temas. */
+table tbody tr {
+    border-bottom: none;
+}
+
+/* La tabla comparte la superficie de la tarjeta que la contiene. */
+.card table {
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
+}
+
+.card table thead,
+.card table thead tr,
+.card table thead th,
+.card table tbody,
+.card table tbody tr,
+.card table tbody td {
+    background-color: transparent;
+}
+
+/* En oscuro, ni la cabecera ni las filas forman un bloque separado. */
+:root[data-theme="dark"] .card table,
+:root[data-theme="dark"] .card table th,
+:root[data-theme="dark"] .card table td {
+    border-color: transparent;
+}
+
+/* Conserva una señal visual discreta al pasar el mouse. */
+.card table tbody tr:hover,
+.card table tbody tr:hover td {
+    background-color: var(--tema-hover);
+}

@@ -1,0 +1,656 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGSM - Documentos</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/tema.css">
+    <script src="../js/csrf.js"></script>
+</head>
+<body>
+
+    <div class="sidebar"></div>
+
+    <div class="main">
+        <div class="header">
+            <div class="header-left">
+                <h2>Documentos</h2>
+            </div>
+
+            <div class="header-right">
+                <span class="user" id="usuario">Cargando...</span>
+                <span class="role" id="rol">Cargando...</span>
+                <button type="button" class="logout" id="btnLogout">
+                    Salir
+                </button>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <div class="top-bar">
+                <h2>Documentos</h2>
+
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <a href="../portal.html" target="_blank" rel="noopener">
+                        <button type="button" class="btn-secondary">
+                            Ver portal
+                        </button>
+                    </a>
+
+                    <a href="documento_subir.html">
+                        <button type="button" class="btn-primary">
+                            + Subir documento
+                        </button>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card">
+                <h3>Buscar documentos</h3>
+
+                <div class="filtros-documentos">
+                    <div class="form-group">
+                        <label for="buscar-documento">Nombre del documento</label>
+                        <input
+                            type="search"
+                            id="buscar-documento"
+                            placeholder="Buscar por nombre..."
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtro-categoria">Categoría</label>
+                        <select id="filtro-categoria">
+                            <option value="">Todas las categorías</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtro-subcategoria">Subcategoría</label>
+                        <select id="filtro-subcategoria" disabled>
+                            <option value="">Todas las subcategorías</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtro-estado">Estado</label>
+                        <select id="filtro-estado">
+                            <option value="">Todos los estados</option>
+                            <option value="activo">Activo</option>
+                            <option value="desvinculado">Dado de baja</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mensaje-documentos" role="status" aria-live="polite"></div>
+
+            <!-- Tabla de documentos -->
+            <div class="card">
+                <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Subcategoría</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Ver PDF</th>
+                            <th>Editar</th>
+                            <th>Dar de baja</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tabla-documentos">
+                        <tr>
+                            <td colspan="9">Cargando documentos...</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+
+            <!-- Visor PDF -->
+            <section class="card" id="seccion-visor" hidden>
+                <div class="top-bar">
+                    <h3 id="titulo-visor">Visualizar documento</h3>
+
+                    <button
+                        type="button"
+                        id="btn-cerrar-visor"
+                        class="btn-secondary"
+                    >
+                        Cerrar visor
+                    </button>
+                </div>
+
+                <iframe
+                    id="visor-pdf"
+                    title="Visor de documentos PDF"
+                    width="100%"
+                    height="650"
+                    style="display: block; border: none;"
+                ></iframe>
+            </section>
+
+        </div>
+    </div>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/auth.js"></script>
+
+<!-- ================= SIDEBAR ================= -->
+
+<script src="../js/operator-sidebar.js"></script>
+
+<!-- ================= JS PROPIO ================= -->
+
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+
+    const autorizado = await verificarSesion();
+
+    if (!autorizado) {
+        return;
+    }
+
+            // Rutas de las API.
+            const API_DOCUMENTOS = '../../API/documentos/';
+            const API_CATEGORIAS = '../../API/categorias/listar.php';
+            const API_SUBCATEGORIAS = '../../API/subcategorias/listar.php';
+            const API_VISUALIZAR = '../../API/documentos/visualizar.php';
+
+            // Elementos del HTML.
+            const tabla = document.getElementById('tabla-documentos');
+            const buscar = document.getElementById('buscar-documento');
+            const filtroCategoria = document.getElementById('filtro-categoria');
+            const filtroSubcategoria = document.getElementById('filtro-subcategoria');
+            const filtroEstado = document.getElementById('filtro-estado');
+            const mensaje = document.getElementById('mensaje-documentos');
+
+            const seccionVisor = document.getElementById('seccion-visor');
+            const visorPDF = document.getElementById('visor-pdf');
+            const tituloVisor = document.getElementById('titulo-visor');
+            const btnCerrarVisor = document.getElementById('btn-cerrar-visor');
+
+            let temporizadorBusqueda;
+            let peticionDocumentos = 0;
+
+            // Mostrar mensajes.
+            function mostrarMensaje(texto, error = false) {
+                mensaje.textContent = texto;
+                mensaje.style.color = error ? '#b91c1c' : '';
+            }
+
+            // Consultar una API que devuelve JSON.
+            async function consultarAPI(url, opciones = {}) {
+                const respuesta = await fetch(url, {
+                    credentials: 'same-origin',
+                    cache: 'no-store',
+                    ...opciones
+                });
+
+                const texto = await respuesta.text();
+                let datos;
+
+                try {
+                    datos = JSON.parse(texto);
+                } catch {
+                    console.error('La API no devolvió JSON:', url, texto);
+                    throw new Error(
+                        'La API devolvió una respuesta inválida.'
+                    );
+                }
+
+                if (!respuesta.ok || datos.ok === false) {
+                    throw new Error(
+                        datos.mensaje || `Error HTTP ${respuesta.status}.`
+                    );
+                }
+
+                return datos;
+            }
+
+            // Obtener una lista de una respuesta JSON.
+            function obtenerLista(datos, clave) {
+                if (Array.isArray(datos)) {
+                    return datos;
+                }
+
+                if (Array.isArray(datos[clave])) {
+                    return datos[clave];
+                }
+
+                return [];
+            }
+
+            // Agregar una opción a un select.
+            function agregarOpcion(select, valor, texto) {
+                const opcion = document.createElement('option');
+                opcion.value = valor;
+                opcion.textContent = texto;
+                select.appendChild(opcion);
+            }
+
+            // Cargar categorías.
+            async function cargarCategorias() {
+                const datos = await consultarAPI(API_CATEGORIAS);
+                const categorias = obtenerLista(datos, 'categorias');
+
+                filtroCategoria.replaceChildren();
+
+                agregarOpcion(
+                    filtroCategoria,
+                    '',
+                    'Todas las categorías'
+                );
+
+                categorias
+                    .filter(categoria => categoria.estado === 'activa')
+                    .forEach(categoria => {
+                        agregarOpcion(
+                            filtroCategoria,
+                            categoria.id_categoria,
+                            categoria.nombre
+                        );
+                    });
+            }
+
+            // Cargar subcategorías.
+            async function cargarSubcategorias(idCategoria = '') {
+                filtroSubcategoria.replaceChildren();
+
+                agregarOpcion(
+                    filtroSubcategoria,
+                    '',
+                    'Todas las subcategorías'
+                );
+
+                filtroSubcategoria.disabled = !idCategoria;
+
+                if (!idCategoria) {
+                    return;
+                }
+
+                const url = new URL(
+                    API_SUBCATEGORIAS,
+                    window.location.href
+                );
+
+                url.searchParams.set('id_categoria', idCategoria);
+
+                const datos = await consultarAPI(url.toString());
+                const subcategorias = obtenerLista(datos, 'subcategorias');
+
+                subcategorias
+                    .filter(subcategoria =>
+                        String(subcategoria.id_categoria) === String(idCategoria) &&
+                        subcategoria.estado === 'activa'
+                    )
+                    .forEach(subcategoria => {
+                        agregarOpcion(
+                            filtroSubcategoria,
+                            subcategoria.id_subcategoria,
+                            subcategoria.nombre
+                        );
+                    });
+            }
+
+            // Crear una celda de forma segura.
+            function crearCelda(texto) {
+                const celda = document.createElement('td');
+                celda.textContent = texto ?? '';
+                return celda;
+            }
+
+            // Crear un botón.
+            function crearBoton(texto, accion, clase = 'btn-secondary') {
+                const boton = document.createElement('button');
+
+                boton.type = 'button';
+                boton.textContent = texto;
+                boton.className = clase;
+                boton.addEventListener('click', accion);
+
+                return boton;
+            }
+
+            // Formatear fecha.
+            function formatearFecha(fecha) {
+                if (!fecha) {
+                    return '—';
+                }
+
+                const fechaValida = new Date(
+                    String(fecha).replace(' ', 'T')
+                );
+
+                if (Number.isNaN(fechaValida.getTime())) {
+                    return fecha;
+                }
+
+                return fechaValida.toLocaleString('es-UY', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+
+            // Abrir el PDF dentro de esta página.
+            function visualizarDocumento(documento) {
+                const id = documento.id_documento;
+
+                if (!id) {
+                    mostrarMensaje(
+                        'El documento no tiene un ID válido.',
+                        true
+                    );
+                    return;
+                }
+
+                const url = new URL(
+                    API_VISUALIZAR,
+                    window.location.href
+                );
+
+                url.searchParams.set('id_documento', id);
+
+                visorPDF.src = url.toString();
+
+                tituloVisor.textContent =
+                    `Visualizando: ${documento.titulo || 'Documento PDF'}`;
+
+                seccionVisor.hidden = false;
+
+                seccionVisor.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+
+            // Cerrar el visor.
+            function cerrarVisor() {
+                visorPDF.removeAttribute('src');
+                seccionVisor.hidden = true;
+                tituloVisor.textContent = 'Visualizar documento';
+            }
+
+            btnCerrarVisor.addEventListener('click', cerrarVisor);
+
+            // Mostrar documentos en la tabla.
+            function mostrarDocumentos(documentos) {
+                tabla.replaceChildren();
+
+                if (documentos.length === 0) {
+                    const fila = document.createElement('tr');
+                    const celda = crearCelda(
+                        'No se encontraron documentos.'
+                    );
+
+                    celda.colSpan = 9;
+                    fila.appendChild(celda);
+                    tabla.appendChild(fila);
+
+                    return;
+                }
+
+                documentos.forEach(documento => {
+                    const fila = document.createElement('tr');
+
+                    fila.appendChild(
+                        crearCelda(documento.id_documento)
+                    );
+                    fila.appendChild(crearCelda(documento.titulo));
+                    fila.appendChild(crearCelda(documento.categoria));
+                    fila.appendChild(crearCelda(documento.subcategoria));
+                    fila.appendChild(
+                        crearCelda(formatearFecha(documento.fecha))
+                    );
+                    fila.appendChild(crearCelda(documento.estado === 'desvinculado' ? 'Dado de baja' : documento.estado));
+
+                    // Ver PDF.
+                    const celdaVer = document.createElement('td');
+
+                    celdaVer.appendChild(
+                        crearBoton('Ver PDF', () => {
+                            visualizarDocumento(documento);
+                        })
+                    );
+
+                    fila.appendChild(celdaVer);
+
+                    // Los documentos dados de baja quedan solo para consulta.
+                    const activo = documento.estado === 'activo';
+                    const celdaEditar = document.createElement('td');
+                    if (activo) {
+                        celdaEditar.appendChild(crearBoton('Editar', () => {
+                            const url = new URL('documento_editar.html', window.location.href);
+                            url.searchParams.set('id_documento', documento.id_documento);
+                            window.location.href = url.toString();
+                        }));
+                    } else {
+                        celdaEditar.textContent = '—';
+                    }
+                    fila.appendChild(celdaEditar);
+
+                    const celdaBaja = document.createElement('td');
+                    if (activo) {
+                        celdaBaja.appendChild(crearBoton('Dar de baja', () => {
+                            darDeBajaDocumento(documento);
+                        }, 'btn-danger'));
+                    } else {
+                        celdaBaja.textContent = '—';
+                    }
+                    fila.appendChild(celdaBaja);
+                    tabla.appendChild(fila);
+                });
+            }
+
+            // Cargar documentos y aplicar filtros.
+            async function cargarDocumentos() {
+                const numeroPeticion = ++peticionDocumentos;
+
+                mostrarMensaje('Cargando documentos...');
+
+                try {
+                    const url = new URL(
+                        API_DOCUMENTOS + 'listar.php',
+                        window.location.href
+                    );
+
+                    if (buscar.value.trim()) {
+                        url.searchParams.set(
+                            'buscar',
+                            buscar.value.trim()
+                        );
+                    }
+
+                    if (filtroCategoria.value) {
+                        url.searchParams.set(
+                            'id_categoria',
+                            filtroCategoria.value
+                        );
+                    }
+
+                    if (filtroSubcategoria.value) {
+                        url.searchParams.set(
+                            'id_subcategoria',
+                            filtroSubcategoria.value
+                        );
+                    }
+
+                    if (filtroEstado.value) {
+                        url.searchParams.set(
+                            'estado',
+                            filtroEstado.value
+                        );
+                    }
+
+                    const datos = await consultarAPI(url.toString());
+
+                    if (numeroPeticion !== peticionDocumentos) {
+                        return;
+                    }
+
+                    const documentos = obtenerLista(datos, 'documentos');
+
+                    mostrarDocumentos(documentos);
+
+                    mostrarMensaje(
+                        `Se encontraron ${documentos.length} documento(s).`
+                    );
+
+                } catch (error) {
+                    if (numeroPeticion !== peticionDocumentos) {
+                        return;
+                    }
+
+                    console.error('Error al cargar documentos:', error);
+
+                    tabla.replaceChildren();
+
+                    const fila = document.createElement('tr');
+                    const celda = crearCelda(
+                        'No se pudieron cargar los documentos.'
+                    );
+
+                    celda.colSpan = 9;
+                    fila.appendChild(celda);
+                    tabla.appendChild(fila);
+
+                    mostrarMensaje(
+                        error.message || 'Error al cargar documentos.',
+                        true
+                    );
+                }
+            }
+
+            // Eliminar documento.
+            async function darDeBajaDocumento(documento) {
+                const confirmado = confirm(
+                    `¿Seguro que querés dar de baja "${documento.titulo}"?\n\n` +
+                    'No aparecerá en el portal y no podrá reactivarse. El PDF seguirá disponible internamente.'
+                );
+
+                if (!confirmado) {
+                    return;
+                }
+
+                try {
+                    mostrarMensaje('Dando de baja el documento...');
+
+                    const formulario = new FormData();
+
+                    formulario.append(
+                        'id_documento',
+                        documento.id_documento
+                    );
+
+                    const resultado = await consultarAPI(
+                        API_DOCUMENTOS + 'eliminar.php',
+                        {
+                            method: 'POST',
+                            body: formulario
+                        }
+                    );
+
+                    // Cerrar el visor del documento dado de baja, si estaba abierto.
+                    const urlActual = new URL(
+                        visorPDF.src || window.location.href,
+                        window.location.href
+                    );
+
+                    if (
+                        urlActual.searchParams.get('id_documento') ===
+                        String(documento.id_documento)
+                    ) {
+                        cerrarVisor();
+                    }
+
+                    mostrarMensaje(
+                        resultado.mensaje ||
+                        'Documento dado de baja correctamente.'
+                    );
+
+                    await cargarDocumentos();
+
+                } catch (error) {
+                    console.error('Error al dar de baja documento:', error);
+
+                    mostrarMensaje(
+                        error.message || 'No se pudo dar de baja el documento.',
+                        true
+                    );
+                }
+            }
+
+            // Buscar mientras se escribe.
+            buscar.addEventListener('input', () => {
+                clearTimeout(temporizadorBusqueda);
+
+                temporizadorBusqueda = setTimeout(() => {
+                    cargarDocumentos();
+                }, 300);
+            });
+
+            // Cambiar categoría.
+            filtroCategoria.addEventListener('change', async () => {
+                try {
+                    await cargarSubcategorias(filtroCategoria.value);
+                    await cargarDocumentos();
+                } catch (error) {
+                    console.error(error);
+
+                    mostrarMensaje(
+                        'No se pudieron cargar las categorías o subcategorías.',
+                        true
+                    );
+                }
+            });
+
+            filtroSubcategoria.addEventListener(
+                'change',
+                cargarDocumentos
+            );
+
+            filtroEstado.addEventListener(
+                'change',
+                cargarDocumentos
+            );
+
+            // Iniciar página.
+            async function iniciar() {
+                try {
+                    await cargarCategorias();
+                    await cargarSubcategorias();
+                    await cargarDocumentos();
+                } catch (error) {
+                    console.error('Error al iniciar documentos:', error);
+
+                    mostrarMensaje(
+                        'No se pudieron cargar los datos. Verificá las API y tu sesión.',
+                        true
+                    );
+                }
+            }
+
+            iniciar();
+        });
+    </script>
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+</html>

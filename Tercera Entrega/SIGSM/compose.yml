@@ -1,0 +1,45 @@
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_NAME: sigsm
+      DB_USER: sigsm_user
+      DB_PASSWORD: ${MYSQL_PASSWORD:?Definir MYSQL_PASSWORD en .env}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - sigsm_uploads:/var/www/html/SIGSM3/uploads
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Definir MYSQL_ROOT_PASSWORD en .env}
+      MYSQL_DATABASE: sigsm
+      MYSQL_USER: sigsm_user
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Definir MYSQL_PASSWORD en .env}
+      TZ: America/Montevideo
+    volumes:
+      - sigsm_mysql_data:/var/lib/mysql
+      - ./Backend/database/bd.sql:/docker-entrypoint-initdb.d/01-sigsm.sql:ro,Z
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'MYSQL_PWD="$${MYSQL_ROOT_PASSWORD}" mysqladmin ping -h 127.0.0.1 -u root --silent'
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+
+volumes:
+  sigsm_mysql_data:
+  sigsm_uploads:

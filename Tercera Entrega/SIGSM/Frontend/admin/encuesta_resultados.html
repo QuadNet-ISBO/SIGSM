@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SIGSM - Resultados de encuestas</title>
+
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/tema.css">
+    <script src="../js/csrf.js"></script>
+</head>
+
+<body>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar"></div>
+
+<!-- ================= CONTENIDO ================= -->
+
+    <div class="main">
+
+        <div class="header">
+
+            <div class="header-left">
+                <h2>Resultados de encuestas</h2>
+            </div>
+
+            <div class="header-right">
+                <span class="user" id="usuario">Cargando...</span>
+                <span class="role" id="rol">Cargando...</span>
+
+                <button class="logout" id="btnLogout" type="button">
+                    Salir
+                </button>
+            </div>
+
+        </div>
+
+        <div class="content">
+
+            <div class="card" style="margin-top: 20px;">
+
+                <div class="form-group selector-resultados">
+                    <label for="encuestaSeleccionada">
+                        Seleccionar encuesta
+                    </label>
+
+                    <select id="encuestaSeleccionada" disabled>
+                        <option value="">Cargando encuestas...</option>
+                    </select>
+                </div>
+
+                <p id="mensajeResultados" role="status">
+                    Cargando resultados...
+                </p>
+
+                <div
+                    id="resultadosEncuesta"
+                    class="resultado-encuesta">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+<!-- ================= SIDEBAR ================= -->
+
+<script src="../js/admin-sidebar.js"></script>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/admin-auth.js"></script>
+
+<!-- ================= JS PROPIO ================= -->
+
+    <script>
+        const API_RESULTADOS = '../../API/portal/encuesta_resultados.php';
+
+        const selector = document.getElementById(
+            'encuestaSeleccionada'
+        );
+
+        const contenedor = document.getElementById(
+            'resultadosEncuesta'
+        );
+
+        const mensaje = document.getElementById(
+            'mensajeResultados'
+        );
+
+        const usuario = document.getElementById('usuario');
+        const rol = document.getElementById('rol');
+        const btnLogout = document.getElementById('btnLogout');
+
+        let encuestas = [];
+
+        // Obtener el ID de la encuesta enviado desde la tabla.
+        const parametrosURL = new URLSearchParams(window.location.search);
+        const idEncuestaInicial = parametrosURL.get('id');
+
+        // Cargar las encuestas y sus resultados desde la API.
+        async function cargarResultados() {
+            selector.disabled = true;
+            mensaje.textContent = 'Cargando resultados...';
+            contenedor.replaceChildren();
+
+            try {
+                const respuesta = await fetch(API_RESULTADOS, {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const contenido = await respuesta.text();
+
+                let datos;
+
+                try {
+                    datos = JSON.parse(contenido);
+                } catch (error) {
+                    console.error(
+                        'La API no devolvió JSON. Respuesta recibida:',
+                        contenido
+                    );
+
+                    throw new Error(
+                        'La API devolvió una respuesta que no es JSON. ' +
+                        'Revisá la ruta y los errores de PHP.'
+                    );
+                }
+
+                if (respuesta.status === 401 ||
+                    respuesta.status === 403) {
+
+                    window.location.href = '../login.html';
+                    return;
+                }
+
+                if (!respuesta.ok || datos.ok !== true) {
+                    throw new Error(
+                        datos.mensaje ||
+                        'No se pudieron cargar los resultados.'
+                    );
+                }
+
+                encuestas = Array.isArray(datos.encuestas)
+                    ? datos.encuestas
+                    : [];
+
+                selector.replaceChildren();
+
+                if (encuestas.length === 0) {
+                    const opcion = document.createElement('option');
+
+                    opcion.value = '';
+                    opcion.textContent = 'No hay encuestas registradas';
+
+                    selector.appendChild(opcion);
+                    selector.disabled = true;
+
+                    mensaje.textContent =
+                        'Todavía no hay encuestas registradas.';
+
+                    return;
+                }
+
+                encuestas.forEach(encuesta => {
+                const opcion = document.createElement('option');
+
+                opcion.value = encuesta.id_encuesta;
+                opcion.textContent =
+                    encuesta.titulo + ' (' + encuesta.estado + ')';
+
+                selector.appendChild(opcion);
+            });
+
+            // Si venimos de la tabla, seleccionar esa encuesta.
+            if (idEncuestaInicial !== null) {
+                const existeEncuesta = encuestas.some(
+                    encuesta =>
+                        String(encuesta.id_encuesta) === idEncuestaInicial
+                );
+
+                if (existeEncuesta) {
+                    selector.value = idEncuestaInicial;
+                } else {
+                    mensaje.textContent =
+                        'La encuesta solicitada no existe o no está disponible.';
+                }
+            }
+
+            selector.disabled = false;
+
+            mostrarEncuesta();
+
+            } catch (error) {
+                mensaje.textContent = error.message;
+                console.error('Error al cargar resultados:', error);
+            }
+        }
+
+        // Mostrar las preguntas, los votos y los porcentajes.
+        function mostrarEncuesta() {
+            const encuesta = encuestas.find(
+                elemento =>
+                    String(elemento.id_encuesta) === selector.value
+            );
+
+            contenedor.replaceChildren();
+
+            if (!encuesta) {
+                mensaje.textContent = 'Seleccioná una encuesta.';
+                return;
+            }
+
+            mensaje.textContent =
+                'Categoría: ' + encuesta.categoria +
+                ' | Subcategoría: ' + encuesta.subcategoria;
+
+            const titulo = document.createElement('h2');
+
+            titulo.textContent = 'Encuesta: ' + encuesta.titulo;
+
+            contenedor.appendChild(titulo);
+
+            if (!Array.isArray(encuesta.preguntas) ||
+                encuesta.preguntas.length === 0) {
+
+                const texto = document.createElement('p');
+
+                texto.textContent =
+                    'Esta encuesta todavía no tiene preguntas.';
+
+                contenedor.appendChild(texto);
+                return;
+            }
+
+            encuesta.preguntas.forEach((pregunta, indice) => {
+
+                const tarjeta = document.createElement('section');
+
+                tarjeta.className = 'resultado-pregunta';
+
+                const tituloPregunta = document.createElement('h3');
+
+                tituloPregunta.textContent =
+                    'Pregunta ' + (indice + 1) + ': ' +
+                    pregunta.texto;
+
+                tarjeta.appendChild(tituloPregunta);
+
+                const total = document.createElement('p');
+
+                total.className = 'resultado-total';
+
+                total.textContent =
+                    'Total de votos: ' +
+                    (Number(pregunta.total_votos) || 0);
+
+                tarjeta.appendChild(total);
+
+                if (!Array.isArray(pregunta.opciones) ||
+                    pregunta.opciones.length === 0) {
+
+                    const texto = document.createElement('p');
+
+                    texto.textContent =
+                        'Esta pregunta no tiene opciones registradas.';
+
+                    tarjeta.appendChild(texto);
+                    contenedor.appendChild(tarjeta);
+
+                    return;
+                }
+
+                pregunta.opciones.forEach(opcion => {
+
+                    const votos = Number(opcion.votos) || 0;
+                    const porcentaje = Math.min(
+                        100,
+                        Math.max(0, Number(opcion.porcentaje) || 0)
+                    );
+
+                    const fila = document.createElement('div');
+
+                    fila.className = 'resultado-opcion';
+
+                    const detalle = document.createElement('div');
+
+                    detalle.className = 'resultado-opcion-detalle';
+
+                    const nombre = document.createElement('span');
+
+                    nombre.className = 'resultado-opcion-nombre';
+                    nombre.textContent = opcion.texto_opcion;
+
+                    const cantidad = document.createElement('strong');
+
+                    cantidad.className = 'resultado-opcion-votos';
+
+                    cantidad.textContent =
+                        votos + ' votos / ' + porcentaje + '%';
+
+                    detalle.append(nombre, cantidad);
+
+                    const fondo = document.createElement('div');
+
+                    fondo.className = 'resultado-barra-fondo';
+
+                    const barra = document.createElement('div');
+
+                    barra.className = 'resultado-barra';
+                    barra.style.width = porcentaje + '%';
+
+                    fondo.appendChild(barra);
+
+                    fila.append(detalle, fondo);
+
+                    tarjeta.appendChild(fila);
+                });
+
+                contenedor.appendChild(tarjeta);
+            });
+        }
+
+        // Cambiar de encuesta actualiza los resultados mostrados.
+        selector.addEventListener('change', mostrarEncuesta);
+
+        // Cargar los resultados al entrar a la página.
+        cargarResultados();
+    </script>
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+
+</html>

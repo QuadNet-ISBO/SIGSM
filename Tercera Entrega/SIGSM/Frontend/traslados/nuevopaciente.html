@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        SIGSM - Nuevo Traslado de Paciente
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SIDEBAR
+     ========================================================= -->
+
+<div class="sidebar"></div>
+
+<!-- =========================================================
+     MAIN
+     ========================================================= -->
+
+<div class="main">
+
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2>
+                Nuevo traslado - Paciente
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span
+                class="user"
+                id="usuario"
+            >
+                Cargando...
+            </span>
+
+
+            <span
+                class="role"
+                id="rol"
+            >
+                Cargando...
+            </span>
+
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         CONTENIDO
+         ===================================================== -->
+
+    <div class="content">
+
+
+        <h2 class="titulo-seccion">
+            Crear traslado de paciente
+        </h2>
+
+
+        <div class="card card-medium">
+
+
+            <div
+                id="mensaje"
+                style="display:none;"
+            ></div>
+
+
+            <form
+                id="formTraslado"
+                class="form"
+            >
+
+
+                <!-- ORIGEN -->
+
+                <div class="form-group">
+
+                    <label for="origen">
+                        Origen
+                    </label>
+
+                    <input
+                        type="text"
+                        id="origen"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- DESTINO -->
+
+                <div class="form-group">
+
+                    <label for="destino">
+                        Destino
+                    </label>
+
+                    <input
+                        type="text"
+                        id="destino"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- PARTIDA PROGRAMADA -->
+                <div class="form-group">
+                    <label for="fechaHoraPartida">Fecha y hora programada de partida</label>
+                    <input type="datetime-local" id="fechaHoraPartida" required>
+                </div>
+
+                <!-- FECHA Y HORA -->
+
+                <div class="form-group">
+
+                    <label for="fechaHoraDestino">
+                        Fecha y hora prevista de destino
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="fechaHoraDestino"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- PACIENTE -->
+
+                <div class="form-group">
+
+                    <label for="ciPaciente">
+                        Cédula del paciente
+                    </label>
+
+                    <input
+                        type="text"
+                        id="ciPaciente"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="nombrePaciente">
+                        Nombre completo
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nombrePaciente"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="telefonoPaciente">
+                        Teléfono
+                    </label>
+
+                    <input
+                        type="text"
+                        id="telefonoPaciente"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="quienRecibe">
+                        Quién recibe
+                    </label>
+
+                    <input
+                        type="text"
+                        id="quienRecibe"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="puerta">
+                        Puerta
+                    </label>
+
+                    <input
+                        type="text"
+                        id="puerta"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="piso">
+                        Piso
+                    </label>
+
+                    <input
+                        type="text"
+                        id="piso"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="sala">
+                        Sala
+                    </label>
+
+                    <input
+                        type="text"
+                        id="sala"
+                    >
+
+                </div>
+
+
+                <!-- AMBULANCIA -->
+
+                <div class="form-group">
+
+                    <label for="vehiculo">
+                        Ambulancia
+                    </label>
+
+                    <select
+                        id="vehiculo"
+                        required
+                    >
+
+                        <option value="">
+                            Cargando ambulancias...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- CHOFER -->
+
+                <div class="form-group">
+
+                    <label for="chofer">
+                        Chofer
+                    </label>
+
+                    <select
+                        id="chofer"
+                        required
+                    >
+
+                        <option value="">
+                            Cargando choferes...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- ENFERMERO -->
+
+                <div class="form-group">
+
+                    <label for="enfermero">
+                        Enfermero
+                    </label>
+
+                    <select
+                        id="enfermero"
+                        required
+                    >
+
+                        <option value="">
+                            Cargando enfermeros...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PRIORIDAD -->
+
+                <div class="form-group">
+
+                    <label for="prioridad">
+                        Prioridad
+                    </label>
+
+                    <select
+                        id="prioridad"
+                        required
+                    >
+
+                        <option value="">
+                            Seleccioná una prioridad
+                        </option>
+
+                        <option value="baja">
+                            Baja
+                        </option>
+
+                        <option value="media">
+                            Media
+                        </option>
+
+                        <option value="alta">
+                            Alta
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- OBSERVACIONES -->
+
+                <div class="form-group">
+
+                    <label for="observaciones">
+                        Observaciones
+                    </label>
+
+                    <textarea
+                        id="observaciones"
+                    ></textarea>
+
+                </div>
+
+
+                <!-- BOTONES -->
+
+                <div class="grupo-botones">
+
+                    <button
+                        type="submit"
+                        class="btn-primary"
+                        id="btnCrear"
+                    >
+                        Crear traslado
+                    </button>
+
+
+                    <a
+                        href="index.html"
+                        class="btn-secondary"
+                    >
+                        Cancelar
+                    </a>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/auth.js"></script>
+
+<!-- ================= SIDEBAR ================= -->
+
+<script src="../js/operator-sidebar.js"></script>
+
+<!-- ================= JS PROPIO ================= -->
+
+<script>
+
+
+/*
+ * ============================================================
+ * ELEMENTOS
+ * ============================================================
+ */
+
+const form =
+    document.getElementById(
+        'formTraslado'
+    );
+
+
+const vehiculo =
+    document.getElementById(
+        'vehiculo'
+    );
+
+
+const chofer =
+    document.getElementById(
+        'chofer'
+    );
+
+
+const enfermero =
+    document.getElementById(
+        'enfermero'
+    );
+
+
+const mensaje =
+    document.getElementById(
+        'mensaje'
+    );
+
+
+const btnCrear =
+    document.getElementById(
+        'btnCrear'
+    );
+
+
+
+/*
+ * ============================================================
+ * MOSTRAR MENSAJE
+ * ============================================================
+ */
+
+function mostrarMensaje(
+    texto,
+    error = true
+) {
+
+    mensaje.style.display =
+        'block';
+
+
+    mensaje.textContent =
+        texto;
+
+
+    mensaje.style.padding =
+        '12px';
+
+
+    mensaje.style.marginBottom =
+        '15px';
+
+
+    mensaje.style.borderRadius =
+        '6px';
+
+
+    if (error) {
+
+        mensaje.style.backgroundColor =
+            '#f8d7da';
+
+        mensaje.style.color =
+            '#842029';
+
+    } else {
+
+        mensaje.style.backgroundColor =
+            '#d1e7dd';
+
+        mensaje.style.color =
+            '#0f5132';
+
+    }
+
+}
+
+
+
+/*
+ * ============================================================
+ * CARGAR RECURSOS
+ * ============================================================
+ */
+
+// Validación visual; la API vuelve a comprobar el turno bajo bloqueo.
+function enTurno(horario, fechaPartida) {
+    if (!fechaPartida || !horario) return false;
+    const turnos = { matutino: '06:00-14:00', diurno: '14:00-22:00', vespertino: '22:00-06:00' };
+    horario = turnos[String(horario).trim().toLowerCase()] || horario;
+    const m = horario.match(/^\s*([01]\d|2[0-3]):([0-5]\d)\s*-\s*([01]\d|2[0-3]):([0-5]\d)\s*$/);
+    if (!m) return false;
+    const inicio = Number(m[1]) * 60 + Number(m[2]);
+    const fin = Number(m[3]) * 60 + Number(m[4]);
+    const hora = new Date(fechaPartida);
+    if (Number.isNaN(hora.getTime()) || inicio === fin) return false;
+    const minuto = hora.getHours() * 60 + hora.getMinutes();
+    return inicio < fin
+        ? minuto >= inicio && minuto < fin
+        : minuto >= inicio || minuto < fin;
+}
+
+async function cargarRecursos() {
+
+    const [
+        respuestaVehiculos,
+        respuestaFuncionarios
+    ] = await Promise.all([
+
+        fetch(
+            '../../API/traslados/vehiculos.php',
+            {
+                method:
+                    'GET',
+
+                credentials:
+                    'same-origin',
+
+                cache:
+                    'no-store'
+            }
+        ),
+
+        fetch(
+            '../../API/traslados/funcionarios.php',
+            {
+                method:
+                    'GET',
+
+                credentials:
+                    'same-origin',
+
+                cache:
+                    'no-store'
+            }
+        )
+
+    ]);
+
+
+    const datosVehiculos =
+        await respuestaVehiculos.json();
+
+
+    const datosFuncionarios =
+        await respuestaFuncionarios.json();
+
+
+    /*
+     * VALIDAR VEHÍCULOS
+     */
+
+    if (
+        !respuestaVehiculos.ok ||
+        !datosVehiculos.ok
+    ) {
+
+        throw new Error(
+            datosVehiculos.mensaje ||
+            'No se pudieron cargar las ambulancias.'
+        );
+
+    }
+
+
+    /*
+     * VALIDAR FUNCIONARIOS
+     */
+
+    if (
+        !respuestaFuncionarios.ok ||
+        !datosFuncionarios.ok
+    ) {
+
+        throw new Error(
+            datosFuncionarios.mensaje ||
+            'No se pudieron cargar los funcionarios.'
+        );
+
+    }
+
+
+    /*
+     * ========================================================
+     * AMBULANCIAS
+     * ========================================================
+     */
+
+    vehiculo.innerHTML = `
+
+        <option value="">
+            Seleccioná una ambulancia
+        </option>
+
+    `;
+
+
+    const ambulancias =
+        (datosVehiculos.vehiculos || [])
+            .filter(
+                v =>
+                    String(
+                        v.tipo_vehiculo
+                    )
+                    .trim()
+                    .toLowerCase() ===
+                    'ambulancia'
+            );
+
+
+    ambulancias.forEach(
+        v => {
+
+            const option =
+                document.createElement(
+                    'option'
+                );
+
+
+            option.value =
+                v.id_vehiculo;
+
+
+            option.textContent =
+                `${v.matricula} - ${v.tipo_vehiculo}`;
+
+
+            vehiculo.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    if (
+        ambulancias.length === 0
+    ) {
+
+        vehiculo.innerHTML = `
+
+            <option value="">
+                No hay ambulancias disponibles
+            </option>
+
+        `;
+
+    }
+
+
+    /*
+     * ========================================================
+     * CHOFERES
+     * ========================================================
+     */
+
+    chofer.innerHTML = `
+
+        <option value="">
+            Seleccioná un chofer
+        </option>
+
+    `;
+
+
+    const choferes = (datosFuncionarios.choferes || []).filter(f => enTurno(f.horario, document.getElementById('fechaHoraPartida').value));
+
+
+    choferes.forEach(
+        f => {
+
+            const option =
+                document.createElement(
+                    'option'
+                );
+
+
+            option.value =
+                f.id_funcionario;
+
+
+            option.textContent =
+                `${f.nombre} ${f.apellido} - CI ${f.ci}`;
+
+
+            chofer.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    if (
+        choferes.length === 0
+    ) {
+
+        chofer.innerHTML = `
+
+            <option value="">
+                No hay choferes disponibles
+            </option>
+
+        `;
+
+    }
+
+
+    /*
+     * ========================================================
+     * ENFERMEROS
+     * ========================================================
+     */
+
+    enfermero.innerHTML = `
+
+        <option value="">
+            Seleccioná un enfermero
+        </option>
+
+    `;
+
+
+    const enfermeros = (datosFuncionarios.enfermeros || []).filter(f => enTurno(f.horario, document.getElementById('fechaHoraPartida').value));
+
+
+    enfermeros.forEach(
+        f => {
+
+            const option =
+                document.createElement(
+                    'option'
+                );
+
+
+            option.value =
+                f.id_funcionario;
+
+
+            option.textContent =
+                `${f.nombre} ${f.apellido} - CI ${f.ci}`;
+
+
+            enfermero.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    if (
+        enfermeros.length === 0
+    ) {
+
+        enfermero.innerHTML = `
+
+            <option value="">
+                No hay enfermeros disponibles
+            </option>
+
+        `;
+
+    }
+
+}
+
+
+
+/*
+ * ============================================================
+ * CREAR TRASLADO
+ * ============================================================
+ */
+
+form.addEventListener(
+    'submit',
+    async function(event) {
+
+        event.preventDefault();
+
+
+        mensaje.style.display =
+            'none';
+
+
+        btnCrear.disabled =
+            true;
+
+
+        btnCrear.textContent =
+            'Creando traslado...';
+
+
+        const datos = {
+
+            tipo_traslado:
+                'paciente',
+
+
+            id_vehiculo:
+                Number(
+                    vehiculo.value
+                ),
+
+
+            id_chofer:
+                Number(
+                    chofer.value
+                ),
+
+
+            id_enfermero:
+                Number(
+                    enfermero.value
+                ),
+
+
+            origen:
+                document
+                    .getElementById(
+                        'origen'
+                    )
+                    .value
+                    .trim(),
+
+
+            destino:
+                document
+                    .getElementById(
+                        'destino'
+                    )
+                    .value
+                    .trim(),
+
+
+            fecha_hora_partida: document.getElementById('fechaHoraPartida').value,
+
+            fecha_hora_destino:
+                document
+                    .getElementById(
+                        'fechaHoraDestino'
+                    )
+                    .value,
+
+
+            prioridad:
+                document
+                    .getElementById(
+                        'prioridad'
+                    )
+                    .value,
+
+
+            observaciones:
+                document
+                    .getElementById(
+                        'observaciones'
+                    )
+                    .value
+                    .trim(),
+
+
+            ci_paciente:
+                document
+                    .getElementById(
+                        'ciPaciente'
+                    )
+                    .value
+                    .trim(),
+
+
+            nombre_paciente:
+                document
+                    .getElementById(
+                        'nombrePaciente'
+                    )
+                    .value
+                    .trim(),
+
+
+            telefono_paciente:
+                document
+                    .getElementById(
+                        'telefonoPaciente'
+                    )
+                    .value
+                    .trim(),
+
+
+            quien_recibe:
+                document
+                    .getElementById(
+                        'quienRecibe'
+                    )
+                    .value
+                    .trim(),
+
+
+            puerta:
+                document
+                    .getElementById(
+                        'puerta'
+                    )
+                    .value
+                    .trim(),
+
+
+            piso:
+                document
+                    .getElementById(
+                        'piso'
+                    )
+                    .value
+                    .trim(),
+
+
+            sala:
+                document
+                    .getElementById(
+                        'sala'
+                    )
+                    .value
+                    .trim()
+
+        };
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    '../../API/traslados/crear.php',
+                    {
+
+                        method:
+                            'POST',
+
+                        credentials:
+                            'same-origin',
+
+                        headers: {
+
+                            'Content-Type':
+                                'application/json'
+
+                        },
+
+                        body:
+                            JSON.stringify(
+                                datos
+                            )
+
+                    }
+                );
+
+
+            const resultado =
+                await respuesta.json();
+
+
+            if (
+                !respuesta.ok ||
+                !resultado.ok
+            ) {
+
+                throw new Error(
+                    resultado.mensaje ||
+                    'No se pudo crear el traslado.'
+                );
+
+            }
+
+
+            mostrarMensaje(
+                `Traslado #${resultado.id_traslado} creado correctamente.`,
+                false
+            );
+
+
+            setTimeout(
+                () => {
+
+                    window.location.href =
+                        'index.html';
+
+                },
+                800
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                'Error al crear traslado:',
+                error
+            );
+
+
+            mostrarMensaje(
+                error.message
+            );
+
+
+            btnCrear.disabled =
+                false;
+
+
+            btnCrear.textContent =
+                'Crear traslado';
+
+        }
+
+    }
+);
+
+
+
+/*
+ * ============================================================
+ * INICIO
+ * ============================================================
+ *
+ * Primero verifica la sesión.
+ *
+ * Si está autenticado:
+ *
+ *     1. auth.js muestra nombre y rol.
+ *     2. auth.js configura logout.
+ *     3. Se cargan vehículos y funcionarios.
+ *
+ */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    async () => {
+
+        const autenticado =
+            await verificarSesion();
+
+
+        if (!autenticado) {
+
+            return;
+
+        }
+
+
+        document.getElementById('fechaHoraPartida').addEventListener('change', async () => {
+            try { await cargarRecursos(); }
+            catch (error) { mostrarMensaje(error.message); }
+        });
+
+        try {
+
+            await cargarRecursos();
+
+        } catch (error) {
+
+            console.error(
+                'Error al cargar recursos:',
+                error
+            );
+
+
+            mostrarMensaje(
+                error.message
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+
+</html>

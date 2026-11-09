@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>SIGSM - Crear Categoría</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar"></div>
+
+<!-- ================= CONTENIDO ================= -->
+
+<div class="main">
+
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2>
+                Crear Categoría
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span class="user">
+                Cargando...
+            </span>
+
+            <span class="role">
+                Cargando...
+            </span>
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="content">
+
+        <h2 class="titulo-seccion">
+            Crear Categoría
+        </h2>
+
+
+        <div class="card card-medium">
+
+            <form
+                class="form"
+                id="formCategoria"
+            >
+
+                <div class="form-group">
+
+                    <label for="nombre">
+                        Nombre
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        placeholder="Nombre de la categoría"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="acciones-form">
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="btnCrearCategoria"
+                >
+                    Crear categoría
+                </button>
+
+
+                    <a href="categorias.html">
+
+                        <button
+                            type="button"
+                            class="btn-secondary"
+                        >
+                            Volver
+                        </button>
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= Sidebar ================= -->
+
+<script src="../js/admin-sidebar.js"></script>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/admin-auth.js"></script>
+
+<!-- ================= JS PROPIO ================= -->
+
+<script>
+
+const btnCrearCategoria =
+    document.getElementById("btnCrearCategoria");
+
+const nombreCategoria =
+    document.getElementById("nombre");
+
+
+btnCrearCategoria.addEventListener(
+    "click",
+    async function () {
+
+        const nombre =
+            nombreCategoria.value.trim();
+
+
+        if (nombre === "") {
+
+            alert(
+                "El nombre de la categoría es obligatorio."
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    "../../API/categorias/crear.php",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        credentials:
+                            "same-origin",
+
+                        body:
+                            JSON.stringify({
+                                nombre: nombre
+                            })
+                    }
+                );
+
+
+            const datos =
+                await respuesta.json();
+
+
+            console.log(
+                "Status:",
+                respuesta.status
+            );
+
+            console.log(
+                "Respuesta crear categoría:",
+                datos
+            );
+
+
+            if (
+                !respuesta.ok ||
+                !datos.ok
+            ) {
+
+                alert(
+                    datos.mensaje ||
+                    "No se pudo crear la categoría."
+                );
+
+                return;
+            }
+
+
+            alert(
+                datos.mensaje
+            );
+
+
+            window.location.href =
+                "categorias.html";
+
+        }
+
+
+        catch (error) {
+
+            console.error(
+                "Error:",
+                error
+            );
+
+
+            alert(
+                "No se pudo conectar con el servidor."
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+
+</html>

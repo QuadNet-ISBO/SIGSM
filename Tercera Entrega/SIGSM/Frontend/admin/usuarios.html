@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>SIGSM - Gestionar Usuarios</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+
+<body>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar"></div>
+
+
+<!-- ================= CONTENIDO ================= -->
+
+<div class="main">
+
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2>
+                Gestionar Usuarios
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span class="user">
+                Cargando...
+            </span>
+
+            <span class="role">
+                Cargando...
+            </span>
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="content">
+
+        <h2 class="titulo-seccion">
+            Gestión de Usuarios
+        </h2>
+
+
+        <div class="card card-medium">
+
+            <a href="usuarios_crear.html">
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                >
+                    + Crear usuario
+                </button>
+
+            </a>
+
+        </div>
+
+
+        <div class="card">
+
+            <div style="overflow-x:auto;">
+
+            <h3>
+                Usuarios del sistema
+            </h3>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>CI</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Editar</th>
+                        <th>Estado laboral</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="tablaUsuarios">
+
+                    <tr>
+
+                        <td colspan="11">
+                            Cargando usuarios...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+             </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= Sidebar ================= -->
+
+<script src="../js/admin-sidebar.js"></script>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/admin-auth.js"></script>
+
+<!-- ================= JS PROPIO ================= -->
+
+<script>
+/* Convierte datos externos en texto seguro para plantillas HTML. */
+function escaparHTMLSeguro(valor) {
+    return String(valor ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+
+
+
+/*
+ * Carga todos los usuarios.
+ */
+async function cargarUsuarios() {
+
+    const tabla =
+        document.getElementById(
+            'tablaUsuarios'
+        );
+
+
+    try {
+
+        const respuesta =
+            await fetch(
+                '../../API/usuarios/listar.php',
+                {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                    cache: 'no-store'
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        if (
+            !respuesta.ok ||
+            !datos.ok
+        ) {
+
+            window.location.replace(
+                '../login.html'
+            );
+
+            return;
+        }
+
+
+        tabla.innerHTML = '';
+
+
+        if (
+            !datos.usuarios ||
+            datos.usuarios.length === 0
+        ) {
+
+            tabla.innerHTML = `
+                <tr>
+                    <td colspan="11">
+                        No hay usuarios registrados.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        datos.usuarios.forEach(
+            usuario => {
+
+                const fila =
+                    document.createElement('tr');
+
+
+                const claseRol =
+                    usuario.rol === 'Administrador'
+                        ? 'admin'
+                        : 'operador';
+
+
+                /*
+                 * Clase visual del estado.
+                 */
+                const claseEstado =
+                    usuario.estado_laboral === 'activo'
+                        ? 'activo'
+                        : 'inactivo';
+
+
+                /*
+                 * Texto y comportamiento del botón.
+                 *
+                 * activo       → Inhabilitar
+                 * inactivo     → Habilitar
+                 * desvinculado → Desvinculado
+                 */
+                let textoBoton;
+                let botonDeshabilitado;
+
+
+                if (
+                    usuario.estado_laboral === 'activo'
+                ) {
+
+                    textoBoton = 'Inhabilitar';
+                    botonDeshabilitado = '';
+
+                } else if (
+                    usuario.estado_laboral === 'inactivo'
+                ) {
+
+                    textoBoton = 'Habilitar';
+                    botonDeshabilitado = '';
+
+                } else {
+
+                    textoBoton = 'Desvinculado';
+                    botonDeshabilitado = 'disabled';
+
+                }
+
+
+                fila.innerHTML = `
+
+                    <td>
+                        ${escaparHTMLSeguro(usuario.id_usuario)}
+                    </td>
+
+                    <td>
+                        ${escaparHTMLSeguro(usuario.user)}
+                    </td>
+
+                    <td>
+                        ${escaparHTMLSeguro(usuario.ci)}
+                    </td>
+
+                    <td>
+                        ${escaparHTMLSeguro(usuario.nombre)}
+                    </td>
+
+                    <td>
+                        ${escaparHTMLSeguro(usuario.apellido)}
+                    </td>
+
+                    <td>
+                        ${escaparHTMLSeguro(usuario.telefono ?? '')}
+                    </td>
+
+                    <td>
+                        ${escaparHTMLSeguro(usuario.email)}
+                    </td>
+
+                    <td>
+
+                        <span
+                            class="badge ${claseRol}"
+                        >
+                            ${escaparHTMLSeguro(usuario.rol)}
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <span
+                            class="estado ${claseEstado}"
+                        >
+                            ${escaparHTMLSeguro(usuario.estado_laboral)}
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <a
+                            href="usuarios_editar.html?id=${escaparHTMLSeguro(usuario.id_usuario)}"
+                        >
+
+                            <button
+                                type="button"
+                                class="btn-secondary"
+                            >
+                                Editar
+                            </button>
+
+                        </a>
+
+                    </td>
+
+                    <td>
+
+                        <button
+                            type="button"
+                            class="btn-danger"
+                            ${botonDeshabilitado}
+                        >
+                            ${textoBoton}
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                fila.querySelector('button.btn-danger').addEventListener('click', () =>
+                    cambiarEstado(usuario.id_usuario, usuario.estado_laboral)
+                );
+
+                tabla.appendChild(
+                    fila
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            'Error al cargar usuarios:',
+            error
+        );
+
+
+        tabla.innerHTML = `
+
+            <tr>
+
+                <td colspan="11">
+
+                    No se pudieron cargar
+                    los usuarios.
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+/*
+ * Cambia el estado laboral.
+ *
+ * activo       → inactivo
+ * inactivo     → activo
+ * desvinculado → no se modifica aquí
+ */
+async function cambiarEstado(
+    idUsuario,
+    estadoActual
+) {
+
+
+    /*
+     * Un usuario desvinculado
+     * solamente se modifica desde Editar.
+     */
+    if (
+        estadoActual === 'desvinculado'
+    ) {
+
+        return;
+
+    }
+
+
+    const nuevoEstado =
+        estadoActual === 'activo'
+            ? 'inactivo'
+            : 'activo';
+
+
+    const textoAccion =
+        nuevoEstado === 'inactivo'
+            ? 'inhabilitar'
+            : 'habilitar';
+
+
+    const confirmar =
+        confirm(
+            `¿Desea ${textoAccion} este usuario?`
+        );
+
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const respuesta =
+            await fetch(
+                '../../API/usuarios/estado.php',
+                {
+                    method: 'PATCH',
+
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
+
+                    credentials:
+                        'same-origin',
+
+                    body:
+                        JSON.stringify({
+
+                            id_usuario:
+                                idUsuario,
+
+                            estado_laboral:
+                                nuevoEstado
+
+                        })
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        if (
+            !respuesta.ok ||
+            !datos.ok
+        ) {
+
+            alert(
+                datos.mensaje ||
+                'No se pudo cambiar el estado.'
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * Recarga la tabla para mostrar
+         * inmediatamente el nuevo estado.
+         */
+        cargarUsuarios();
+
+
+    } catch (error) {
+
+        console.error(
+            'Error al cambiar estado:',
+            error
+        );
+
+
+        alert(
+            'No se pudo conectar con el servidor.'
+        );
+
+    }
+
+}
+
+
+/*
+ * Primero verifica la seguridad.
+ * Después carga los usuarios.
+ */
+verificarAdministrador()
+    .then(autorizado => {
+
+        if (autorizado) {
+
+            cargarUsuarios();
+
+        }
+
+    });
+
+
+</script>
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+
+</html>

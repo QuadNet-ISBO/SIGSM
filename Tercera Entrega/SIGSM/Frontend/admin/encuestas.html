@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SIGSM - Gestionar Encuestas</title>
+
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+
+<body>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar"></div>
+
+
+<!-- ================= CONTENIDO ================= -->
+
+<div class="main">
+
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2>
+                Gestionar Encuestas
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span class="user">
+                Cargando...
+            </span>
+
+            <span class="role">
+                Cargando...
+            </span>
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="content">
+
+
+        <h2 class="titulo-seccion">
+            Gestión de Encuestas
+        </h2>
+
+
+        <!-- ================= CREAR ENCUESTA ================= -->
+
+        <div class="card card-medium">
+
+            <a href="encuesta_crear.html">
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                >
+                    + Crear encuesta
+                </button>
+
+            </a>
+
+        </div>
+
+
+        <!-- ================= FILTROS ================= -->
+
+        <div class="card">
+
+            <h3>
+                Buscar encuestas
+            </h3>
+
+
+            <div class="form-group">
+
+                <label for="buscarEncuesta">
+                    Título de la encuesta
+                </label>
+
+                <input
+                    type="search"
+                    id="buscarEncuesta"
+                    placeholder="Buscar por título..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="filtroEstado">
+                    Estado
+                </label>
+
+                <select id="filtroEstado">
+
+                    <option value="">
+                        Todos los estados
+                    </option>
+
+                    <option value="activa">
+                        Activa
+                    </option>
+
+                    <option value="retirada">
+                        Retirada
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= MENSAJES ================= -->
+
+        <p
+            id="mensajeEncuestas"
+            role="status"
+            aria-live="polite"
+        ></p>
+
+
+        <!-- ================= TABLA ================= -->
+
+        <div class="card">
+
+            <div style="overflow-x:auto;">
+
+            <h3>
+                Encuestas registradas
+            </h3>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Categoría</th>
+                        <th>Subcategoría</th>
+                        <th>Estado</th>
+                        <th>Editar</th>
+                        <th>Resultados</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="tablaEncuestas">
+
+                    <tr>
+
+                        <td colspan="7">
+                            Cargando encuestas...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<script src="../js/admin-sidebar.js"></script>
+
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/admin-auth.js"></script>
+
+
+<!-- ================= JS PROPIO ================= -->
+
+<script>
+
+let encuestas = [];
+
+
+/*
+ * Carga las encuestas desde la API.
+ */
+async function cargarEncuestas() {
+
+    const tabla =
+        document.getElementById("tablaEncuestas");
+
+
+    try {
+
+        const respuesta = await fetch(
+            "../../API/encuestas/obtener.php",
+            {
+                method: "GET",
+                credentials: "same-origin",
+                cache: "no-store",
+                headers: {
+                    "Accept": "application/json"
+                }
+            }
+        );
+
+
+        const datos = await respuesta.json();
+
+
+        if (!respuesta.ok || !datos.ok) {
+
+            throw new Error(
+                datos.mensaje ||
+                "No se pudieron cargar las encuestas."
+            );
+
+        }
+
+
+        encuestas = Array.isArray(datos.encuestas)
+            ? datos.encuestas
+            : [];
+
+
+        listarEncuestas();
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al cargar encuestas:",
+            error
+        );
+
+
+        mostrarCarga(
+            "No se pudieron cargar las encuestas."
+        );
+
+
+        mostrarMensaje(
+            error.message ||
+            "Verificá la conexión con el servidor."
+        );
+
+    }
+
+}
+
+
+/*
+ * Muestra un mensaje en la página.
+ */
+function mostrarMensaje(texto) {
+
+    document.getElementById(
+        "mensajeEncuestas"
+    ).textContent = texto;
+
+}
+
+
+/*
+ * Muestra una fila con un mensaje.
+ */
+function mostrarCarga(texto) {
+
+    const tabla =
+        document.getElementById("tablaEncuestas");
+
+
+    tabla.replaceChildren();
+
+
+    const fila =
+        document.createElement("tr");
+
+
+    const celda =
+        document.createElement("td");
+
+
+    celda.colSpan = 7;
+    celda.textContent = texto;
+
+
+    fila.appendChild(celda);
+    tabla.appendChild(fila);
+
+}
+
+
+/*
+ * Crea una celda de texto.
+ */
+function crearCelda(texto) {
+
+    const celda =
+        document.createElement("td");
+
+
+    celda.textContent = texto ?? "";
+
+
+    return celda;
+
+}
+
+
+/*
+ * Muestra las encuestas aplicando los filtros.
+ */
+function listarEncuestas() {
+
+    const tabla =
+        document.getElementById("tablaEncuestas");
+
+
+    const textoBusqueda =
+        document.getElementById("buscarEncuesta")
+            .value
+            .trim()
+            .toLowerCase();
+
+
+    const estadoSeleccionado =
+        document.getElementById("filtroEstado").value;
+
+
+    tabla.replaceChildren();
+
+    mostrarMensaje("");
+
+
+    const encuestasFiltradas = encuestas.filter(
+        encuesta => {
+
+            const titulo =
+                String(encuesta.titulo ?? "").toLowerCase();
+
+
+            const coincideTitulo =
+                titulo.includes(textoBusqueda);
+
+
+            const coincideEstado =
+                !estadoSeleccionado ||
+                encuesta.estado === estadoSeleccionado;
+
+
+            return coincideTitulo && coincideEstado;
+
+        }
+    );
+
+
+    if (encuestasFiltradas.length === 0) {
+
+        mostrarCarga(
+            "No se encontraron encuestas."
+        );
+
+        return;
+
+    }
+
+
+    encuestasFiltradas.forEach(encuesta => {
+
+        const fila =
+            document.createElement("tr");
+
+
+        fila.appendChild(
+            crearCelda(encuesta.id_encuesta)
+        );
+
+
+        fila.appendChild(
+            crearCelda(encuesta.titulo)
+        );
+
+
+        fila.appendChild(
+            crearCelda(encuesta.categoria)
+        );
+
+
+        fila.appendChild(
+            crearCelda(encuesta.subcategoria)
+        );
+
+        const celdaEstado = document.createElement("td");
+
+        const etiquetaEstado = document.createElement("span");
+
+        etiquetaEstado.className =
+            encuesta.estado === "activa"
+                ? "estado activo"
+                : "estado inactivo";
+
+        etiquetaEstado.textContent = encuesta.estado;
+
+        celdaEstado.appendChild(etiquetaEstado);
+
+        fila.appendChild(celdaEstado);
+
+
+        /*
+         * Columna para gestionar la encuesta.
+         */
+
+        const celdaEditar =
+            document.createElement("td");
+
+
+        if (encuesta.estado === "activa") {
+
+            const botonEditar =
+                document.createElement("button");
+
+
+            botonEditar.type = "button";
+            botonEditar.className = "btn-secondary";
+            botonEditar.textContent = "Editar";
+
+
+            botonEditar.addEventListener("click", () => {
+
+                const parametros =
+                    new URLSearchParams({
+
+                        id: String(encuesta.id_encuesta)
+
+                    });
+
+
+                window.location.href =
+                    `encuesta_editar.html?${parametros.toString()}`;
+
+            });
+
+
+            celdaEditar.appendChild(botonEditar);
+
+        } else {
+
+            celdaEditar.textContent = "—";
+
+        }
+
+
+        fila.appendChild(celdaEditar);
+
+
+        /*
+         * Columna para consultar resultados.
+         */
+
+        const celdaResultados =
+            document.createElement("td");
+
+            
+        const enlaceResultados =
+            document.createElement("a");
+
+        enlaceResultados.textContent = "Ver resultados";
+
+        enlaceResultados.className = "btn-secondary";
+
+        enlaceResultados.style.textDecoration = "none";
+
+        enlaceResultados.href =
+            `encuesta_resultados.html?id=${encodeURIComponent(
+                encuesta.id_encuesta
+            )}`;
+
+        celdaResultados.appendChild(enlaceResultados);
+
+
+
+        fila.appendChild(celdaResultados);
+
+
+        tabla.appendChild(fila);
+
+    });
+
+}
+
+
+/*
+ * Eventos de búsqueda y filtro.
+ */
+
+document.getElementById("buscarEncuesta")
+    .addEventListener("input", listarEncuestas);
+
+
+document.getElementById("filtroEstado")
+    .addEventListener("change", listarEncuestas);
+
+
+/*
+ * Verificar permisos antes de cargar los datos.
+ */
+
+verificarAdministrador()
+    .then(autorizado => {
+
+        if (autorizado) {
+
+            cargarEncuestas();
+
+        }
+
+    })
+    .catch(error => {
+
+        console.error(
+            "Error al verificar permisos:",
+            error
+        );
+
+    });
+
+</script>
+
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+
+</html>

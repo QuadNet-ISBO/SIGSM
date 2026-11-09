@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>SIGSM - Crear Subcategoría</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+
+<body>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar"></div>
+
+
+<!-- ================= CONTENIDO ================= -->
+
+<div class="main">
+
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2>
+                Crear Subcategoría
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span class="user">
+                Cargando...
+            </span>
+
+            <span class="role">
+                Cargando...
+            </span>
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="content">
+
+        <h2 class="titulo-seccion">
+            Crear Subcategoría
+        </h2>
+
+
+        <div class="card card-medium">
+
+            <form
+                class="form"
+                id="formSubcategoria"
+            >
+
+
+                <!-- ================= CATEGORÍA ================= -->
+
+                <div class="form-group">
+
+                    <label for="categoria">
+                        Categoría
+                    </label>
+
+                    <select
+                        id="categoria"
+                        name="id_categoria"
+                        required
+                    >
+
+                        <option value="">
+                            Cargando categorías...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- ================= NOMBRE ================= -->
+
+                <div class="form-group">
+
+                    <label for="nombre">
+                        Nombre
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        placeholder="Nombre de la subcategoría"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- ================= ACCIONES ================= -->
+
+                <div class="acciones-form">
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                        id="btnCrearSubcategoria"
+                    >
+                        Crear subcategoría
+                    </button>
+
+
+                    <a href="categorias.html">
+
+                        <button
+                            type="button"
+                            class="btn-secondary"
+                        >
+                            Volver
+                        </button>
+
+                    </a>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= Sidebar ================= -->
+
+<script src="../js/admin-sidebar.js"></script>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/admin-auth.js"></script>
+
+<!-- ================= JS PROPIO ================= -->
+
+<script>
+
+
+const categoria =
+    document.getElementById(
+        "categoria"
+    );
+
+
+const nombre =
+    document.getElementById(
+        "nombre"
+    );
+
+
+const btnCrearSubcategoria =
+    document.getElementById(
+        "btnCrearSubcategoria"
+    );
+
+
+/*
+ * ============================================================
+ * CARGAR CATEGORÍAS
+ * ============================================================
+ */
+
+async function cargarCategorias() {
+
+    try {
+
+        const respuesta =
+            await fetch(
+                "../../API/categorias/listar.php",
+                {
+                    method: "GET",
+                    credentials: "same-origin",
+                    cache: "no-store"
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        if (
+            !respuesta.ok ||
+            !datos.ok
+        ) {
+
+            categoria.innerHTML = `
+
+                <option value="">
+                    ${
+                        datos.mensaje ||
+                        "No se pudieron cargar las categorías."
+                    }
+                </option>
+
+            `;
+
+            return;
+
+        }
+
+
+        categoria.innerHTML = `
+
+            <option value="">
+                Seleccionar categoría...
+            </option>
+
+        `;
+
+
+        if (
+            !datos.categorias ||
+            datos.categorias.length === 0
+        ) {
+
+            categoria.innerHTML = `
+
+                <option value="">
+                    No hay categorías registradas.
+                </option>
+
+            `;
+
+            return;
+
+        }
+
+
+        /*
+         * Solo mostramos categorías activas.
+         */
+
+        datos.categorias
+            .filter(
+                item =>
+                    item.estado === "activa"
+            )
+            .forEach(
+                item => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        item.id_categoria;
+
+
+                    option.textContent =
+                        item.nombre;
+
+
+                    categoria.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al cargar categorías:",
+            error
+        );
+
+
+        categoria.innerHTML = `
+
+            <option value="">
+                No se pudo conectar con el servidor.
+            </option>
+
+        `;
+
+    }
+
+}
+
+
+/*
+ * ============================================================
+ * CREAR SUBCATEGORÍA
+ * ============================================================
+ */
+
+btnCrearSubcategoria.addEventListener(
+    "click",
+    async function() {
+
+
+        const idCategoria =
+            categoria.value;
+
+
+        const nombreSubcategoria =
+            nombre.value.trim();
+
+
+        /*
+         * Validar categoría
+         */
+
+        if (!idCategoria) {
+
+            alert(
+                "Seleccioná una categoría."
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * Validar nombre
+         */
+
+        if (!nombreSubcategoria) {
+
+            alert(
+                "El nombre de la subcategoría es obligatorio."
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    "../../API/subcategorias/crear.php",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        credentials:
+                            "same-origin",
+
+                        body:
+                            JSON.stringify({
+
+                                id_categoria:
+                                    parseInt(
+                                        idCategoria
+                                    ),
+
+                                nombre:
+                                    nombreSubcategoria
+
+                            })
+                    }
+                );
+
+
+            const datos =
+                await respuesta.json();
+
+
+            if (
+                !respuesta.ok ||
+                !datos.ok
+            ) {
+
+                alert(
+                    datos.mensaje ||
+                    "No se pudo crear la subcategoría."
+                );
+
+                return;
+
+            }
+
+
+            alert(
+                datos.mensaje ||
+                "Subcategoría creada correctamente."
+            );
+
+
+            window.location.href =
+                "categorias.html";
+
+
+        } catch (error) {
+
+            console.error(
+                "Error al crear subcategoría:",
+                error
+            );
+
+
+            alert(
+                "No se pudo conectar con el servidor."
+            );
+
+        }
+
+    }
+);
+
+
+/*
+ * ============================================================
+ * SEGURIDAD + CARGA INICIAL
+ * ============================================================
+ */
+
+verificarAdministrador()
+    .then(
+        autorizado => {
+
+            if (autorizado) {
+
+                cargarCategorias();
+
+            }
+
+        }
+    );
+
+
+</script>
+
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+
+</html>

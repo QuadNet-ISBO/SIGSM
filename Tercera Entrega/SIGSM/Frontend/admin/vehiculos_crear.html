@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>SIGSM - Agregar Vehículo</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+
+<body>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar"></div>
+
+
+<!-- ================= CONTENIDO ================= -->
+
+<div class="main">
+
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2>
+                Agregar Vehículo
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span class="user">
+                Cargando...
+            </span>
+
+            <span class="role">
+                Cargando...
+            </span>
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="content">
+
+        <h2 class="titulo-seccion">
+            Agregar Vehículo
+        </h2>
+
+
+        <div class="card card-medium">
+
+            <form
+                class="form"
+                id="crearVehiculoForm"
+            >
+
+
+                <div class="form-group">
+
+                    <label for="matricula">
+                        Matrícula
+                    </label>
+
+                    <input
+                        type="text"
+                        id="matricula"
+                        placeholder="Ej: ABC-123"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="tipo">
+                        Tipo
+                    </label>
+
+                    <select
+                        id="tipo"
+                        required
+                    >
+
+                        <option value="">
+                            Cargando tipos...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <p
+                    id="mensaje"
+                    role="alert"
+                ></p>
+
+
+                <div class="acciones-form">
+
+                    <button
+                        type="submit"
+                        class="btn-primary"
+                    >
+                        Crear vehículo
+                    </button>
+
+
+                    <a href="vehiculos.html">
+
+                        <button
+                            type="button"
+                            class="btn-secondary"
+                        >
+                            Volver
+                        </button>
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= Sidebar ================= -->
+
+<script src="../js/admin-sidebar.js"></script>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/admin-auth.js"></script>
+
+<!-- ================= JS PROPIO ================= -->
+
+<script>
+
+
+const formulario =
+    document.getElementById(
+        'crearVehiculoForm'
+    );
+
+
+const mensaje =
+    document.getElementById(
+        'mensaje'
+    );
+
+
+const selectTipo =
+    document.getElementById(
+        'tipo'
+    );
+
+
+/*
+ * ============================================================
+ * CARGAR TIPOS
+ * ============================================================
+ */
+async function cargarTipos() {
+
+    try {
+
+        const respuesta =
+            await fetch(
+                '../../API/vehiculos/listar_tipos.php',
+                {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                    cache: 'no-store'
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        if (
+            !respuesta.ok ||
+            !datos.ok
+        ) {
+
+            mensaje.textContent =
+                datos.mensaje ||
+                'No se pudieron cargar los tipos.';
+
+            return;
+
+        }
+
+
+        selectTipo.innerHTML = `
+            <option value="">
+                Seleccione un tipo
+            </option>
+        `;
+
+
+        datos.tipos.forEach(
+            tipo => {
+
+                const opcion =
+                    document.createElement(
+                        'option'
+                    );
+
+
+                opcion.value =
+                    tipo.id_tipo_vehiculo;
+
+
+                opcion.textContent =
+                    tipo.nombre;
+
+
+                selectTipo.appendChild(
+                    opcion
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        mensaje.textContent =
+            'No se pudieron cargar los tipos de vehículo.';
+
+    }
+
+}
+
+
+/*
+ * ============================================================
+ * CREAR VEHÍCULO
+ * ============================================================
+ */
+formulario.addEventListener(
+    'submit',
+    async evento => {
+
+        evento.preventDefault();
+
+
+        mensaje.textContent = '';
+
+
+        const matricula =
+            document
+                .getElementById('matricula')
+                .value
+                .trim();
+
+
+        const idTipoVehiculo =
+            selectTipo.value;
+
+
+        if (
+            matricula === '' ||
+            idTipoVehiculo === ''
+        ) {
+
+            mensaje.textContent =
+                'Complete todos los campos obligatorios.';
+
+            return;
+
+        }
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    '../../API/vehiculos/crear.php',
+                    {
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        credentials:
+                            'same-origin',
+
+                        body:
+                            JSON.stringify({
+
+                                matricula:
+                                    matricula,
+
+                                id_tipo_vehiculo:
+                                    Number(
+                                        idTipoVehiculo
+                                    )
+
+                            })
+                    }
+                );
+
+
+            const datos =
+                await respuesta.json();
+
+
+            if (
+                !respuesta.ok ||
+                !datos.ok
+            ) {
+
+                mensaje.textContent =
+                    datos.mensaje ||
+                    'No se pudo crear el vehículo.';
+
+                return;
+
+            }
+
+
+            mensaje.textContent =
+                'Vehículo creado correctamente.';
+
+
+            formulario.reset();
+
+
+            setTimeout(
+                () => {
+
+                    window.location.replace(
+                        'vehiculos.html'
+                    );
+
+                },
+                1000
+            );
+
+
+        } catch (error) {
+
+            console.error(error);
+
+
+            mensaje.textContent =
+                'No se pudo conectar con el servidor.';
+
+        }
+
+    }
+);
+
+
+/*
+ * Seguridad + carga.
+ */
+verificarAdministrador()
+    .then(autorizado => {
+
+        if (!autorizado) {
+
+            return;
+
+        }
+
+
+        cargarTipos();
+
+    });
+
+
+</script>
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+
+</html>

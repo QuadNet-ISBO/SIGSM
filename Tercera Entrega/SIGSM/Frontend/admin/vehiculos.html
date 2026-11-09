@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>SIGSM - Vehículos</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+
+<body>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar"></div>
+
+
+<!-- ================= CONTENIDO ================= -->
+
+<div class="main">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2>
+                Vehículos
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span class="user">
+                Cargando...
+            </span>
+
+            <span class="role">
+                Cargando...
+            </span>
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- CONTENT -->
+
+    <div class="content">
+
+        <h2 class="titulo-seccion">
+            Vehículos
+        </h2>
+
+
+        <div class="card card-medium">
+
+            <a href="vehiculos_crear.html">
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                >
+                    + Agregar vehículo
+                </button>
+
+            </a>
+
+        </div>
+
+
+        <div class="card">
+
+            <div style="overflow-x:auto;">
+
+            <h3>
+                Flota de vehículos
+            </h3>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Matrícula</th>
+                        <th>Tipo</th>
+                        <th>Estado laboral</th>
+                        <th>Estado operativo</th>
+                        <th>Editar</th>
+                        <th>Estado laboral</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="tablaVehiculos">
+
+                    <tr>
+
+                        <td colspan="7">
+                            Cargando vehículos...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+            
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= Sidebar ================= -->
+
+<script src="../js/admin-sidebar.js"></script>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/admin-auth.js"></script>
+
+<!-- ================= JS PROPIO ================= -->
+
+<script>
+/* Convierte datos externos en texto seguro para plantillas HTML. */
+function escaparHTMLSeguro(valor) {
+    return String(valor ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+
+
+
+/*
+ * ============================================================
+ * GESTIÓN DE VEHÍCULOS
+ * ============================================================
+ */
+
+
+/*
+ * Carga todos los vehículos.
+ */
+async function cargarVehiculos() {
+
+    const tabla =
+        document.getElementById(
+            'tablaVehiculos'
+        );
+
+
+    try {
+
+        const respuesta =
+            await fetch(
+                '../../API/vehiculos/listar.php',
+                {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                    cache: 'no-store'
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        if (
+            !respuesta.ok ||
+            !datos.ok
+        ) {
+
+            tabla.innerHTML = `
+                <tr>
+
+                    <td colspan="7">
+
+                        ${escaparHTMLSeguro(datos.mensaje || 'No se pudieron cargar los vehículos.')}
+
+                    </td>
+
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        tabla.innerHTML = '';
+
+
+        if (
+            !datos.vehiculos ||
+            datos.vehiculos.length === 0
+        ) {
+
+            tabla.innerHTML = `
+                <tr>
+
+                    <td colspan="7">
+
+                        No hay vehículos registrados.
+
+                    </td>
+
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        datos.vehiculos.forEach(
+            vehiculo => {
+
+
+                /*
+                 * Clase visual para estado laboral.
+                 */
+                let claseEstadoLaboral = '';
+
+
+                if (
+                    vehiculo.estado_laboral === 'activo'
+                ) {
+
+                    claseEstadoLaboral = 'activo';
+
+                } else {
+
+                    claseEstadoLaboral = 'inactivo';
+
+                }
+
+
+                /*
+                 * Clase visual para estado operativo.
+                 */
+                let claseEstadoOperativo = '';
+
+
+                if (
+                    vehiculo.estado_operativo === 'libre'
+                ) {
+
+                    claseEstadoOperativo = 'activo';
+
+                } else {
+
+                    claseEstadoOperativo = 'inactivo';
+
+                }
+
+
+                /*
+                 * Texto del botón.
+                 */
+                let textoBoton;
+
+
+                if (
+                    vehiculo.estado_laboral === 'activo'
+                ) {
+
+                    textoBoton = 'Inactivar';
+
+                } else if (
+                    vehiculo.estado_laboral === 'inactivo'
+                ) {
+
+                    textoBoton = 'Activar';
+
+                } else {
+
+                    textoBoton = 'Desvinculado';
+
+                }
+
+
+                /*
+                 * Un vehículo desvinculado
+                 * no puede cambiarse desde
+                 * el botón rápido.
+                 */
+                const botonDeshabilitado =
+                    vehiculo.estado_laboral === 'desvinculado'
+                        ? 'disabled'
+                        : '';
+
+
+                const fila =
+                    document.createElement('tr');
+
+
+                fila.innerHTML = `
+
+                    <td>
+                        ${escaparHTMLSeguro(vehiculo.id_vehiculo)}
+                    </td>
+
+                    <td>
+                        ${escaparHTMLSeguro(vehiculo.matricula)}
+                    </td>
+
+                    <td>
+                        ${escaparHTMLSeguro(vehiculo.tipo)}
+                    </td>
+
+
+                    <!-- ESTADO LABORAL -->
+
+                    <td>
+
+                        <span
+                            class="estado ${claseEstadoLaboral}"
+                        >
+                            ${escaparHTMLSeguro(vehiculo.estado_laboral)}
+                        </span>
+
+                    </td>
+
+
+                    <!-- ESTADO OPERATIVO -->
+
+                    <td>
+
+                        <span
+                            class="estado ${claseEstadoOperativo}"
+                        >
+                            ${escaparHTMLSeguro(vehiculo.estado_operativo)}
+                        </span>
+
+                    </td>
+
+
+                    <!-- EDITAR -->
+
+                    <td>
+
+                        <a
+                            href="vehiculos_editar.html?id=${escaparHTMLSeguro(vehiculo.id_vehiculo)}"
+                        >
+
+                            <button
+                                type="button"
+                                class="btn-secondary"
+                            >
+                                Editar
+                            </button>
+
+                        </a>
+
+                    </td>
+
+
+                    <!-- CAMBIAR ESTADO LABORAL -->
+
+                    <td>
+
+                        <button
+                            type="button"
+                            class="btn-danger"
+                            ${botonDeshabilitado}
+                        >
+
+                            ${textoBoton}
+
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                fila.querySelector('button.btn-danger').addEventListener('click', () =>
+                    cambiarEstado(vehiculo.id_vehiculo, vehiculo.estado_laboral)
+                );
+
+                tabla.appendChild(fila);
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            'Error al cargar vehículos:',
+            error
+        );
+
+
+        tabla.innerHTML = `
+
+            <tr>
+
+                <td colspan="7">
+
+                    No se pudo conectar con el servidor.
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+/*
+ * ============================================================
+ * CAMBIAR ESTADO LABORAL
+ * ============================================================
+ *
+ * Solo permite:
+ *
+ * activo → inactivo
+ * inactivo → activo
+ *
+ * desvinculado se modifica desde Editar.
+ */
+async function cambiarEstado(
+    idVehiculo,
+    estadoActual
+) {
+
+
+    if (
+        estadoActual === 'desvinculado'
+    ) {
+
+        return;
+
+    }
+
+
+    const nuevoEstado =
+        estadoActual === 'activo'
+            ? 'inactivo'
+            : 'activo';
+
+
+    const confirmar =
+        confirm(
+            `¿Desea cambiar el estado laboral a "${nuevoEstado}"?`
+        );
+
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const respuesta =
+            await fetch(
+                '../../API/vehiculos/estado.php',
+                {
+                    method: 'PATCH',
+
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
+
+                    credentials:
+                        'same-origin',
+
+                    body:
+                        JSON.stringify({
+
+                            id_vehiculo:
+                                idVehiculo,
+
+                            estado_laboral:
+                                nuevoEstado
+
+                        })
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        if (
+            !respuesta.ok ||
+            !datos.ok
+        ) {
+
+            alert(
+                datos.mensaje ||
+                'No se pudo cambiar el estado.'
+            );
+
+            return;
+
+        }
+
+
+        cargarVehiculos();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        alert(
+            'No se pudo conectar con el servidor.'
+        );
+
+    }
+
+}
+
+
+/*
+ * Seguridad + carga inicial.
+ */
+verificarAdministrador()
+    .then(autorizado => {
+
+        if (autorizado) {
+
+            cargarVehiculos();
+
+        }
+
+    });
+
+
+</script>
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+
+</html>

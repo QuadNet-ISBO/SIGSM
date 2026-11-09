@@ -1,0 +1,987 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SIGSM - Gestionar encuesta</title>
+
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <style>
+
+        /* ==========================================
+           CONSULTAR ENCUESTA
+           ========================================== */
+
+        .encuesta-contenedor {
+            width: 100%;
+            max-width: 650px;
+        }
+
+        .encuesta-contenedor .card {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 14px;
+        }
+
+        .encuesta-contenedor .card h3 {
+            margin-top: 0;
+            margin-bottom: 18px;
+        }
+
+
+        /* ==========================================
+           DATOS DE LA ENCUESTA
+           ========================================== */
+
+        .encuesta-datos {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .encuesta-dato {
+            display: grid;
+            grid-template-columns: 135px minmax(0, 1fr);
+            align-items: center;
+            gap: 16px;
+            padding: 13px 0;
+            border-bottom: 1px solid rgba(140, 150, 170, 0.18);
+        }
+
+        .encuesta-dato:first-child {
+            padding-top: 0;
+        }
+
+        .encuesta-dato:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .encuesta-etiqueta {
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.65;
+        }
+
+        .encuesta-valor {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+
+        /* ==========================================
+           ACCIONES
+           ========================================== */
+
+        .encuesta-acciones p {
+            margin-top: 0;
+            margin-bottom: 16px;
+            line-height: 1.5;
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        .encuesta-acciones .acciones-form {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 0;
+        }
+
+        .encuesta-acciones .acciones-form a {
+            text-decoration: none;
+        }
+
+        .encuesta-acciones .acciones-admin {
+            display: contents;
+        }
+
+        .encuesta-acciones [hidden] {
+            display: none !important;
+        }
+
+
+        /* ==========================================
+           MENSAJES
+           ========================================== */
+
+        #mensaje-editar {
+            margin: 0 0 12px;
+            line-height: 1.5;
+        }
+
+        #mensaje-editar:empty {
+            display: none;
+        }
+
+
+        /* ==========================================
+           RESPONSIVE
+           ========================================== */
+
+        @media (max-width: 600px) {
+
+            .encuesta-dato {
+                grid-template-columns: 1fr;
+                gap: 4px;
+                padding: 12px 0;
+            }
+
+            .encuesta-acciones .acciones-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .encuesta-acciones .acciones-form > button,
+            .encuesta-acciones .acciones-form > a,
+            .encuesta-acciones .acciones-admin > button {
+                width: 100%;
+                box-sizing: border-box;
+                text-align: center;
+            }
+
+        }
+
+    </style>
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <div class="sidebar"></div>
+
+
+    <!-- ================= CONTENIDO PRINCIPAL ================= -->
+
+    <div class="main">
+
+        <!-- ================= HEADER ================= -->
+
+        <div class="header">
+
+            <div class="header-left">
+                <h2>Gestión de encuestas</h2>
+            </div>
+
+            <div class="header-right">
+
+                <span class="user" id="usuario">
+                    Cargando...
+                </span>
+
+                <span class="role" id="rol">
+                    Cargando...
+                </span>
+
+                <button
+                    type="button"
+                    class="logout"
+                    id="btnLogout"
+                >
+                    Salir
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= CONTENIDO ================= -->
+
+        <div class="content">
+
+            <h2 class="titulo-seccion">
+                Consultar encuesta
+            </h2>
+
+            <p id="descripcionEncuesta">
+                Consultá la información y el estado de la encuesta seleccionada.
+            </p>
+
+
+            <div class="encuesta-contenedor">
+
+                <!-- ================= DATOS DE LA ENCUESTA ================= -->
+
+                <div class="card card-medium">
+
+                    <h3>Datos de la encuesta</h3>
+
+                    <div class="encuesta-datos">
+
+                        <div class="encuesta-dato">
+
+                            <span class="encuesta-etiqueta">
+                                ID
+                            </span>
+
+                            <span
+                                class="encuesta-valor"
+                                id="idEncuesta"
+                            >
+                                Cargando...
+                            </span>
+
+                        </div>
+
+
+                        <div class="encuesta-dato">
+
+                            <span class="encuesta-etiqueta">
+                                Título
+                            </span>
+
+                            <span
+                                class="encuesta-valor"
+                                id="tituloEncuesta"
+                            >
+                                Cargando...
+                            </span>
+
+                        </div>
+
+
+                        <div class="encuesta-dato">
+
+                            <span class="encuesta-etiqueta">
+                                Categoría
+                            </span>
+
+                            <span
+                                class="encuesta-valor"
+                                id="categoriaEncuesta"
+                            >
+                                Cargando...
+                            </span>
+
+                        </div>
+
+
+                        <div class="encuesta-dato">
+
+                            <span class="encuesta-etiqueta">
+                                Subcategoría
+                            </span>
+
+                            <span
+                                class="encuesta-valor"
+                                id="subcategoriaEncuesta"
+                            >
+                                Cargando...
+                            </span>
+
+                        </div>
+
+
+                        <div class="encuesta-dato">
+
+                            <span class="encuesta-etiqueta">
+                                Estado
+                            </span>
+
+                            <span class="encuesta-valor">
+
+                                <span id="estadoEncuesta">
+                                    Cargando...
+                                </span>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================= ACCIONES ================= -->
+
+                <div class="card card-medium encuesta-acciones">
+
+                    <h3>Acciones</h3>
+
+
+                    <!-- ACCIONES DEL ADMINISTRADOR -->
+
+                    <div id="seccionAcciones" hidden>
+
+                        <p>
+                            Podés retirar la encuesta actual o reemplazarla
+                            por una nueva. La encuesta anterior y sus
+                            respuestas históricas se conservarán.
+                        </p>
+
+                    </div>
+
+
+                    <!-- MENSAJES -->
+
+                    <p
+                        id="mensaje-editar"
+                        role="status"
+                        aria-live="polite"
+                    ></p>
+
+
+                    <!-- BOTONES -->
+
+                    <div class="acciones-form">
+
+                        <div
+                            class="acciones-admin"
+                            id="botonesAdministrador"
+                            hidden
+                        >
+
+                            <button
+                                type="button"
+                                class="btn-primary"
+                                id="btnReemplazar"
+                                disabled
+                            >
+                                Reemplazar encuesta
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn-secondary"
+                                id="btnDesactivar"
+                                disabled
+                            >
+                                Retirar encuesta
+                            </button>
+
+                        </div>
+
+
+                        <a
+                            href="encuestas.html"
+                            class="btn-secondary"
+                        >
+                            Volver
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= SEGURIDAD ================= -->
+
+    <script src="../js/auth.js"></script>
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <script src="../js/admin-sidebar.js"></script>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", async () => {
+
+            /*
+             * ============================================================
+             * VERIFICAR SESIÓN
+             * ============================================================
+             */
+
+            const autorizado = await verificarSesion();
+
+            if (!autorizado) {
+                return;
+            }
+
+
+            /*
+             * ============================================================
+             * PARÁMETROS DE LA URL
+             * ============================================================
+             */
+
+            const parametros =
+                new URLSearchParams(window.location.search);
+
+            const idEncuesta =
+                Number(parametros.get("id"));
+
+
+            /*
+             * ============================================================
+             * ELEMENTOS DEL HTML
+             * ============================================================
+             */
+
+            const elementoId =
+                document.getElementById("idEncuesta");
+
+            const elementoTitulo =
+                document.getElementById("tituloEncuesta");
+
+            const elementoCategoria =
+                document.getElementById("categoriaEncuesta");
+
+            const elementoSubcategoria =
+                document.getElementById("subcategoriaEncuesta");
+
+            const elementoEstado =
+                document.getElementById("estadoEncuesta");
+
+            const seccionAcciones =
+                document.getElementById("seccionAcciones");
+
+            const botonesAdministrador =
+                document.getElementById("botonesAdministrador");
+
+            const btnReemplazar =
+                document.getElementById("btnReemplazar");
+
+            const btnDesactivar =
+                document.getElementById("btnDesactivar");
+
+            const mensaje =
+                document.getElementById("mensaje-editar");
+
+            const descripcion =
+                document.getElementById("descripcionEncuesta");
+
+
+            /*
+             * ============================================================
+             * PERMISOS DEL USUARIO
+             * ============================================================
+             */
+
+            const rolUsuario =
+                document.getElementById("rol")
+                    .textContent
+                    .trim()
+                    .toLowerCase();
+
+            const esAdministrador =
+                rolUsuario.includes("administrador");
+
+
+            /*
+             * ============================================================
+             * VARIABLES
+             * ============================================================
+             */
+
+            let encuesta = null;
+
+            let procesando = false;
+
+
+            /*
+             * ============================================================
+             * MOSTRAR MENSAJES
+             * ============================================================
+             */
+
+            function mostrarMensaje(texto, tipo = "") {
+
+                mensaje.textContent = texto;
+
+                mensaje.className = tipo;
+
+            }
+
+
+            /*
+             * ============================================================
+             * HABILITAR O DESHABILITAR ACCIONES
+             * ============================================================
+             */
+
+            function habilitarAcciones(habilitar) {
+
+                btnReemplazar.disabled = !habilitar;
+
+                btnDesactivar.disabled = !habilitar;
+
+            }
+
+
+            /*
+             * ============================================================
+             * MOSTRAR DATOS NO DISPONIBLES
+             * ============================================================
+             */
+
+            function mostrarNoDisponible() {
+
+                elementoId.textContent = "No disponible";
+
+                elementoTitulo.textContent = "No disponible";
+
+                elementoCategoria.textContent = "No disponible";
+
+                elementoSubcategoria.textContent = "No disponible";
+
+                elementoEstado.textContent = "No disponible";
+
+                elementoEstado.className = "";
+
+            }
+
+
+            /*
+             * ============================================================
+             * CARGAR ENCUESTA
+             * ============================================================
+             */
+
+            async function cargarEncuesta() {
+
+                // Validar ID.
+
+                if (
+                    !Number.isSafeInteger(idEncuesta) ||
+                    idEncuesta <= 0
+                ) {
+
+                    mostrarMensaje(
+                        "El ID de la encuesta no es válido.",
+                        "mensaje-error"
+                    );
+
+                    mostrarNoDisponible();
+
+                    return;
+
+                }
+
+
+                try {
+
+                    // Obtener encuestas desde la API.
+
+                    const respuesta = await fetch(
+                        "../../API/encuestas/obtener.php",
+                        {
+                            method: "GET",
+
+                            credentials: "same-origin",
+
+                            headers: {
+                                "Accept": "application/json"
+                            }
+                        }
+                    );
+
+
+                    const datos =
+                        await respuesta.json();
+
+
+                    // Validar respuesta.
+
+                    if (
+                        !respuesta.ok ||
+                        datos.ok !== true
+                    ) {
+
+                        throw new Error(
+                            datos.mensaje ||
+                            "No se pudieron cargar las encuestas."
+                        );
+
+                    }
+
+
+                    // Buscar encuesta solicitada.
+
+                    const encuestas =
+                        Array.isArray(datos.encuestas)
+                            ? datos.encuestas
+                            : [];
+
+
+                    encuesta = encuestas.find(
+                        item =>
+                            Number(item.id_encuesta) === idEncuesta
+                    );
+
+
+                    if (!encuesta) {
+
+                        throw new Error(
+                            "No se encontró la encuesta solicitada."
+                        );
+
+                    }
+
+
+                    /*
+                     * MOSTRAR DATOS
+                     */
+
+                    elementoId.textContent =
+                        encuesta.id_encuesta;
+
+                    elementoTitulo.textContent =
+                        encuesta.titulo || "Sin título";
+
+                    elementoCategoria.textContent =
+                        encuesta.categoria || "Sin categoría";
+
+                    elementoSubcategoria.textContent =
+                        encuesta.subcategoria || "Sin subcategoría";
+
+
+                    /*
+                     * MOSTRAR ESTADO
+                     */
+
+                    const estaActiva =
+                        encuesta.estado === "activa";
+
+
+                    elementoEstado.textContent =
+                        estaActiva
+                            ? "Activa"
+                            : "Retirada";
+
+
+                    elementoEstado.className =
+                        estaActiva
+                            ? "estado activo"
+                            : "estado inactivo";
+
+
+                    /*
+                     * PERMISOS DEL ADMINISTRADOR
+                     */
+
+                    if (esAdministrador) {
+
+                        seccionAcciones.hidden = false;
+
+                        botonesAdministrador.hidden = false;
+
+                        habilitarAcciones(estaActiva);
+
+
+                        mostrarMensaje(
+                            estaActiva
+                                ? ""
+                                : "Esta encuesta está retirada. Podés consultar sus datos, pero no volver a activarla desde esta pantalla."
+                        );
+
+                    } else {
+
+                        /*
+                         * El operador solamente puede consultar.
+                         */
+
+                        seccionAcciones.hidden = true;
+
+                        botonesAdministrador.hidden = true;
+
+
+                        descripcion.textContent =
+                            "Podés consultar los datos y el estado de esta encuesta. " +
+                            "Las acciones de administración están reservadas al Administrador.";
+
+
+                        mostrarMensaje(
+                            estaActiva
+                                ? "Modo consulta: no tenés permisos para retirar o reemplazar encuestas."
+                                : "Esta encuesta está retirada. Estás en modo consulta."
+                        );
+
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "Error al cargar la encuesta:",
+                        error
+                    );
+
+
+                    encuesta = null;
+
+                    seccionAcciones.hidden = true;
+
+                    botonesAdministrador.hidden = true;
+
+                    mostrarNoDisponible();
+
+
+                    mostrarMensaje(
+                        error.message ||
+                        "Ocurrió un error al cargar la encuesta.",
+                        "mensaje-error"
+                    );
+
+                }
+
+            }
+
+
+            /*
+             * ============================================================
+             * RETIRAR ENCUESTA
+             * ============================================================
+             */
+
+            btnDesactivar.addEventListener("click", async () => {
+
+                // Validar permisos y estado.
+
+                if (
+                    !esAdministrador ||
+                    !encuesta ||
+                    encuesta.estado !== "activa" ||
+                    procesando
+                ) {
+
+                    return;
+
+                }
+
+
+                // Confirmar operación.
+
+                const confirmar = window.confirm(
+
+                    `¿Querés retirar la encuesta "${encuesta.titulo}"?\n\n` +
+
+                    "Dejará de estar activa, pero se conservarán sus preguntas y respuestas históricas."
+
+                );
+
+
+                if (!confirmar) {
+                    return;
+                }
+
+
+                // Bloquear acciones durante la operación.
+
+                procesando = true;
+
+                habilitarAcciones(false);
+
+                btnDesactivar.textContent = "Retirando...";
+
+                mostrarMensaje("Retirando encuesta...");
+
+
+                try {
+
+                    // Enviar solicitud a la API.
+
+                    const respuesta = await fetch(
+                        "../../API/encuestas/actualizar.php",
+                        {
+                            method: "POST",
+
+                            credentials: "same-origin",
+
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Accept": "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                accion: "desactivar",
+                                id_encuesta: Number(encuesta.id_encuesta)
+                            })
+                        }
+                    );
+
+
+                    const datos =
+                        await respuesta.json();
+
+
+                    // Validar respuesta.
+
+                    if (
+                        !respuesta.ok ||
+                        datos.ok !== true
+                    ) {
+
+                        throw new Error(
+                            datos.mensaje ||
+                            "No se pudo retirar la encuesta."
+                        );
+
+                    }
+
+
+                    // Mostrar confirmación.
+
+                    mostrarMensaje(
+                        datos.mensaje ||
+                        "Encuesta retirada correctamente.",
+                        "mensaje-exito"
+                    );
+
+
+                    // Regresar al listado.
+
+                    window.location.href =
+                        "encuestas.html";
+
+                } catch (error) {
+
+                    console.error(
+                        "Error al retirar la encuesta:",
+                        error
+                    );
+
+
+                    mostrarMensaje(
+                        error.message ||
+                        "Ocurrió un error al retirar la encuesta.",
+                        "mensaje-error"
+                    );
+
+
+                    habilitarAcciones(
+                        encuesta &&
+                        encuesta.estado === "activa"
+                    );
+
+                } finally {
+
+                    procesando = false;
+
+                    btnDesactivar.textContent =
+                        "Retirar encuesta";
+
+                }
+
+            });
+
+
+            /*
+             * ============================================================
+             * REEMPLAZAR ENCUESTA
+             * ============================================================
+             */
+
+            btnReemplazar.addEventListener("click", () => {
+
+                // Validar permisos y estado.
+
+                if (
+                    !esAdministrador ||
+                    !encuesta ||
+                    encuesta.estado !== "activa" ||
+                    procesando
+                ) {
+
+                    return;
+
+                }
+
+
+                // Obtener subcategoría.
+
+                const idSubcategoria =
+                    Number(encuesta.id_subcategoria);
+
+
+                if (
+                    !Number.isSafeInteger(idSubcategoria) ||
+                    idSubcategoria <= 0
+                ) {
+
+                    mostrarMensaje(
+                        "No se pudo identificar la subcategoría de la encuesta.",
+                        "mensaje-error"
+                    );
+
+                    return;
+
+                }
+
+
+                // Confirmar reemplazo.
+
+                const confirmar = window.confirm(
+
+                    `¿Querés reemplazar "${encuesta.titulo}"?\n\n` +
+
+                    "Se creará una encuesta nueva para la misma subcategoría. " +
+
+                    "La anterior quedará retirada y sus respuestas se conservarán."
+
+                );
+
+
+                if (!confirmar) {
+                    return;
+                }
+
+
+                /*
+                 * PREPARAR PARÁMETROS DEL REEMPLAZO
+                 */
+
+                const query = new URLSearchParams({
+
+                    reemplazar: "1",
+
+                    id_encuesta:
+                        String(encuesta.id_encuesta),
+
+                    id_subcategoria:
+                        String(idSubcategoria)
+
+                });
+
+
+                // Abrir formulario en modo reemplazo.
+
+                window.location.href =
+                    `encuesta_crear.html?${query.toString()}`;
+
+            });
+
+
+            /*
+             * ============================================================
+             * INICIALIZAR PÁGINA
+             * ============================================================
+             */
+
+            await cargarEncuesta();
+
+        });
+
+    </script>
+
+
+    <!-- ================= PREFERENCIAS Y HEADER ================= -->
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+
+</body>
+
+</html>

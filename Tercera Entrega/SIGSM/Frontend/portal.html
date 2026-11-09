@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Portal del Paciente - SIGSM</title>
+
+    <link rel="stylesheet" href="css/portal.css">
+    <link rel="stylesheet" href="css/tema.css">
+    <script src="js/csrf.js"></script>
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+
+<!-- ================= HEADER ================= -->
+
+    <header class="portal-header">
+
+        <div class="portal-header__contenido">
+
+            <!-- LOGO E INFORMACIÓN -->
+
+            <div class="portal-header__identidad">
+
+                <img
+                    src="img/Logo_Hc.png"
+                    alt="Hospital de Clínicas"
+                    class="portal-header__logo"
+                >
+
+                <div>
+                    <h1>Portal del Paciente</h1>
+                    <p>Hospital de Clínicas</p>
+                </div>
+
+            </div>
+
+
+            <!-- PREFERENCIAS -->
+
+            <div class="header-right portal-header__preferencias"></div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ================= CONTENIDO ================= -->
+
+    <main class="portal-main">
+
+
+        <!-- ================= BIENVENIDA ================= -->
+
+        <section class="bienvenida">
+
+            <div class="bienvenida__contenido">
+
+                <span class="bienvenida__etiqueta">
+                    INFORMACIÓN PARA PACIENTES
+                </span>
+
+                <h2>
+                    Bienvenido al Portal del Paciente
+                </h2>
+
+                <p>
+                    Encontrá de forma rápida y sencilla las indicaciones,
+                    recomendaciones y documentos informativos del
+                    Hospital de Clínicas.
+                </p>
+
+                <p>
+                    No necesitás usuario ni contraseña.
+                    Seleccioná un servicio y luego el subservicio
+                    que estás buscando.
+                </p>
+
+                <a
+                    href="#servicios"
+                    class="boton boton--principal"
+                >
+                    Consultar información
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= SERVICIOS ================= -->
+
+        <section
+            class="portal-seccion"
+            id="servicios"
+        >
+
+            <div class="seccion-cabecera">
+
+                <span class="seccion-cabecera__numero">
+                    01
+                </span>
+
+                <div>
+
+                    <h2>
+                        Servicios
+                    </h2>
+
+                    <p>
+                        Seleccioná el servicio sobre el que
+                        necesitás información.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Buscador -->
+
+            <div class="buscador">
+
+                <label for="buscarServicio">
+                    Buscar servicio
+                </label>
+
+                <input
+                    type="search"
+                    id="buscarServicio"
+                    placeholder="Ej.: Cardiología, Imagenología..."
+                >
+
+            </div>
+
+
+            <!--
+
+                ESTO SE CARGARÁ DESDE LA BASE DE DATOS.
+
+                Ejemplo visual mientras desarrollamos:
+
+            -->
+
+            <div
+                class="servicios-grid"
+                id="listaServicios"
+                aria-live="polite"
+            >
+                <p id="estadoServicios">Cargando servicios...</p>
+            </div>
+
+        </section>
+
+
+        <!-- ================= SUBSERVICIOS ================= -->
+
+        <section
+            class="portal-seccion seccion-oculta"
+            id="subservicios"
+        >
+
+            <div class="seccion-cabecera">
+
+                <span class="seccion-cabecera__numero">
+                    02
+                </span>
+
+                <div>
+
+                    <span
+                        class="ruta"
+                        id="servicioSeleccionado"
+                    >
+                        Servicio
+                    </span>
+
+                    <h2>
+                        Subservicios
+                    </h2>
+
+                    <p>
+                        Seleccioná el tipo de información
+                        que necesitás consultar.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="subservicios-lista"
+                id="listaSubservicios"
+                aria-live="polite"
+            >
+                <p id="estadoSubservicios">Seleccioná un servicio.</p>
+            </div>
+
+        </section>
+
+
+        <!-- ================= DOCUMENTO ================= -->
+
+        <section
+            class="portal-seccion seccion-oculta"
+            id="documento"
+        >
+
+            <div class="seccion-cabecera">
+
+                <span class="seccion-cabecera__numero">
+                    03
+                </span>
+
+                <div>
+
+                    <span
+                        class="ruta"
+                        id="subservicioSeleccionado"
+                    >
+                        Subservicio
+                    </span>
+
+                    <h2 id="tituloDocumento">
+                        Documento
+                    </h2>
+
+                    <p>
+                        Consultá el documento directamente
+                        desde el portal.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Aviso -->
+
+            <div class="aviso">
+
+                <span class="aviso__icono">
+                    i
+                </span>
+
+                <p>
+                    Este documento se puede visualizar
+                    directamente desde el portal.
+                    Por seguridad, no está disponible
+                    para descarga.
+                </p>
+
+            </div>
+
+
+            <p id="estadoDocumento" role="status" hidden></p>
+
+            <!-- VISOR PDF -->
+
+            <div class="pdf-container" id="contenedorVisorPDF">
+                <div class="pdf-controles" id="controlesPDF" hidden>
+                    <button type="button" id="paginaAnteriorPDF" aria-label="Página anterior">&#8592;</button>
+                    <span id="contadorPaginasPDF" aria-live="polite">Página 1 de 1</span>
+                    <button type="button" id="paginaSiguientePDF" aria-label="Página siguiente">&#8594;</button>
+                </div>
+                <div class="pdf-lienzo" id="lienzoPDF">
+                    <p id="mensajeVisorPDF">Seleccioná un documento para visualizarlo.</p>
+                    <canvas id="paginaPDF" aria-label="Página del documento PDF" hidden></canvas>
+                </div>
+                <a id="abrirPDFAlternativo" class="pdf-enlace-alternativo" href="#" target="_blank" rel="noopener noreferrer" hidden>Abrir documento en otra pestaña</a>
+            </div>
+
+
+</section>
+
+
+        <!-- ================= ENCUESTA ================= -->
+
+        <section
+            class="portal-seccion encuesta seccion-oculta"
+            id="encuesta"
+        >
+
+            <div class="seccion-cabecera">
+
+                <span class="seccion-cabecera__numero">
+                    04
+                </span>
+
+                <div>
+
+                    <h2>
+                        Tu opinión nos importa
+                    </h2>
+
+                    <p>
+                        Luego de consultar el documento,
+                        podés completar una breve encuesta.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div id="contenidoEncuesta" aria-live="polite">
+                <p>La encuesta aparecerá aquí después de consultar el documento.</p>
+            </div>
+
+        </section>
+
+
+        <!-- ================= INFORMACIÓN ================= -->
+
+        <section class="portal-seccion">
+
+            <div class="informacion">
+
+                <h2>
+                    Información importante
+                </h2>
+
+                <div class="informacion__grid">
+
+                    <div>
+
+                        <strong>
+                            Sin registro
+                        </strong>
+
+                        <p>
+                            No necesitás crear una cuenta
+                            para consultar la información.
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            Información general
+                        </strong>
+
+                        <p>
+                            Los documentos disponibles son
+                            informativos y de uso general.
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            Privacidad
+                        </strong>
+
+                        <p>
+                            El portal no solicita información
+                            personal para consultar documentos.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="portal-footer">
+
+        <img
+            src="img/Logo_Hc.png"
+            alt="Hospital de Clínicas"
+        >
+
+        <p>
+            Hospital de Clínicas — Sistema SIGSM
+            &copy; 2026
+        </p>
+
+    </footer>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+    <script src="./js/portal.js"></script>
+
+
+    <script src="./js/preferencias.js"></script>
+    <script src="./js/header.js"></script>
+    <script src="./js/portal-idioma.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>SIGSM - Categorías</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar"></div>
+
+<!-- ================= CONTENIDO ================= -->
+
+<div class="main">
+
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2>
+                Categorías
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span class="user">
+                Cargando...
+            </span>
+
+            <span class="role">
+                Cargando...
+            </span>
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="content">
+
+        <h2 class="titulo-seccion">
+            Gestionar categorías
+        </h2>
+
+
+        <!-- ================= ACCIONES ================= -->
+
+        <div class="card card-medium">
+
+            <div class="acciones-categorias">
+
+                <a href="categorias_crear.html">
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                    >
+                        + Crear categoría
+                    </button>
+
+                </a>
+
+
+                <a href="categorias_editar.html">
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                    >
+                        Editar categoría
+                    </button>
+
+                </a>
+
+
+                <a href="subcategorias_crear.html">
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                    >
+                        + Crear subcategoría
+                    </button>
+
+                </a>
+
+
+                <a href="subcategorias_editar.html">
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                    >
+                        Editar subcategorías
+                    </button>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= TABLA ================= -->
+
+        <div class="card">
+
+            <div style="overflow-x:auto;">
+
+            <h3>
+                Categorías del sistema
+            </h3>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Estado</th>
+                        <th>Editar</th>
+                        <th>Estado</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="tablaCategorias">
+
+                    <tr>
+
+                        <td colspan="5">
+                            Cargando categorías...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= Sidebar ================= -->
+
+<script src="../js/admin-sidebar.js"></script>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/admin-auth.js"></script>
+
+
+<!-- ================= JS PROPIO ================= -->
+
+<script>
+/* Convierte datos externos en texto seguro para plantillas HTML. */
+function escaparHTMLSeguro(valor) {
+    return String(valor ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+
+
+
+/*
+ * ============================================================
+ * CARGAR CATEGORÍAS
+ * ============================================================
+ */
+
+async function cargarCategorias() {
+
+    const tabla =
+        document.getElementById(
+            'tablaCategorias'
+        );
+
+
+    try {
+
+        const respuesta =
+            await fetch(
+                '../../API/categorias/listar.php',
+                {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                    cache: 'no-store'
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        if (
+            !respuesta.ok ||
+            !datos.ok
+        ) {
+
+            tabla.innerHTML = `
+
+                <tr>
+
+                    <td colspan="5">
+
+                        ${escaparHTMLSeguro(datos.mensaje || 'No se pudieron cargar las categorías.')}
+
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        tabla.innerHTML = '';
+
+
+        if (
+            !datos.categorias ||
+            datos.categorias.length === 0
+        ) {
+
+            tabla.innerHTML = `
+
+                <tr>
+
+                    <td colspan="5">
+                        No hay categorías registradas.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        datos.categorias.forEach(
+            categoria => {
+
+
+                /*
+                 * Clase visual del estado.
+                 */
+
+                const claseEstado =
+                    categoria.estado === 'activa'
+                        ? 'activo'
+                        : 'inactivo';
+
+
+                /*
+                 * Texto del botón.
+                 */
+
+                const textoBoton =
+                    categoria.estado === 'activa'
+                        ? 'Desvincular'
+                        : 'Activar';
+
+
+                const fila =
+                    document.createElement('tr');
+
+
+                fila.innerHTML = `
+
+                    <td>
+                        ${escaparHTMLSeguro(categoria.id_categoria)}
+                    </td>
+
+                    <td>
+                        ${escaparHTMLSeguro(categoria.nombre)}
+                    </td>
+
+                    <td>
+
+                        <span
+                            class="estado ${claseEstado}"
+                        >
+                            ${escaparHTMLSeguro(categoria.estado)}
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <a
+                            href="categorias_editar.html?id=${escaparHTMLSeguro(categoria.id_categoria)}"
+                        >
+
+                            <button
+                                type="button"
+                                class="btn-secondary"
+                            >
+                                Editar
+                            </button>
+
+                        </a>
+
+                    </td>
+
+                    <td>
+
+                        <button
+                            type="button"
+                            class="btn-danger"
+                        >
+                            ${textoBoton}
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                const botonEstado = fila.querySelector('button.btn-danger');
+                botonEstado.addEventListener('click', () =>
+                    cambiarEstado(categoria.id_categoria, categoria.estado)
+                );
+
+                tabla.appendChild(
+                    fila
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            'Error al cargar categorías:',
+            error
+        );
+
+
+        tabla.innerHTML = `
+
+            <tr>
+
+                <td colspan="5">
+                    No se pudo conectar con el servidor.
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+/*
+ * ============================================================
+ * CAMBIAR ESTADO
+ * ============================================================
+ */
+
+async function cambiarEstado(
+    idCategoria,
+    estadoActual
+) {
+
+
+    const nuevoEstado =
+        estadoActual === 'activa'
+            ? 'desvinculada'
+            : 'activa';
+
+
+    const confirmar =
+        confirm(
+            `¿Desea cambiar el estado de la categoría a "${nuevoEstado}"?`
+        );
+
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const respuesta =
+            await fetch(
+                '../../API/categorias/estado.php',
+                {
+                    method: 'PATCH',
+
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
+
+                    credentials:
+                        'same-origin',
+
+                    body:
+                        JSON.stringify({
+
+                            id_categoria:
+                                idCategoria,
+
+                            estado:
+                                nuevoEstado
+
+                        })
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        if (
+            !respuesta.ok ||
+            !datos.ok
+        ) {
+
+            alert(
+                datos.mensaje ||
+                'No se pudo cambiar el estado.'
+            );
+
+            return;
+
+        }
+
+
+        cargarCategorias();
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        alert(
+            'No se pudo conectar con el servidor.'
+        );
+
+    }
+
+}
+
+
+/*
+ * ============================================================
+ * SEGURIDAD + CARGA INICIAL
+ * ============================================================
+ */
+
+verificarAdministrador()
+    .then(autorizado => {
+
+        if (autorizado) {
+
+            cargarCategorias();
+
+        }
+
+    });
+
+
+</script>
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+
+</html>

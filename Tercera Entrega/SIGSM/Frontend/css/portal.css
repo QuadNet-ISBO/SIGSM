@@ -1,0 +1,984 @@
+/* =========================================================
+   GENERAL
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: #f4f7f9;
+
+    color: #26343d;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.portal-header {
+    background: #ffffff;
+
+    border-bottom: 1px solid #dfe6ea;
+
+    padding: 18px 30px;
+}
+
+
+.portal-header__contenido {
+    max-width: 1100px;
+
+    margin: auto;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+}
+
+
+.portal-header__logo {
+    width: 75px;
+
+    height: auto;
+}
+
+
+.portal-header h1 {
+    font-size: 25px;
+
+    font-weight: 700;
+
+    color: #173f56;
+}
+
+
+.portal-header p {
+    color: #647783;
+
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   CONTENIDO PRINCIPAL
+   ========================================================= */
+
+.portal-main {
+    max-width: 1100px;
+
+    margin: auto;
+
+    padding: 30px 20px 60px;
+}
+
+
+/* =========================================================
+   BIENVENIDA
+   ========================================================= */
+
+.bienvenida {
+    background: #ffffff;
+
+    border: 1px solid #dfe6ea;
+
+    border-radius: 12px;
+
+    margin-bottom: 25px;
+
+    overflow: hidden;
+}
+
+
+.bienvenida__contenido {
+    padding: 55px 50px;
+}
+
+
+.bienvenida__etiqueta {
+    display: inline-block;
+
+    margin-bottom: 12px;
+
+    color: #28708d;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+}
+
+
+.bienvenida h2 {
+    max-width: 700px;
+
+    margin-bottom: 15px;
+
+    color: #173f56;
+
+    font-size: 36px;
+
+    line-height: 1.2;
+}
+
+
+.bienvenida p {
+    max-width: 700px;
+
+    margin-bottom: 10px;
+
+    color: #52636d;
+
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+
+.boton {
+    display: inline-block;
+
+    border: none;
+
+    border-radius: 7px;
+
+    padding: 12px 20px;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+
+.boton--principal {
+    margin-top: 15px;
+
+    background: #28708d;
+
+    color: white;
+}
+
+
+.boton--principal:hover {
+    background: #205c74;
+}
+
+
+/* =========================================================
+   SECCIONES
+   ========================================================= */
+
+.portal-seccion {
+    background: #ffffff;
+
+    border: 1px solid #dfe6ea;
+
+    border-radius: 12px;
+
+    padding: 30px;
+
+    margin-bottom: 25px;
+}
+
+
+.seccion-cabecera {
+    display: flex;
+
+    gap: 18px;
+
+    align-items: flex-start;
+
+    margin-bottom: 25px;
+}
+
+
+.seccion-cabecera__numero {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    min-width: 42px;
+
+    height: 42px;
+
+    border-radius: 50%;
+
+    background: #e8f2f6;
+
+    color: #28708d;
+
+    font-weight: bold;
+
+    font-size: 14px;
+}
+
+
+.seccion-cabecera h2 {
+    color: #173f56;
+
+    font-size: 25px;
+
+    margin-bottom: 3px;
+}
+
+
+.seccion-cabecera p {
+    color: #667780;
+}
+
+
+/* =========================================================
+   BUSCADOR
+   ========================================================= */
+
+.buscador {
+    margin-bottom: 25px;
+}
+
+
+.buscador label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-weight: bold;
+
+    color: #344954;
+}
+
+
+.buscador input {
+    width: 100%;
+
+    padding: 13px 15px;
+
+    border: 1px solid #cbd7dc;
+
+    border-radius: 7px;
+
+    font-size: 16px;
+
+    outline: none;
+}
+
+
+.buscador input:focus {
+    border-color: #28708d;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(40, 112, 141, 0.12);
+}
+
+
+/* =========================================================
+   SERVICIOS
+   ========================================================= */
+
+.servicios-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 12px;
+}
+
+
+.servicio {
+    width: 100%;
+
+    min-height: 80px;
+
+    padding: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    background: #ffffff;
+
+    border: 1px solid #ccd9de;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    transition:
+        border-color 0.15s,
+        background 0.15s;
+}
+
+
+.servicio:hover {
+    border-color: #28708d;
+
+    background: #f5fafc;
+}
+
+
+.servicio__icono {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    width: 38px;
+
+    height: 38px;
+
+    border-radius: 50%;
+
+    background: #e8f2f6;
+
+    color: #28708d;
+
+    font-size: 22px;
+
+    font-weight: bold;
+}
+
+
+.servicio__texto {
+    flex: 1;
+
+    color: #243d49;
+
+    font-size: 16px;
+
+    font-weight: bold;
+}
+
+
+.servicio__flecha {
+    color: #28708d;
+
+    font-size: 20px;
+}
+
+
+/* =========================================================
+   SUBSERVICIOS
+   ========================================================= */
+
+.subservicios-lista {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.subservicio {
+    width: 100%;
+
+    padding: 16px 18px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    border: 1px solid #ccd9de;
+
+    background: #ffffff;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    font-size: 16px;
+
+    color: #263f4a;
+}
+
+
+.subservicio:hover {
+    border-color: #28708d;
+
+    background: #f5fafc;
+}
+
+
+.subservicio span:last-child {
+    color: #28708d;
+
+    font-size: 20px;
+}
+
+
+/* =========================================================
+   RUTA
+   ========================================================= */
+
+.ruta {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #28708d;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   AVISO
+   ========================================================= */
+
+.aviso {
+    display: flex;
+
+    gap: 12px;
+
+    align-items: center;
+
+    padding: 14px 16px;
+
+    margin-bottom: 20px;
+
+    background: #f0f6f8;
+
+    border: 1px solid #d4e3e8;
+
+    border-radius: 7px;
+}
+
+
+.aviso__icono {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    min-width: 27px;
+
+    height: 27px;
+
+    border-radius: 50%;
+
+    background: #28708d;
+
+    color: white;
+
+    font-weight: bold;
+}
+
+
+.aviso p {
+    color: #526771;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   VISOR PDF
+   ========================================================= */
+
+.pdf-container {
+    width: 100%;
+
+    height: 700px;
+
+    border: 1px solid #cbd7dc;
+
+    border-radius: 7px;
+
+    overflow: hidden;
+
+    background: #525b60;
+}
+
+
+.pdf-container iframe {
+    width: 100%;
+
+    height: 100%;
+
+    border: none;
+}
+
+
+/* =========================================================
+   ENCUESTA
+   ========================================================= */
+
+.encuesta {
+    margin-top: 25px;
+}
+
+
+.encuesta-placeholder {
+    padding: 45px 25px;
+
+    text-align: center;
+
+    border: 1px dashed #c5d3d9;
+
+    border-radius: 8px;
+
+    background: #f8fafb;
+}
+
+
+.encuesta-placeholder__icono {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    width: 48px;
+
+    height: 48px;
+
+    margin: 0 auto 15px;
+
+    border-radius: 50%;
+
+    background: #e5f1f5;
+
+    color: #28708d;
+
+    font-size: 22px;
+
+    font-weight: bold;
+}
+
+
+.encuesta-placeholder h3 {
+    margin-bottom: 5px;
+
+    color: #263f4a;
+}
+
+
+.encuesta-placeholder p {
+    margin-bottom: 10px;
+
+    color: #687a83;
+}
+
+
+.encuesta-placeholder span {
+    font-size: 13px;
+
+    color: #28708d;
+
+    font-weight: bold;
+}
+
+
+/* =========================================================
+   INFORMACIÓN
+   ========================================================= */
+
+.informacion {
+    padding: 5px;
+}
+
+
+.informacion h2 {
+    margin-bottom: 20px;
+
+    color: #173f56;
+
+    font-size: 22px;
+}
+
+
+.informacion__grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 20px;
+}
+
+
+.informacion__grid div {
+    padding: 18px;
+
+    background: #f5f8f9;
+
+    border-radius: 7px;
+}
+
+
+.informacion__grid strong {
+    color: #28708d;
+}
+
+
+.informacion__grid p {
+    margin-top: 6px;
+
+    color: #65767e;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   SECCIONES OCULTAS
+   ========================================================= */
+
+.seccion-oculta {
+    display: none;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.portal-footer {
+    padding: 25px 20px;
+
+    text-align: center;
+
+    border-top: 1px solid #dfe6ea;
+
+    background: #ffffff;
+
+    color: #71818a;
+
+    font-size: 13px;
+}
+
+
+.portal-footer img {
+    width: 55px;
+
+    margin-bottom: 8px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .portal-header {
+        padding: 15px 18px;
+    }
+
+
+    .portal-header__logo {
+        width: 60px;
+    }
+
+
+    .portal-header h1 {
+        font-size: 20px;
+    }
+
+
+    .portal-header p {
+        font-size: 13px;
+    }
+
+
+    .portal-main {
+        padding: 15px 12px 40px;
+    }
+
+
+    .bienvenida__contenido {
+        padding: 35px 25px;
+    }
+
+
+    .bienvenida h2 {
+        font-size: 28px;
+    }
+
+
+    .bienvenida p {
+        font-size: 16px;
+    }
+
+
+    .portal-seccion {
+        padding: 22px 18px;
+    }
+
+
+    .seccion-cabecera h2 {
+        font-size: 22px;
+    }
+
+
+    .servicios-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .informacion__grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .pdf-container {
+        height: 550px;
+    }
+
+}
+
+
+@media (max-width: 450px) {
+
+    .portal-header__contenido {
+        gap: 12px;
+    }
+
+
+    .portal-header__logo {
+        width: 50px;
+    }
+
+
+    .bienvenida h2 {
+        font-size: 25px;
+    }
+
+
+    .seccion-cabecera {
+        gap: 12px;
+    }
+
+
+    .seccion-cabecera__numero {
+        min-width: 36px;
+
+        height: 36px;
+    }
+
+
+    .pdf-container {
+        height: 500px;
+    }
+
+}
+
+/* Preferencias globales del portal del paciente */
+:root[data-theme="dark"] body {
+    background: #0f172a;
+    color: #e2e8f0;
+}
+:root[data-theme="dark"] .portal-header,
+:root[data-theme="dark"] .bienvenida,
+:root[data-theme="dark"] .portal-seccion,
+:root[data-theme="dark"] .documento-card,
+:root[data-theme="dark"] .encuesta-card {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
+}
+:root[data-theme="dark"] .portal-header h1,
+:root[data-theme="dark"] .bienvenida h2,
+:root[data-theme="dark"] .portal-seccion h2,
+:root[data-theme="dark"] .portal-seccion h3 {
+    color: #e2e8f0;
+}
+:root[data-theme="dark"] .portal-header p,
+:root[data-theme="dark"] .bienvenida p,
+:root[data-theme="dark"] .portal-seccion p,
+:root[data-theme="dark"] .portal-header__contenido p {
+    color: #cbd5e1;
+}
+
+
+/* ==========================================
+   HEADER DEL PORTAL
+   ========================================== */
+
+.portal-header__contenido {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+}
+
+.portal-header__identidad {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.portal-header__preferencias {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.portal-header__preferencias .btn-preferencia {
+    white-space: nowrap;
+}
+
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 650px) {
+
+    .portal-header__contenido {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .portal-header__preferencias {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+}
+
+
+/* ==========================================
+   PREFERENCIAS DEL PORTAL
+   ========================================== */
+
+.portal-header__preferencias,
+.portal-header__preferencias .header-preferencias {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.portal-header__preferencias .btn-preferencia {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 36px;
+    padding: 8px 13px;
+
+    background-color: var(--tema-superficie-secundaria);
+    color: var(--tema-texto);
+
+    border: 1px solid var(--tema-borde);
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+
+    white-space: nowrap;
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.portal-header__preferencias .btn-preferencia:hover {
+    background-color: var(--tema-superficie-terciaria);
+}
+
+.portal-header__preferencias .btn-preferencia:focus-visible {
+    outline: 2px solid var(--tema-portal-acento);
+    outline-offset: 2px;
+}
+
+@media (max-width: 650px) {
+    .portal-header__preferencias,
+    .portal-header__preferencias .header-preferencias {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+}
+
+
+/* Documentos agrupados dentro de cada subservicio del Portal. */
+.subservicio-grupo { width: 100%; }
+.documentos-subservicio:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 8px 0 12px 20px;
+    padding-left: 14px;
+    border-left: 2px solid #ccd9de;
+}
+.documento-opcion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 13px 16px;
+    background: #f5fafc;
+    color: #263f4a;
+    border: 1px solid #ccd9de;
+    border-radius: 7px;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+.documento-opcion:hover, .documento-opcion:focus-visible {
+    border-color: #28708d;
+    background: #eaf5fa;
+}
+.documento-opcion span:last-child { color: #28708d; }
+
+
+/* Visor PDF.js compatible con pantallas móviles */
+.pdf-container { height: auto; min-height: 420px; background: #eef2f6; }
+.pdf-controles { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 12px; background: #243247; color: #fff; }
+.pdf-controles[hidden], .pdf-lienzo canvas[hidden], .pdf-enlace-alternativo[hidden] { display: none !important; }
+.pdf-controles button { border: 1px solid #8293ab; background: #344966; color: #fff; border-radius: 6px; padding: 8px 14px; cursor: pointer; }
+.pdf-controles button:disabled { opacity: .45; cursor: default; }
+.pdf-lienzo { min-height: 360px; padding: 12px; display: flex; align-items: center; justify-content: flex-start; flex-direction: column; overflow: auto; }
+.pdf-lienzo canvas { display: block; max-width: 100%; height: auto; box-shadow: 0 2px 12px #0002; background: #fff; }
+.pdf-lienzo p { color: #243247; text-align: center; padding: 36px 12px; }
+.pdf-enlace-alternativo { display: block; margin: 12px auto 20px; width: fit-content; padding: 10px 15px; background: #246fe5; color: white; border-radius: 8px; text-decoration: none; text-align: center; }
+@media (max-width: 600px) { .pdf-container { min-height: 350px; height: auto; } .pdf-lienzo { min-height: 300px; padding: 8px; } }

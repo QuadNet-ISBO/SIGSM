@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>SIGSM - Editar Categoría</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+
+<body>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar"></div>
+
+<!-- ================= CONTENIDO ================= -->
+
+<div class="main">
+
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2>
+                Editar categoría
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span class="user">
+                Cargando...
+            </span>
+
+            <span class="role">
+                Cargando...
+            </span>
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="content">
+
+        <h2 class="titulo-seccion">
+            Editar categoría
+        </h2>
+
+
+        <!-- ================= SELECCIONAR ================= -->
+
+        <div class="card">
+
+            <h3>
+                Seleccionar categoría
+            </h3>
+
+
+            <label for="buscarCategoria">
+                Buscar categoría
+            </label>
+
+
+            <input
+                type="text"
+                id="buscarCategoria"
+                placeholder="Buscar categoría..."
+                class="campo-buscador"
+            >
+
+
+            <select
+                id="categoria"
+                size="5"
+                class="campo-full"
+            >
+
+                <option value="">
+                    Cargando categorías...
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- ================= EDICIÓN ================= -->
+
+        <div class="card">
+
+            <h3>
+                Datos de la categoría
+            </h3>
+
+
+            <div class="form-group">
+
+                <label for="nombreCategoria">
+                    Nombre
+                </label>
+
+                <input
+                    type="text"
+                    id="nombreCategoria"
+                    placeholder="Nombre de la categoría"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="estadoCategoria">
+                    Estado
+                </label>
+
+                <select id="estadoCategoria">
+
+                    <option value="activa">
+                        Activa
+                    </option>
+
+                    <option value="desvinculada">
+                        Desvinculada
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="acciones-form">
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="btnGuardar"
+                >
+                    Guardar cambios
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn-danger"
+                    id="btnDesvincular"
+                >
+                    Desvincular categoría
+                </button>
+
+
+                <a href="categorias.html">
+
+                    <button
+                        type="button"
+                        class="btn-secondary"
+                    >
+                        Volver
+                    </button>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= INFORMACIÓN ================= -->
+
+        <div class="card card--info">
+
+            <p>
+
+                <b>Importante:</b>
+
+                desvincular una categoría no elimina
+                sus datos. La categoría permanece en
+                el sistema y puede volver a activarse.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= Sidebar ================= -->
+
+<script src="../js/admin-sidebar.js"></script>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/admin-auth.js"></script>
+
+
+<!-- ================= JS PROPIO ================= -->
+
+<script>
+
+
+const buscarCategoria =
+    document.getElementById('buscarCategoria');
+
+
+const categoria =
+    document.getElementById('categoria');
+
+
+const nombreCategoria =
+    document.getElementById('nombreCategoria');
+
+
+const estadoCategoria =
+    document.getElementById('estadoCategoria');
+
+
+const btnGuardar =
+    document.getElementById('btnGuardar');
+
+
+const btnDesvincular =
+    document.getElementById('btnDesvincular');
+
+
+
+/*
+ * Guardamos las categorías
+ * que vienen de la base de datos.
+ */
+
+let categorias = [];
+
+
+
+/*
+ * ============================================================
+ * CARGAR CATEGORÍAS
+ * ============================================================
+ */
+
+async function cargarCategorias() {
+
+    try {
+
+        const respuesta = await fetch(
+            '../../API/categorias/listar.php',
+            {
+                method: 'GET',
+                credentials: 'same-origin',
+                cache: 'no-store'
+            }
+        );
+
+
+        const datos = await respuesta.json();
+
+
+        if (!respuesta.ok || !datos.ok) {
+
+            categoria.innerHTML = `
+                <option value="">
+                    ${
+                        datos.mensaje ||
+                        'No se pudieron cargar las categorías.'
+                    }
+                </option>
+            `;
+
+            return;
+
+        }
+
+
+        categorias = datos.categorias || [];
+
+
+        categoria.innerHTML = '';
+
+
+        if (categorias.length === 0) {
+
+            categoria.innerHTML = `
+                <option value="">
+                    No hay categorías registradas.
+                </option>
+            `;
+
+            return;
+
+        }
+
+
+        /*
+         * Crear las opciones.
+         */
+
+        categorias.forEach(item => {
+
+            const option =
+                document.createElement('option');
+
+
+            option.value =
+                item.id_categoria;
+
+
+            option.textContent =
+                item.nombre;
+
+
+            categoria.appendChild(option);
+
+        });
+
+
+        /*
+         * Si venimos desde categorias.html
+         * con ?id=...
+         */
+
+        const parametros =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        const id =
+            parametros.get('id');
+
+
+        if (id) {
+
+            categoria.value = id;
+
+        }
+
+
+        /*
+         * Cargar los datos de la categoría
+         * seleccionada.
+         */
+
+        cargarDatosCategoria();
+
+    } catch (error) {
+
+        console.error(
+            'Error al cargar categorías:',
+            error
+        );
+
+
+        categoria.innerHTML = `
+            <option value="">
+                No se pudo conectar con el servidor.
+            </option>
+        `;
+
+    }
+
+}
+
+
+
+/*
+ * ============================================================
+ * MOSTRAR DATOS DE LA CATEGORÍA
+ * ============================================================
+ */
+
+function cargarDatosCategoria() {
+
+    const id =
+        parseInt(categoria.value);
+
+
+    if (!id) {
+
+        nombreCategoria.value = '';
+        estadoCategoria.value = 'activa';
+
+        actualizarBotonDesvincular();
+
+        return;
+
+    }
+
+
+    const datos =
+        categorias.find(
+            item =>
+                parseInt(item.id_categoria) === id
+        );
+
+
+    if (!datos) {
+
+        return;
+
+    }
+
+
+    /*
+     * Acá aparecen automáticamente
+     * los datos de la categoría.
+     */
+
+    nombreCategoria.value =
+        datos.nombre;
+
+
+    estadoCategoria.value =
+        datos.estado;
+
+
+    actualizarBotonDesvincular();
+
+}
+
+
+
+/*
+ * ============================================================
+ * CAMBIO DE CATEGORÍA
+ * ============================================================
+ */
+
+categoria.addEventListener(
+    'change',
+    cargarDatosCategoria
+);
+
+
+
+/*
+ * ============================================================
+ * BUSCADOR
+ * ============================================================
+ */
+
+buscarCategoria.addEventListener(
+    'input',
+    function () {
+
+        const texto =
+            this.value
+                .toLowerCase()
+                .trim();
+
+
+        Array.from(
+            categoria.options
+        ).forEach(option => {
+
+            if (!option.value) {
+
+                return;
+
+            }
+
+
+            option.hidden =
+                !option.textContent
+                    .toLowerCase()
+                    .includes(texto);
+
+        });
+
+    }
+);
+
+
+
+/*
+ * ============================================================
+ * GUARDAR CAMBIOS
+ * ============================================================
+ */
+
+btnGuardar.addEventListener(
+    'click',
+    async function () {
+
+        const id =
+            parseInt(categoria.value);
+
+
+        const nombre =
+            nombreCategoria.value.trim();
+
+
+        const estado =
+            estadoCategoria.value;
+
+
+        if (!id) {
+
+            alert(
+                'Seleccioná una categoría.'
+            );
+
+            return;
+
+        }
+
+
+        if (!nombre) {
+
+            alert(
+                'El nombre de la categoría no puede estar vacío.'
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    '../../API/categorias/actualizar.php',
+                    {
+                        method: 'PUT',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        credentials:
+                            'same-origin',
+
+                        body:
+                            JSON.stringify({
+
+                                id_categoria:
+                                    id,
+
+                                nombre:
+                                    nombre,
+
+                                estado:
+                                    estado
+
+                            })
+                    }
+                );
+
+
+            const datos =
+                await respuesta.json();
+
+
+            if (!respuesta.ok || !datos.ok) {
+
+                alert(
+                    datos.mensaje ||
+                    'No se pudieron guardar los cambios.'
+                );
+
+                return;
+
+            }
+
+
+            alert(
+                datos.mensaje ||
+                'Categoría actualizada correctamente.'
+            );
+
+
+            window.location.href =
+                'categorias.html';
+
+
+        } catch (error) {
+
+            console.error(
+                'Error al actualizar categoría:',
+                error
+            );
+
+
+            alert(
+                'No se pudo conectar con el servidor.'
+            );
+
+        }
+
+    }
+);
+
+
+
+/*
+ * ============================================================
+ * DESVINCULAR
+ * ============================================================
+ */
+
+btnDesvincular.addEventListener(
+    'click',
+    async function () {
+
+        const id =
+            parseInt(categoria.value);
+
+
+        if (!id) {
+
+            alert(
+                'Seleccioná una categoría.'
+            );
+
+            return;
+
+        }
+
+
+        const confirmar =
+            confirm(
+                '¿Está seguro de que desea desvincular esta categoría?\n\n' +
+                'Todas las subcategorías pertenecientes a esta categoría ' +
+                'también serán desvinculadas.\n\n' +
+                'Los datos no serán eliminados.'
+            );
+
+
+        if (!confirmar) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    '../../API/categorias/estado.php',
+                    {
+                        method: 'PATCH',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        credentials:
+                            'same-origin',
+
+                        body:
+                            JSON.stringify({
+
+                                id_categoria:
+                                    id,
+
+                                estado:
+                                    'desvinculada'
+
+                            })
+                    }
+                );
+
+
+            const datos =
+                await respuesta.json();
+
+
+            if (!respuesta.ok || !datos.ok) {
+
+                alert(
+                    datos.mensaje ||
+                    'No se pudo desvincular la categoría.'
+                );
+
+                return;
+
+            }
+
+
+            alert(
+                'Categoría desvinculada correctamente.'
+            );
+
+
+            window.location.href =
+                'categorias.html';
+
+
+        } catch (error) {
+
+            console.error(
+                'Error al desvincular:',
+                error
+            );
+
+
+            alert(
+                'No se pudo conectar con el servidor.'
+            );
+
+        }
+
+    }
+);
+
+
+
+/*
+ * ============================================================
+ * BOTÓN DESVINCULAR
+ * ============================================================
+ */
+
+function actualizarBotonDesvincular() {
+
+    if (
+        estadoCategoria.value === 'desvinculada'
+    ) {
+
+        btnDesvincular.disabled = true;
+
+        btnDesvincular.textContent =
+            'Categoría desvinculada';
+
+    } else {
+
+        btnDesvincular.disabled = false;
+
+        btnDesvincular.textContent =
+            'Desvincular categoría';
+
+    }
+
+}
+
+
+
+/*
+ * ============================================================
+ * CAMBIO DE ESTADO
+ * ============================================================
+ */
+
+estadoCategoria.addEventListener(
+    'change',
+    actualizarBotonDesvincular
+);
+
+
+
+/*
+ * ============================================================
+ * SEGURIDAD + CARGA INICIAL
+ * ============================================================
+ */
+
+verificarAdministrador()
+    .then(autorizado => {
+
+        if (autorizado) {
+
+            cargarCategorias();
+
+        }
+
+    });
+
+
+</script>
+
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+
+</html>

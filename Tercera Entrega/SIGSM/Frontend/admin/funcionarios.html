@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>SIGSM - Funcionarios</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+
+<body>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar"></div>
+
+
+<!-- ================= CONTENIDO ================= -->
+
+<div class="main">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2>
+                Funcionarios
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span class="user">
+                Cargando...
+            </span>
+
+            <span class="role">
+                Cargando...
+            </span>
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- CONTENT -->
+
+    <div class="content">
+
+        <h2 class="titulo-seccion">
+            Funcionarios
+        </h2>
+
+
+        <div class="card card-medium">
+
+            <a href="funcionarios_crear.html">
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                >
+                    + Agregar funcionario
+                </button>
+
+            </a>
+
+        </div>
+
+
+        <div class="card">
+
+            <div style="overflow-x:auto;">
+
+            <h3>
+                Lista de funcionarios
+            </h3>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>CI</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Tipo</th>
+                        <th>Teléfono</th>
+                        <th>Horario</th>
+                        <th>Estado laboral</th>
+                        <th>Estado operativo</th>
+                        <th>Editar</th>
+                        <th>Estado laboral</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="tablaFuncionarios">
+
+                    <tr>
+
+                        <td colspan="11">
+                            Cargando funcionarios...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= Sidebar ================= -->
+
+<script src="../js/admin-sidebar.js"></script>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/admin-auth.js"></script>
+
+<!-- ================= JS PROPIO ================= -->
+
+<script>
+    /*
+ * ============================================================
+ * GESTIÓN DE FUNCIONARIOS
+ * ============================================================
+ */
+
+
+/*
+ * Carga todos los funcionarios.
+ */
+async function cargarFuncionarios() {
+
+    const tabla =
+        document.getElementById(
+            'tablaFuncionarios'
+        );
+
+
+    try {
+
+        const respuesta =
+            await fetch(
+                '../../API/funcionarios/listar.php',
+                {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                    cache: 'no-store'
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        if (
+            !respuesta.ok ||
+            !datos.ok
+        ) {
+
+            tabla.replaceChildren();
+            const filaError = document.createElement('tr');
+            const celdaError = document.createElement('td');
+            celdaError.colSpan = 11;
+            celdaError.textContent = datos.mensaje ||
+                'No se pudieron cargar los funcionarios.';
+            filaError.appendChild(celdaError);
+            tabla.appendChild(filaError);
+
+            return;
+        }
+
+
+        tabla.innerHTML = '';
+
+
+        if (
+            !datos.funcionarios ||
+            datos.funcionarios.length === 0
+        ) {
+
+            tabla.innerHTML = `
+                <tr>
+                    <td colspan="10">
+                        No hay funcionarios registrados.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        datos.funcionarios.forEach(
+            funcionario => {
+
+
+                /*
+                 * Determina el tipo de funcionario
+                 * según las dos columnas booleanas.
+                 */
+                let tipo = '';
+
+
+                if (
+                    funcionario.puede_ser_chofer &&
+                    funcionario.puede_ser_enfermero
+                ) {
+
+                    tipo = 'Chofer / Enfermero';
+
+                } else if (
+                    funcionario.puede_ser_chofer
+                ) {
+
+                    tipo = 'Chofer';
+
+                } else if (
+                    funcionario.puede_ser_enfermero
+                ) {
+
+                    tipo = 'Enfermero';
+
+                } else {
+
+                    tipo = 'Sin función';
+
+                }
+
+
+                /*
+                * Clase visual para el estado laboral.
+                */
+                let claseEstadoLaboral = '';
+
+                if (funcionario.estado_laboral === 'activo') {
+
+                    claseEstadoLaboral = 'activo';
+
+                } else if (funcionario.estado_laboral === 'inactivo') {
+
+                    claseEstadoLaboral = 'inactivo';
+
+                } else {
+
+                    claseEstadoLaboral = 'inactivo';
+
+                }
+
+
+                /*
+                * Clase visual para el estado operativo.
+                */
+                let claseEstadoOperativo = '';
+
+                if (funcionario.estado_operativo === 'libre') {
+
+                    claseEstadoOperativo = 'activo';
+
+                } else {
+
+                    claseEstadoOperativo = 'inactivo';
+
+                }
+
+
+                /*
+                * Texto del botón de estado laboral.
+                */
+                let textoBoton;
+
+                if (funcionario.estado_laboral === 'activo') {
+
+                    textoBoton = 'Desactivar';
+
+                } else if (funcionario.estado_laboral === 'inactivo') {
+
+                    textoBoton = 'Activar';
+
+                } else {
+
+                    textoBoton = 'Desvinculado';
+
+                }
+
+
+                /*
+                * Un funcionario desvinculado no puede
+                * cambiarse mediante el botón rápido.
+                */
+                const botonDeshabilitado =
+                    funcionario.estado_laboral === 'desvinculado'
+                        ? 'disabled'
+                        : '';
+
+
+                const fila =
+                    document.createElement('tr');
+
+
+                // Los valores procedentes de la API se insertan como texto,
+                // nunca como HTML interpretable por el navegador.
+                const agregarCelda = (valor) => {
+                    const celda = document.createElement('td');
+                    celda.textContent = String(valor ?? '');
+                    fila.appendChild(celda);
+                    return celda;
+                };
+
+                agregarCelda(funcionario.id_funcionario);
+                agregarCelda(funcionario.ci);
+                agregarCelda(funcionario.nombre);
+                agregarCelda(funcionario.apellido);
+                agregarCelda(tipo);
+                agregarCelda(funcionario.telefono);
+                agregarCelda(funcionario.horario);
+
+                const celdaLaboral = agregarCelda('');
+                const estadoLaboral = document.createElement('span');
+                estadoLaboral.className = `estado ${claseEstadoLaboral}`;
+                estadoLaboral.textContent = funcionario.estado_laboral ?? '';
+                celdaLaboral.appendChild(estadoLaboral);
+
+                const celdaOperativa = agregarCelda('');
+                const estadoOperativo = document.createElement('span');
+                estadoOperativo.className = `estado ${claseEstadoOperativo}`;
+                estadoOperativo.textContent = funcionario.estado_operativo ?? '';
+                celdaOperativa.appendChild(estadoOperativo);
+
+                const celdaEditar = agregarCelda('');
+                const enlaceEditar = document.createElement('a');
+                enlaceEditar.href = 'funcionarios_editar.html?id=' +
+                    encodeURIComponent(String(funcionario.id_funcionario));
+                const botonEditar = document.createElement('button');
+                botonEditar.type = 'button';
+                botonEditar.className = 'btn-secondary';
+                botonEditar.textContent = 'Editar';
+                enlaceEditar.appendChild(botonEditar);
+                celdaEditar.appendChild(enlaceEditar);
+
+                const celdaEstado = agregarCelda('');
+                const botonEstado = document.createElement('button');
+                botonEstado.type = 'button';
+                botonEstado.className = 'btn-danger';
+                botonEstado.disabled = funcionario.estado_laboral === 'desvinculado';
+                botonEstado.textContent = textoBoton;
+                botonEstado.addEventListener('click', () => {
+                    cambiarEstado(funcionario.id_funcionario, funcionario.estado_laboral);
+                });
+                celdaEstado.appendChild(botonEstado);
+
+
+                tabla.appendChild(fila);
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            'Error al cargar funcionarios:',
+            error
+        );
+
+
+        tabla.innerHTML = `
+            <tr>
+                <td colspan="10">
+                    No se pudo conectar con el servidor.
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+/*
+ * Cambia activo ↔ inactivo.
+ */
+async function cambiarEstado(
+    idFuncionario,
+    estadoActual
+) {
+
+
+    if (
+        estadoActual === 'desvinculado'
+    ) {
+
+        return;
+
+    }
+
+
+    const nuevoEstado =
+        estadoActual === 'activo'
+            ? 'inactivo'
+            : 'activo';
+
+
+    const confirmar =
+        confirm(
+            `¿Desea cambiar el estado laboral a "${nuevoEstado}"?`
+        );
+
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const respuesta =
+            await fetch(
+                '../../API/funcionarios/estado.php',
+                {
+                    method: 'PATCH',
+
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
+
+                    credentials:
+                        'same-origin',
+
+                    body:
+                        JSON.stringify({
+
+                            id_funcionario:
+                                idFuncionario,
+
+                            estado_laboral:
+                                nuevoEstado
+
+                        })
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        if (
+            !respuesta.ok ||
+            !datos.ok
+        ) {
+
+            alert(
+                datos.mensaje ||
+                'No se pudo cambiar el estado.'
+            );
+
+            return;
+
+        }
+
+
+        cargarFuncionarios();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        alert(
+            'No se pudo conectar con el servidor.'
+        );
+
+    }
+
+}
+
+
+/*
+ * Seguridad + carga inicial.
+ */
+verificarAdministrador()
+    .then(autorizado => {
+
+        if (autorizado) {
+
+            cargarFuncionarios();
+
+        }
+
+    });
+</script>
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+</html>

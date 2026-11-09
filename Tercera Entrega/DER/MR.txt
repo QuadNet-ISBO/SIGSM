@@ -1,0 +1,35 @@
+Modelo Relacional
+
+USUARIOS(id_usuario, id_rol, ci, nombre, apellido, telefono, email, user, password, estado_laboral)
+
+ROLES(id_rol, nombre)
+
+INTENTOS_LOGIN(usuario_hash, intentos, ventana_inicio, bloqueado_hasta)
+
+FUNCIONARIOS(id_funcionario, ci, nombre, apellido, telefono, estado_laboral, horario, estado_operativo, puede_ser_chofer, puede_ser_enfermero)
+
+VEHICULOS(id_vehiculo, id_tipo_vehiculo, matricula, estado_laboral, estado_operativo)
+
+TIPOS_VEHICULO(id_tipo_vehiculo, nombre)
+
+TRASLADOS(id_traslado, id_vehiculo, origen, destino, prioridad, estado, fecha_creacion, fecha_hora_partida, fecha_hora_destino, hora_salida, hora_llegada, hora_regreso, hora_retorno, hora_finalizado, observaciones)
+
+TRASLADO_FUNCIONARIO(id, id_traslado, id_funcionario, rol_en_traslado)
+
+PACIENTE(id_traslado, ci, nombre, telefono, quien_recibe, puerta, piso, sala)
+
+OTRO(id_traslado, descripcion)
+
+CATEGORIAS(id_categoria, nombre, estado)
+
+SUBCATEGORIAS(id_subcategoria, id_categoria, nombre, estado)
+
+DOCUMENTOS(id_documento, id_subcategoria, titulo, ruta, estado, fecha)
+
+ENCUESTAS(id_encuesta, id_subcategoria, titulo, estado)
+
+PREGUNTAS(id_pregunta, id_encuesta, tipo, orden, texto)
+
+RESPUESTAS(id_respuesta, id_opcion, id_pregunta, texto, valor, fecha_hora)
+
+OPCIONES_PREGUNTA(id_opcion, id_pregunta, texto_opcion, orden)

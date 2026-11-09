@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>SIGSM - Editar Subcategoría</title>
+
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+
+<body>
+
+
+<div class="sidebar"></div>
+
+
+<div class="main">
+
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2>
+                Editar Subcategoría
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span class="user">
+                Cargando...
+            </span>
+
+            <span class="role">
+                Cargando...
+            </span>
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="content">
+
+        <h2 class="titulo-seccion">
+            Editar Subcategoría
+        </h2>
+
+
+        <div class="card card-medium">
+
+            <div class="form-group">
+
+                <label for="categoria">
+                    Categoría
+                </label>
+
+                <select id="categoria">
+
+                    <option value="">
+                        Seleccionar categoría...
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="subcategoria">
+                    Subcategoría
+                </label>
+
+                <select id="subcategoria">
+
+                    <option value="">
+                        Seleccionar subcategoría...
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="nombre">
+                    Nombre
+                </label>
+
+                <input
+                    type="text"
+                    id="nombre"
+                    placeholder="Nombre de la subcategoría"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="estado">
+                    Estado
+                </label>
+
+                <select id="estado">
+
+                    <option value="activa">
+                        Activa
+                    </option>
+
+                    <option value="desvinculada">
+                        Desvinculada
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="acciones-form">
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="btnGuardar"
+                >
+                    Guardar cambios
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn-danger"
+                    id="btnDesvincular"
+                >
+                    Desvincular
+                </button>
+
+
+                <a href="categorias.html">
+
+                    <button
+                        type="button"
+                        class="btn-secondary"
+                    >
+                        Volver
+                    </button>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="card card--info">
+
+            <p>
+
+                <b>Importante:</b>
+
+                desvincular una subcategoría no elimina
+                sus datos. Puede volver a activarse
+                posteriormente.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= Sidebar ================= -->
+
+<script src="../js/admin-sidebar.js"></script>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/admin-auth.js"></script>
+
+<!-- ================= JS PROPIO ================= -->
+
+<script>
+
+
+const categoria =
+    document.getElementById('categoria');
+
+const subcategoria =
+    document.getElementById('subcategoria');
+
+const nombre =
+    document.getElementById('nombre');
+
+const estado =
+    document.getElementById('estado');
+
+const btnGuardar =
+    document.getElementById('btnGuardar');
+
+const btnDesvincular =
+    document.getElementById('btnDesvincular');
+
+
+let todasLasSubcategorias = [];
+
+
+/*
+ * ============================================================
+ * CARGAR CATEGORÍAS Y SUBCATEGORÍAS
+ * ============================================================
+ */
+
+async function cargarDatos() {
+
+    try {
+
+        const respuesta =
+            await fetch(
+                '../../API/subcategorias/listar.php',
+                {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                    cache: 'no-store'
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        if (!respuesta.ok || !datos.ok) {
+
+            alert(
+                datos.mensaje ||
+                'No se pudieron cargar las subcategorías.'
+            );
+
+            return;
+
+        }
+
+
+        todasLasSubcategorias =
+            datos.subcategorias;
+
+
+        /*
+         * Crear lista de categorías únicas.
+         */
+
+        const categorias =
+            new Map();
+
+
+        todasLasSubcategorias.forEach(
+            item => {
+
+                categorias.set(
+                    item.id_categoria,
+                    item.categoria
+                );
+
+            }
+        );
+
+
+        categorias.forEach(
+            (nombreCategoria, idCategoria) => {
+
+                const option =
+                    document.createElement('option');
+
+                option.value =
+                    idCategoria;
+
+                option.textContent =
+                    nombreCategoria;
+
+                categoria.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            'No se pudo conectar con el servidor.'
+        );
+
+    }
+
+}
+
+
+/*
+ * ============================================================
+ * CAMBIAR CATEGORÍA
+ * ============================================================
+ */
+
+categoria.addEventListener(
+    'change',
+    function() {
+
+        const idCategoria =
+            this.value;
+
+
+        subcategoria.innerHTML = `
+            <option value="">
+                Seleccionar subcategoría...
+            </option>
+        `;
+
+
+        nombre.value = '';
+        estado.value = 'activa';
+
+
+        if (!idCategoria) {
+
+            return;
+
+        }
+
+
+        const filtradas =
+            todasLasSubcategorias.filter(
+                item =>
+                    item.id_categoria == idCategoria
+            );
+
+
+        filtradas.forEach(
+            item => {
+
+                const option =
+                    document.createElement('option');
+
+                option.value =
+                    item.id_subcategoria;
+
+                option.textContent =
+                    item.nombre;
+
+                subcategoria.appendChild(
+                    option
+                );
+
+            }
+        );
+
+    }
+);
+
+
+/*
+ * ============================================================
+ * SELECCIONAR SUBCATEGORÍA
+ * ============================================================
+ */
+
+subcategoria.addEventListener(
+    'change',
+    async function() {
+
+        const id =
+            this.value;
+
+
+        if (!id) {
+
+            nombre.value = '';
+            estado.value = 'activa';
+
+            return;
+
+        }
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    `../../API/subcategorias/obtener.php?id=${id}`,
+                    {
+                        method: 'GET',
+                        credentials: 'same-origin',
+                        cache: 'no-store'
+                    }
+                );
+
+
+            const datos =
+                await respuesta.json();
+
+
+            if (!respuesta.ok || !datos.ok) {
+
+                alert(
+                    datos.mensaje ||
+                    'No se pudo obtener la subcategoría.'
+                );
+
+                return;
+
+            }
+
+
+            nombre.value =
+                datos.subcategoria.nombre;
+
+
+            estado.value =
+                datos.subcategoria.estado;
+
+
+            actualizarBoton();
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                'No se pudo conectar con el servidor.'
+            );
+
+        }
+
+    }
+);
+
+
+/*
+ * ============================================================
+ * GUARDAR
+ * ============================================================
+ */
+
+btnGuardar.addEventListener(
+    'click',
+    async function() {
+
+        const id =
+            subcategoria.value;
+
+        const nombreNuevo =
+            nombre.value.trim();
+
+        const estadoNuevo =
+            estado.value;
+
+
+        if (!id) {
+
+            alert(
+                'Seleccioná una subcategoría.'
+            );
+
+            return;
+
+        }
+
+
+        if (!nombreNuevo) {
+
+            alert(
+                'El nombre de la subcategoría es obligatorio.'
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    '../../API/subcategorias/actualizar.php',
+                    {
+                        method: 'PUT',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        credentials:
+                            'same-origin',
+
+                        body:
+                            JSON.stringify({
+
+                                id_subcategoria:
+                                    parseInt(id),
+
+                                nombre:
+                                    nombreNuevo,
+
+                                estado:
+                                    estadoNuevo
+
+                            })
+                    }
+                );
+
+
+            const datos =
+                await respuesta.json();
+
+
+            if (!respuesta.ok || !datos.ok) {
+
+                alert(
+                    datos.mensaje ||
+                    'No se pudieron guardar los cambios.'
+                );
+
+                return;
+
+            }
+
+
+            alert(
+                datos.mensaje
+            );
+
+
+            window.location.href =
+                'categorias.html';
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                'No se pudo conectar con el servidor.'
+            );
+
+        }
+
+    }
+);
+
+
+/*
+ * ============================================================
+ * DESVINCULAR
+ * ============================================================
+ */
+
+btnDesvincular.addEventListener(
+    'click',
+    async function() {
+
+        const id =
+            subcategoria.value;
+
+
+        if (!id) {
+
+            alert(
+                'Seleccioná una subcategoría.'
+            );
+
+            return;
+
+        }
+
+
+        const confirmar =
+            confirm(
+                '¿Está seguro de que desea desvincular esta subcategoría?'
+            );
+
+
+        if (!confirmar) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    '../../API/subcategorias/estado.php',
+                    {
+                        method: 'PATCH',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        credentials:
+                            'same-origin',
+
+                        body:
+                            JSON.stringify({
+
+                                id_subcategoria:
+                                    parseInt(id),
+
+                                estado:
+                                    'desvinculada'
+
+                            })
+                    }
+                );
+
+
+            const datos =
+                await respuesta.json();
+
+
+            if (!respuesta.ok || !datos.ok) {
+
+                alert(
+                    datos.mensaje ||
+                    'No se pudo desvincular la subcategoría.'
+                );
+
+                return;
+
+            }
+
+
+            alert(
+                'Subcategoría desvinculada correctamente.'
+            );
+
+
+            window.location.href =
+                'categorias.html';
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                'No se pudo conectar con el servidor.'
+            );
+
+        }
+
+    }
+);
+
+
+/*
+ * ============================================================
+ * BOTÓN DESVINCULAR
+ * ============================================================
+ */
+
+function actualizarBoton() {
+
+    if (estado.value === 'desvinculada') {
+
+        btnDesvincular.disabled = true;
+
+        btnDesvincular.textContent =
+            'Subcategoría desvinculada';
+
+    } else {
+
+        btnDesvincular.disabled = false;
+
+        btnDesvincular.textContent =
+            'Desvincular';
+
+    }
+
+}
+
+
+estado.addEventListener(
+    'change',
+    actualizarBoton
+);
+
+
+/*
+ * ============================================================
+ * INICIO
+ * ============================================================
+ */
+
+verificarAdministrador()
+    .then(autorizado => {
+
+        if (autorizado) {
+
+            cargarDatos();
+
+        }
+
+    });
+
+</script>
+
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+
+</html>

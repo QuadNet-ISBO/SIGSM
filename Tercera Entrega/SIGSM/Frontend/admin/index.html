@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>SIGSM - Panel Administrador</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar"></div>
+
+<!-- ================= CONTENIDO ================= -->
+
+<div class="main">
+
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2>
+                Panel Administrador
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span class="user">
+                Cargando...
+            </span>
+
+            <span class="role">
+                Cargando...
+            </span>
+
+            <button
+                class="logout"
+                type="button"
+                id="btnLogout"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="content">
+
+        <h2 class="titulo-seccion">
+            Panel de Administración
+        </h2>
+
+
+        <div class="grid-admin">
+
+
+            <!-- USUARIOS -->
+
+            <div class="card card-admin">
+
+                <h3>
+                    Usuarios
+                </h3>
+
+                <p>
+                    Crear y editar usuarios del sistema
+                </p>
+
+                <a href="usuarios.html">
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                    >
+                        Gestionar
+                    </button>
+
+                </a>
+
+            </div>
+
+
+            <!-- FUNCIONARIOS -->
+
+            <div class="card card-admin">
+
+                <h3>
+                    Funcionarios
+                </h3>
+
+                <p>
+                    Choferes y enfermeros
+                </p>
+
+                <a href="funcionarios.html">
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                    >
+                        Gestionar
+                    </button>
+
+                </a>
+
+            </div>
+
+
+            <!-- VEHÍCULOS -->
+
+            <div class="card card-admin">
+
+                <h3>
+                    Vehículos
+                </h3>
+
+                <p>
+                    Ambulancias y estado
+                </p>
+
+                <a href="vehiculos.html">
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                    >
+                        Gestionar
+                    </button>
+
+                </a>
+
+            </div>
+
+
+            <!-- CATEGORÍAS -->
+
+            <div class="card card-admin">
+
+                <h3>
+                    Categorías
+                </h3>
+
+                <p>
+                    Categorías y subcategorías
+                </p>
+
+                <a href="categorias.html">
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                    >
+                        Gestionar
+                    </button>
+
+                </a>
+
+            </div>
+
+            <!-- ENCUESTAS -->
+
+            <div class="card card-admin">
+
+                <h3>
+                    Encuestas
+                </h3>
+
+                <p>
+                    Ver encuestas
+                </p>
+
+                <a href="encuestas.html">
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                    >
+                        Gestionar
+                    </button>
+
+                </a>
+
+            </div>
+
+            <!-- Documentos -->
+
+            <div class="card card-admin">
+
+                <h3>
+                    Documentos
+                </h3>
+
+                <p>
+                    Ver documentos
+                </p>
+
+                <a href="../documentos/index.html">
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                    >
+                        Gestionar
+                    </button>
+
+                </a>
+
+            </div>
+
+            <!-- Traslados -->
+
+            <div class="card card-admin">
+
+                <h3>
+                    Traslados
+                </h3>
+
+                <p>
+                    Ver traslados
+                </p>
+
+                <a href="../traslados/index.html">
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                    >
+                        Gestionar
+                    </button>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= Sidebar ================= -->
+
+<script src="../js/admin-sidebar.js"></script>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/admin-auth.js"></script>
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+
+</html>

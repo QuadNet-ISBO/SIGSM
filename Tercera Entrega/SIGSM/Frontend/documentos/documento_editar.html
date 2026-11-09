@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGSM - Editar Documento</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/tema.css">
+    <script src="../js/csrf.js"></script>
+</head>
+<body>
+
+    <div class="sidebar"></div>
+
+    <div class="main">
+        <div class="header">
+            <div class="header-left">
+                <h2>Editar Documento</h2>
+            </div>
+
+            <div class="header-right">
+                <span class="user" id="usuario">Cargando...</span>
+                <span class="role" id="rol">Cargando...</span>
+                <button type="button" class="logout" id="btnLogout">
+                    Salir
+                </button>
+            </div>
+        </div>
+
+        <div class="content">
+            <h2 class="titulo-seccion">Editar Documento</h2>
+
+            <div class="card card-medium">
+                <form id="form-editar-documento" class="form"
+                      enctype="multipart/form-data">
+
+                    <input type="hidden" id="id-documento" name="id_documento">
+
+                    <div class="form-group">
+                        <label for="titulo">Nombre del documento</label>
+                        <input
+                            type="text"
+                            id="titulo"
+                            name="titulo"
+                            maxlength="200"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoria">Categoría</label>
+                        <select id="categoria" name="categoria" required>
+                            <option value="">Cargando categorías...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subcategoria">Subcategoría</label>
+                        <select id="subcategoria"
+                                name="id_subcategoria"
+                                required
+                                disabled>
+                            <option value="">Seleccioná una categoría primero</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Archivo actual</label>
+                        <p id="archivo-actual">Cargando documento...</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="archivo">Reemplazar archivo PDF (opcional)</label>
+                        <input
+                            type="file"
+                            id="archivo"
+                            name="archivo"
+                            accept=".pdf,application/pdf"
+                        >
+                        <small>Si no seleccionás otro archivo, se conserva el actual.</small>
+                    </div>
+
+                    <div id="mensaje-editar" role="status"
+                         aria-live="polite"></div>
+
+                    <div class="grupo-botones">
+                        <button
+                            type="submit"
+                            class="btn-primary"
+                            id="btnGuardar">
+                            Guardar cambios
+                        </button>
+
+                        <a href="./index.html" class="btn-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/auth.js"></script>
+
+<!-- ================= SIDEBAR ================= -->
+
+<script src="../js/operator-sidebar.js"></script>
+
+<!-- ================= JS PROPIO ================= -->
+
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+
+        // Verificar que el usuario tenga una sesión activa.
+        const autorizado = await verificarSesion();
+
+        if (!autorizado) {
+            return;
+        }
+
+        const API_CATEGORIAS = '../../API/categorias/listar.php';
+        const API_SUBCATEGORIAS = '../../API/subcategorias/listar.php';
+        const API_OBTENER = '../../API/documentos/obtener.php';
+        const API_ACTUALIZAR = '../../API/documentos/actualizar.php';
+
+        const formulario = document.getElementById('form-editar-documento');
+        const idDocumento = document.getElementById('id-documento');
+        const titulo = document.getElementById('titulo');
+        const categoria = document.getElementById('categoria');
+        const subcategoria = document.getElementById('subcategoria');
+        const archivo = document.getElementById('archivo');
+        const archivoActual = document.getElementById('archivo-actual');
+        const mensaje = document.getElementById('mensaje-editar');
+        const btnGuardar = document.getElementById('btnGuardar');
+
+        let todasLasSubcategorias = [];
+        let documentoOriginal = null;
+
+        function mostrarMensaje(texto, error = false) {
+            mensaje.textContent = texto;
+            mensaje.style.color = error ? '#c62828' : '#2e7d32';
+        }
+
+        async function consultarAPI(url, opciones = {}) {
+            const respuesta = await fetch(url, {
+                credentials: 'same-origin',
+                cache: 'no-store',
+                ...opciones
+            });
+
+            const datos = await respuesta.json();
+
+            if (!respuesta.ok || datos.ok === false) {
+                throw new Error(
+                    datos.mensaje || 'Error al comunicarse con el servidor.'
+                );
+            }
+
+            return datos;
+        }
+
+        function obtenerIdDeLaURL() {
+            const parametros = new URLSearchParams(window.location.search);
+
+            return parametros.get('id_documento') || parametros.get('id');
+        }
+
+        function cargarSubcategorias(
+            idCategoria,
+            idSubcategoriaSeleccionada = ''
+        ) {
+            subcategoria.replaceChildren(
+                new Option('Seleccioná una subcategoría', '')
+            );
+
+            subcategoria.disabled = true;
+
+            if (!idCategoria) {
+                subcategoria.replaceChildren(
+                    new Option('Seleccioná una categoría primero', '')
+                );
+                return;
+            }
+
+            const filtradas = todasLasSubcategorias.filter(item =>
+                String(item.id_categoria) === String(idCategoria) &&
+                String(item.estado).toLowerCase() === 'activa'
+            );
+
+            filtradas.forEach(item => {
+                const opcion = new Option(
+                    item.nombre,
+                    item.id_subcategoria
+                );
+
+                if (
+                    String(item.id_subcategoria) ===
+                    String(idSubcategoriaSeleccionada)
+                ) {
+                    opcion.selected = true;
+                }
+
+                subcategoria.add(opcion);
+            });
+
+            if (filtradas.length === 0) {
+                subcategoria.replaceChildren(
+                    new Option('No hay subcategorías activas', '')
+                );
+                return;
+            }
+
+            subcategoria.disabled = false;
+        }
+
+        async function cargarDatos() {
+            const id = obtenerIdDeLaURL();
+
+            if (!id || !/^\d+$/.test(id) || Number(id) <= 0) {
+                mostrarMensaje(
+                    'No se recibió un ID de documento válido.',
+                    true
+                );
+                btnGuardar.disabled = true;
+                return;
+            }
+
+            idDocumento.value = id;
+            categoria.disabled = true;
+            subcategoria.disabled = true;
+            btnGuardar.disabled = true;
+
+            try {
+                const [
+                    datosCategorias,
+                    datosSubcategorias,
+                    datosDocumento
+                ] = await Promise.all([
+                    consultarAPI(API_CATEGORIAS),
+                    consultarAPI(API_SUBCATEGORIAS),
+                    consultarAPI(
+                        `${API_OBTENER}?id_documento=${encodeURIComponent(id)}`
+                    )
+                ]);
+
+                const categorias = datosCategorias.categorias || [];
+
+                todasLasSubcategorias =
+                    datosSubcategorias.subcategorias || [];
+
+                documentoOriginal = datosDocumento.documento;
+
+                if (!documentoOriginal) {
+                    throw new Error(
+                        'No se encontró el documento solicitado.'
+                    );
+                }
+
+                titulo.value = documentoOriginal.titulo || '';
+
+                categoria.replaceChildren(
+                    new Option('Seleccioná una categoría', '')
+                );
+
+                categorias
+                    .filter(item =>
+                        String(item.estado).toLowerCase() === 'activa'
+                    )
+                    .forEach(item => {
+                        categoria.add(
+                            new Option(item.nombre, item.id_categoria)
+                        );
+                    });
+
+                const categoriaOriginal = documentoOriginal.id_categoria;
+
+                if (!categoriaOriginal) {
+                    throw new Error(
+                        'La API obtener.php debe devolver id_categoria.'
+                    );
+                }
+
+                categoria.value = String(categoriaOriginal);
+
+                if (!categoria.value) {
+                    throw new Error(
+                        'La categoría del documento no está disponible.'
+                    );
+                }
+
+                cargarSubcategorias(
+                    categoriaOriginal,
+                    documentoOriginal.id_subcategoria
+                );
+
+                // Mostrar el nombre del archivo PDF actual.
+                const ruta = documentoOriginal.ruta || '';
+                const nombreArchivo = ruta.split('/').pop();
+
+                archivoActual.textContent = nombreArchivo ||
+                    'No se encontró la ruta del archivo actual.';
+
+                categoria.disabled = false;
+                btnGuardar.disabled = false;
+
+            } catch (error) {
+                console.error('Error al cargar el documento:', error);
+                mostrarMensaje(error.message, true);
+                archivoActual.textContent =
+                    'No se pudo cargar el documento.';
+            }
+        }
+
+        categoria.addEventListener('change', () => {
+            cargarSubcategorias(categoria.value);
+            mostrarMensaje('');
+        });
+
+        archivo.addEventListener('change', () => {
+            mostrarMensaje('');
+
+            const seleccionado = archivo.files[0];
+
+            if (!seleccionado) {
+                return;
+            }
+
+            if (!seleccionado.name.toLowerCase().endsWith('.pdf')) {
+                mostrarMensaje('Solo se permiten archivos PDF.', true);
+                archivo.value = '';
+                return;
+            }
+
+            if (seleccionado.size > 10 * 1024 * 1024) {
+                mostrarMensaje(
+                    'El archivo no puede superar los 10 MB.',
+                    true
+                );
+                archivo.value = '';
+            }
+        });
+
+        formulario.addEventListener('submit', async evento => {
+            evento.preventDefault();
+            mostrarMensaje('');
+
+            if (!documentoOriginal) {
+                mostrarMensaje(
+                    'No se cargó el documento original.',
+                    true
+                );
+                return;
+            }
+
+            if (!titulo.value.trim()) {
+                mostrarMensaje(
+                    'Ingresá el nombre del documento.',
+                    true
+                );
+                return;
+            }
+
+            if (!categoria.value) {
+                mostrarMensaje('Seleccioná una categoría.', true);
+                return;
+            }
+
+            if (!subcategoria.value) {
+                mostrarMensaje('Seleccioná una subcategoría.', true);
+                return;
+            }
+
+            const seleccionado = archivo.files[0];
+
+            if (seleccionado) {
+                if (!seleccionado.name.toLowerCase().endsWith('.pdf')) {
+                    mostrarMensaje(
+                        'Solo se permiten archivos PDF.',
+                        true
+                    );
+                    return;
+                }
+
+                if (seleccionado.size > 10 * 1024 * 1024) {
+                    mostrarMensaje(
+                        'El archivo no puede superar los 10 MB.',
+                        true
+                    );
+                    return;
+                }
+            }
+
+            const datosFormulario = new FormData(formulario);
+
+            // La API recibe id_subcategoria, no el campo categoria.
+            datosFormulario.delete('categoria');
+
+            btnGuardar.disabled = true;
+            btnGuardar.textContent = 'Guardando...';
+
+            try {
+                const datos = await consultarAPI(API_ACTUALIZAR, {
+                    method: 'POST',
+                    body: datosFormulario
+                });
+
+                mostrarMensaje(
+                    datos.mensaje ||
+                    'Documento actualizado correctamente.'
+                );
+
+                window.location.href = './index.html';
+
+            } catch (error) {
+                console.error(
+                    'Error al actualizar el documento:',
+                    error
+                );
+                mostrarMensaje(error.message, true);
+
+            } finally {
+                btnGuardar.disabled = false;
+                btnGuardar.textContent = 'Guardar cambios';
+            }
+        });
+
+        await cargarDatos();
+
+    });
+    </script>
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+</html>

@@ -1,0 +1,679 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+
+    <title>SIGSM - Dashboard</title>
+
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/tema.css">
+    <script src="../js/csrf.js"></script>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar"></div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="main">
+
+        <!-- ENCABEZADO -->
+        <div class="header">
+
+            <div class="header-left">
+                <h2>Dashboard</h2>
+            </div>
+
+            <div class="header-right">
+
+                <span class="user" id="usuario">
+                    Cargando...
+                </span>
+
+                <span class="role" id="rol">
+                    Cargando...
+                </span>
+
+                <button
+                    class="logout"
+                    id="btnLogout"
+                    type="button"
+                >
+                    Salir
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- CONTENIDO -->
+        
+        <div class="content">
+
+    <!-- BIENVENIDA -->
+    <section class="card card--info" aria-labelledby="tituloBienvenida">
+
+        <div class="top-bar">
+
+            <div>
+                <h2 id="tituloBienvenida">Bienvenido</h2>
+                <p id="fechaHoy"></p>
+                <p id="mensajeBienvenida">
+                    Preparando el resumen del día...
+                </p>
+                <p id="ultimaActualizacion"></p>
+            </div>
+
+            <div class="grupo-botones">
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    id="btnActualizar"
+                >
+                    Actualizar
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- TRASLADOS -->
+    <section aria-labelledby="tituloTraslados">
+
+        <div class="top-bar">
+            <h2 class="titulo-seccion" id="tituloTraslados">
+                Traslados
+            </h2>
+        </div>
+
+        <div class="grid-admin">
+
+            <article class="card card-admin">
+                <h3>Solicitudes pendientes</h3>
+                <div class="number" id="kpiPendientes">—</div>
+                <p>Esperando aprobación</p>
+            </article>
+
+            <article class="card card-admin">
+                <h3>Traslados en proceso</h3>
+                <div class="number" id="kpiEnProceso">—</div>
+                <p>Aprobados y en ejecución</p>
+            </article>
+
+            <article class="card card-admin">
+                <h3>Finalizados hoy</h3>
+                <div class="number" id="kpiFinalizadosHoy">—</div>
+                <p>Completados durante el día</p>
+            </article>
+
+            <article class="card card-admin">
+                <h3>Prioridad alta</h3>
+                <div class="number" id="kpiPrioridadAlta">—</div>
+                <p>Pendientes o en proceso</p>
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <!-- DOCUMENTOS -->
+    <section aria-labelledby="tituloDocumentos">
+
+        <div class="top-bar">
+            <h2 class="titulo-seccion" id="tituloDocumentos">
+                Documentos
+            </h2>
+        </div>
+
+        <div class="grid-admin">
+
+            <article class="card card-admin">
+                <h3>Disponibles en el portal</h3>
+                <div class="number" id="kpiDocDisponibles">—</div>
+                <p>Visibles para los pacientes</p>
+            </article>
+
+            <article class="card card-admin">
+                <h3>Fuera del portal</h3>
+                <div class="number" id="kpiDocFuera">—</div>
+                <p>No visibles para el público</p>
+            </article>
+
+            <article class="card card-admin">
+                <h3>Categorías activas</h3>
+                <div class="number" id="kpiCategorias">—</div>
+                <p>Grupos principales</p>
+            </article>
+
+            <article class="card card-admin">
+                <h3>Subcategorías activas</h3>
+                <div class="number" id="kpiSubcategorias">—</div>
+                <p>Organización de documentos</p>
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <!-- AVISO DE DOCUMENTOS OCULTOS -->
+    <section
+        class="card card--info"
+        id="avisoOcultos"
+        role="status"
+        hidden
+    ></section>
+
+
+    <!-- ESTADO DEL SISTEMA -->
+    <p id="estadoDashboard" aria-live="polite">
+        Cargando datos...
+    </p>
+
+        </div>
+
+
+    </div>
+
+    <!-- SEGURIDAD -->
+    <script src="../js/auth.js"></script>
+
+    <!-- BARRA LATERAL -->
+    <script src="../js/operator-sidebar.js"></script>
+
+    <!-- FUNCIONAMIENTO DEL DASHBOARD -->
+    <script>
+
+        const API_SESION =
+            '../../API/usuarios/sesion.php';
+
+        const API_TRASLADOS =
+            '../../API/traslados/listar.php';
+
+        const API_DOCUMENTOS =
+            '../../API/documentos/listar.php';
+
+        const API_CATEGORIAS =
+            '../../API/categorias/listar.php';
+
+        const API_SUBCATEGORIAS =
+            '../../API/subcategorias/listar.php';
+
+        const ESTADOS_EN_PROCESO = [
+            'aprobado',
+            'en_curso',
+            'llegado',
+            'regreso',
+            'retornado'
+        ];
+
+        const resumen = {
+            pendientes: null,
+            enProceso: null,
+            disponibles: null
+        };
+
+        let cargando = false;
+        let nombreBienvenida = null;
+        let fechaUltimaActualizacion = null;
+
+        const $ = id => document.getElementById(id);
+
+
+        // CONSULTAR DATOS DE LA API
+
+        async function obtenerJSON(url) {
+
+            const respuesta = await fetch(url, {
+                method: 'GET',
+                credentials: 'same-origin',
+                cache: 'no-store',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (
+                respuesta.status === 401 ||
+                respuesta.status === 403
+            ) {
+                window.location.replace('../login.html');
+
+                throw new Error('La sesión ya no es válida.');
+            }
+
+            let datos;
+
+            try {
+                datos = await respuesta.json();
+            } catch (error) {
+                throw new Error(
+                    'El servidor devolvió una respuesta no válida.'
+                );
+            }
+
+            if (!respuesta.ok || datos.ok === false) {
+                throw new Error(
+                    datos.mensaje ||
+                    `Error HTTP ${respuesta.status}`
+                );
+            }
+
+            return datos;
+        }
+
+
+        // FECHA ACTUAL
+
+        function fechaLocalISO() {
+
+            const hoy = new Date();
+
+            const anio = hoy.getFullYear();
+
+            const mes = String(
+                hoy.getMonth() + 1
+            ).padStart(2, '0');
+
+            const dia = String(
+                hoy.getDate()
+            ).padStart(2, '0');
+
+            return `${anio}-${mes}-${dia}`;
+        }
+
+
+        function idiomaDashboard() {
+            return window.SIGSMPreferencias?.idiomaActual() === 'en' ? 'en' : 'es';
+        }
+
+        function mostrarFechaHoy() {
+            const ingles = idiomaDashboard() === 'en';
+            const fecha = new Date().toLocaleDateString(
+                ingles ? 'en-US' : 'es-UY',
+                { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }
+            );
+            $('fechaHoy').textContent = fecha.charAt(0).toUpperCase() + fecha.slice(1);
+        }
+
+        function saludoSegunHora() {
+            const hora = new Date().getHours();
+            const ingles = idiomaDashboard() === 'en';
+            if (hora < 12) return ingles ? 'Good morning' : 'Buenos días';
+            if (hora < 20) return ingles ? 'Good afternoon' : 'Buenas tardes';
+            return ingles ? 'Good evening' : 'Buenas noches';
+        }
+
+        function mostrarSaludo() {
+            $('tituloBienvenida').textContent = nombreBienvenida
+                ? `${saludoSegunHora()}, ${nombreBienvenida}`
+                : saludoSegunHora();
+        }
+
+        function mostrarUltimaActualizacion() {
+            if (!fechaUltimaActualizacion) return;
+            const ingles = idiomaDashboard() === 'en';
+            const hora = fechaUltimaActualizacion.toLocaleTimeString(
+                ingles ? 'en-US' : 'es-UY',
+                { hour: '2-digit', minute: '2-digit' }
+            );
+            $('ultimaActualizacion').textContent =
+                ingles ? `Updated at ${hora}` : `Actualizado a las ${hora}`;
+        }
+
+        // BIENVENIDA Y USUARIO
+        async function cargarBienvenida() {
+            try {
+                const datos = await obtenerJSON(API_SESION);
+                nombreBienvenida = datos.usuario?.nombre || null;
+                mostrarSaludo();
+            } catch (error) {
+                console.error('Error al cargar la bienvenida:', error);
+                mostrarSaludo();
+            }
+        }
+
+        // TRASLADOS
+
+        async function cargarTraslados() {
+
+            const datos = await obtenerJSON(API_TRASLADOS);
+
+            const traslados = datos.traslados;
+
+            if (!Array.isArray(traslados)) {
+                throw new Error(
+                    'La respuesta de traslados no es válida.'
+                );
+            }
+
+            const pendientes = traslados.filter(
+                t => t.estado === 'solicitado'
+            );
+
+            const enProceso = traslados.filter(
+                t => ESTADOS_EN_PROCESO.includes(t.estado)
+            );
+
+            const finalizadosHoy = traslados.filter(t =>
+                t.estado === 'finalizado' &&
+                t.hora_finalizado &&
+                String(t.hora_finalizado).substring(0, 10)
+                    === fechaLocalISO()
+            );
+
+            const prioridadAlta = traslados.filter(t =>
+                (
+                    t.estado === 'solicitado' ||
+                    ESTADOS_EN_PROCESO.includes(t.estado)
+                ) &&
+                t.prioridad === 'alta'
+            );
+
+            $('kpiPendientes').textContent =
+                pendientes.length;
+
+            $('kpiEnProceso').textContent =
+                enProceso.length;
+
+            $('kpiFinalizadosHoy').textContent =
+                finalizadosHoy.length;
+
+            $('kpiPrioridadAlta').textContent =
+                prioridadAlta.length;
+
+            resumen.pendientes = pendientes.length;
+
+            resumen.enProceso = enProceso.length;
+        }
+
+
+        function errorTraslados(error) {
+
+            $('kpiPendientes').textContent = '—';
+            $('kpiEnProceso').textContent = '—';
+            $('kpiFinalizadosHoy').textContent = '—';
+            $('kpiPrioridadAlta').textContent = '—';
+
+            resumen.pendientes = null;
+            resumen.enProceso = null;
+
+            console.error(
+                'Error al cargar traslados:',
+                error
+            );
+        }
+
+
+        // DOCUMENTOS
+
+        function motivoNoVisible(documento) {
+
+            if (documento.estado !== 'activo') {
+                return 'Documento desvinculado';
+            }
+
+            if (documento.estado_subcategoria !== 'activa') {
+                return 'Subcategoría desvinculada';
+            }
+
+            if (documento.estado_categoria !== 'activa') {
+                return 'Categoría desvinculada';
+            }
+
+            return null;
+        }
+
+
+        async function cargarDocumentos() {
+
+            const [
+                datosDocumentos,
+                datosCategorias,
+                datosSubcategorias
+            ] = await Promise.all([
+                obtenerJSON(API_DOCUMENTOS),
+                obtenerJSON(API_CATEGORIAS),
+                obtenerJSON(API_SUBCATEGORIAS)
+            ]);
+
+            const documentos = datosDocumentos.documentos;
+            const categorias = datosCategorias.categorias;
+            const subcategorias = datosSubcategorias.subcategorias;
+
+            if (
+                !Array.isArray(documentos) ||
+                !Array.isArray(categorias) ||
+                !Array.isArray(subcategorias)
+            ) {
+                throw new Error(
+                    'La respuesta de documentos no es válida.'
+                );
+            }
+
+            const disponibles = documentos.filter(
+                d => motivoNoVisible(d) === null
+            ).length;
+
+            const activosOcultos = documentos.filter(
+                d =>
+                    d.estado === 'activo' &&
+                    motivoNoVisible(d) !== null
+            ).length;
+
+            $('kpiDocDisponibles').textContent =
+                disponibles;
+
+            $('kpiDocFuera').textContent =
+                documentos.length - disponibles;
+
+            $('kpiCategorias').textContent =
+                categorias.filter(
+                    c => c.estado === 'activa'
+                ).length;
+
+            $('kpiSubcategorias').textContent =
+                subcategorias.filter(
+                    s => s.estado === 'activa'
+                ).length;
+
+            resumen.disponibles = disponibles;
+
+            mostrarAvisoOcultos(activosOcultos);
+        }
+
+
+        function mostrarAvisoOcultos(cantidad) {
+
+            const aviso = $('avisoOcultos');
+
+            if (cantidad === 0) {
+                aviso.hidden = true;
+                aviso.textContent = '';
+                return;
+            }
+
+            aviso.textContent =
+                `${cantidad} ${
+                    cantidad === 1
+                        ? 'documento activo no se ve'
+                        : 'documentos activos no se ven'
+                } en el portal porque su categoría o subcategoría está desvinculada.`;
+
+            aviso.hidden = false;
+        }
+
+
+        function errorDocumentos(error) {
+
+            $('kpiDocDisponibles').textContent = '—';
+            $('kpiDocFuera').textContent = '—';
+            $('kpiCategorias').textContent = '—';
+            $('kpiSubcategorias').textContent = '—';
+
+            resumen.disponibles = null;
+
+            mostrarAvisoOcultos(0);
+
+            console.error(
+                'Error al cargar documentos:',
+                error
+            );
+        }
+
+
+        // ACTUALIZAR MENSAJE DE BIENVENIDA
+
+        function actualizarMensajeBienvenida() {
+            const ingles = idiomaDashboard() === 'en';
+            const partes = [];
+
+            if (resumen.pendientes !== null) {
+                const n = resumen.pendientes;
+                partes.push(ingles
+                    ? (n === 0 ? 'No pending requests.' : `${n} pending ${n === 1 ? 'request' : 'requests'} awaiting approval.`)
+                    : (n === 0 ? 'No hay solicitudes pendientes.' : `Hay ${n} ${n === 1 ? 'solicitud pendiente' : 'solicitudes pendientes'} de aprobación.`));
+            }
+            if (resumen.enProceso !== null) {
+                const n = resumen.enProceso;
+                partes.push(ingles
+                    ? (n === 0 ? 'No transfers in progress.' : `${n} ${n === 1 ? 'transfer' : 'transfers'} in progress.`)
+                    : (n === 0 ? 'No hay traslados en proceso.' : `Hay ${n} ${n === 1 ? 'traslado en proceso' : 'traslados en proceso'}.`));
+            }
+            if (resumen.disponibles !== null) {
+                const n = resumen.disponibles;
+                partes.push(ingles
+                    ? `${n} ${n === 1 ? 'document' : 'documents'} available in the portal.`
+                    : `${n} ${n === 1 ? 'documento disponible' : 'documentos disponibles'} en el portal.`);
+            }
+            $('mensajeBienvenida').textContent = partes.length
+                ? partes.join(' ')
+                : (ingles ? 'Operational summary of transfers and documents.' : 'Resumen operativo de traslados y documentos.');
+        }
+
+        function actualizarTextosDinamicos() {
+            mostrarFechaHoy();
+            mostrarSaludo();
+            actualizarMensajeBienvenida();
+            mostrarUltimaActualizacion();
+        }
+
+        document.addEventListener('sigsm:idioma', actualizarTextosDinamicos);
+
+        // ACTUALIZAR DASHBOARD
+
+        async function cargarDashboard() {
+
+            if (cargando) {
+                return;
+            }
+
+            cargando = true;
+
+            $('btnActualizar').disabled = true;
+
+            $('estadoDashboard').textContent =
+                'Actualizando información...';
+
+            try {
+
+                const resultados = await Promise.allSettled([
+                    cargarTraslados(),
+                    cargarDocumentos()
+                ]);
+
+                const errores = [];
+
+                if (resultados[0].status === 'rejected') {
+
+                    errorTraslados(resultados[0].reason);
+
+                    errores.push('No se pudieron cargar los traslados.');
+                }
+
+                if (resultados[1].status === 'rejected') {
+
+                    errorDocumentos(resultados[1].reason);
+
+                    errores.push('No se pudieron cargar los documentos.');
+                }
+
+                actualizarMensajeBienvenida();
+
+                fechaUltimaActualizacion = new Date();
+                mostrarUltimaActualizacion();
+
+                $('estadoDashboard').textContent =
+                    errores.length
+                        ? errores.join(' ')
+                        : 'Todos los datos están actualizados.';
+
+            } catch (error) {
+
+                console.error(error);
+
+                $('estadoDashboard').textContent =
+                    'No se pudo actualizar el dashboard.';
+
+            } finally {
+
+                $('btnActualizar').disabled = false;
+
+                cargando = false;
+            }
+        }
+
+
+        // INICIO
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            async () => {
+
+                const autorizado = await verificarSesion();
+
+                if (!autorizado) {
+                    return;
+                }
+
+                mostrarFechaHoy();
+
+                $('btnActualizar').addEventListener(
+                    'click',
+                    cargarDashboard
+                );
+
+                await Promise.all([
+                    cargarBienvenida(),
+                    cargarDashboard()
+                ]);
+
+                window.setInterval(
+                    () => {
+                        if (!document.hidden) {
+                            cargarDashboard();
+                        }
+                    },
+                    60000
+                );
+            }
+        );
+
+    </script>
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+</html>

@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SIGSM - Crear Encuesta</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+    <link rel="stylesheet" href="../css/tema.css">
+
+    <script src="../js/csrf.js"></script>
+</head>
+
+
+<body>
+
+<div class="sidebar"></div>
+
+<!-- ================= CONTENIDO ================= -->
+
+<div class="main">
+
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h2 id="tituloPagina">
+                Crear encuesta
+            </h2>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span class="user" id="usuario">
+                Cargando...
+            </span>
+
+            <span class="role" id="rol">
+                Cargando...
+            </span>
+
+            <button
+                class="logout"
+                id="btnLogout"
+                type="button"
+            >
+                Salir
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= FORMULARIO ================= -->
+
+    <div class="content">
+
+
+        <h2
+            class="titulo-seccion"
+            id="tituloSeccion"
+        >
+            Nueva encuesta
+        </h2>
+
+
+        <p id="descripcionSeccion">
+            Completá los datos y agregá las preguntas con sus opciones de respuesta.
+        </p>
+
+
+        <form
+            class="form"
+            id="formEncuesta"
+        >
+
+
+            <!-- ================= DATOS GENERALES ================= -->
+
+            <div class="card card-medium">
+
+                <h3>
+                    Datos generales
+                </h3>
+
+
+                <div class="form-group">
+
+                    <label for="titulo">
+                        Título de la encuesta
+                    </label>
+
+                    <input
+                        type="text"
+                        id="titulo"
+                        name="titulo"
+                        maxlength="150"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="idCategoria">
+                        Categoría
+                    </label>
+
+                    <select
+                        id="idCategoria"
+                        name="idCategoria"
+                        required
+                    >
+
+                        <option value="">
+                            Cargando categorías...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="idSubcategoria">
+                        Subcategoría
+                    </label>
+
+                    <select
+                        id="idSubcategoria"
+                        name="idSubcategoria"
+                        required
+                        disabled
+                    >
+
+                        <option value="">
+                            Primero seleccioná una categoría
+                        </option>
+
+                    </select>
+
+                    <small>
+                        Cada subcategoría puede tener una sola encuesta activa.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= PREGUNTAS ================= -->
+
+            <div class="card">
+
+                <div class="top-bar">
+
+                    <div>
+
+                        <h3>
+                            Preguntas
+                        </h3>
+
+                        <p>
+                            Cada pregunta debe tener al menos dos opciones de respuesta.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="btnAgregarPregunta"
+                        class="btn-secondary"
+                    >
+                        Agregar pregunta
+                    </button>
+
+                </div>
+
+
+                <div id="listaPreguntas"></div>
+
+
+                <p id="sinPreguntas">
+                    Todavía no agregaste preguntas.
+                </p>
+
+            </div>
+
+
+            <!-- ================= MENSAJES ================= -->
+
+            <p
+                id="mensajeFormulario"
+                role="alert"
+                aria-live="polite"
+            ></p>
+
+
+            <!-- ================= BOTONES ================= -->
+
+            <div class="acciones-form">
+
+                <button
+                    type="submit"
+                    class="btn-primary"
+                    id="btnGuardar"
+                >
+                    Crear encuesta
+                </button>
+
+                <a
+                    href="encuestas.html"
+                    class="btn-secondary"
+                >
+                    Volver
+                </a>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ================= Sidebar ================= -->
+
+<script src="../js/admin-sidebar.js"></script>
+
+<!-- ================= SEGURIDAD ================= -->
+
+<script src="../js/admin-auth.js"></script>
+
+<!-- ================= JS PROPIO ================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+
+    const formulario =
+        document.getElementById("formEncuesta");
+
+
+    const listaPreguntas =
+        document.getElementById("listaPreguntas");
+
+
+    const sinPreguntas =
+        document.getElementById("sinPreguntas");
+
+
+    const selectorCategoria =
+        document.getElementById("idCategoria");
+
+
+    const selectorSubcategoria =
+        document.getElementById("idSubcategoria");
+
+
+    const mensaje =
+        document.getElementById("mensajeFormulario");
+
+
+    const btnAgregarPregunta =
+        document.getElementById("btnAgregarPregunta");
+
+
+    const btnGuardar =
+        document.getElementById("btnGuardar");
+
+
+    const tituloPagina =
+        document.getElementById("tituloPagina");
+
+
+    const tituloSeccion =
+        document.getElementById("tituloSeccion");
+
+
+    const descripcionSeccion =
+        document.getElementById("descripcionSeccion");
+
+
+    /*
+     * Rutas de la API.
+     */
+
+    const API_CATEGORIAS =
+        "../../API/categorias/listar.php";
+
+
+    const API_SUBCATEGORIAS =
+        "../../API/subcategorias/listar.php";
+
+
+    const API_CREAR_ENCUESTA =
+        "../../API/encuestas/crear.php";
+
+
+    const API_ACTUALIZAR_ENCUESTA =
+        "../../API/encuestas/actualizar.php";
+
+
+    /*
+     * Parámetros de la URL.
+     *
+     * Si reemplazar=1, se crea una nueva versión
+     * de una encuesta existente.
+     */
+
+    const parametros =
+        new URLSearchParams(window.location.search);
+
+
+    const modoReemplazo =
+        parametros.get("reemplazar") === "1";
+
+
+    const idEncuestaAnterior =
+        Number(parametros.get("id_encuesta"));
+
+
+    const idSubcategoriaReemplazo =
+        Number(parametros.get("id_subcategoria"));
+
+
+    let todasLasSubcategorias = [];
+
+    let formularioEnviado = false;
+
+
+    /*
+     * Mostrar mensajes.
+     */
+
+    function mostrarMensaje(texto, tipo = "") {
+
+        mensaje.textContent = texto;
+
+        mensaje.className = tipo;
+
+    }
+
+
+    /*
+     * Bloquear el formulario.
+     */
+
+    function bloquearFormulario() {
+
+        formulario.querySelectorAll(
+            "input, select, button"
+        ).forEach(elemento => {
+
+            elemento.disabled = true;
+
+        });
+
+    }
+
+
+    /*
+     * Obtener datos de la API.
+     */
+
+    async function obtenerLista(url, clavesPosibles) {
+
+        const respuesta = await fetch(url, {
+
+            method: "GET",
+
+            credentials: "same-origin",
+
+            headers: {
+                "Accept": "application/json"
+            }
+
+        });
+
+
+        const datos = await respuesta.json();
+
+
+        if (!respuesta.ok || datos.ok === false) {
+
+            throw new Error(
+                datos.mensaje ||
+                "No se pudieron cargar los datos."
+            );
+
+        }
+
+
+        if (Array.isArray(datos)) {
+
+            return datos;
+
+        }
+
+
+        for (const clave of clavesPosibles) {
+
+            if (Array.isArray(datos[clave])) {
+
+                return datos[clave];
+
+            }
+
+        }
+
+
+        if (Array.isArray(datos.datos)) {
+
+            return datos.datos;
+
+        }
+
+
+        return [];
+
+    }
+
+
+    /*
+     * Obtener identificadores y nombres.
+     */
+
+    function obtenerIdCategoria(item) {
+
+        return item.id_categoria ??
+            item.idCategoria ??
+            item.id;
+
+    }
+
+
+    function obtenerNombreCategoria(item) {
+
+        return item.nombre_categoria ??
+            item.nombre ??
+            item.categoria;
+
+    }
+
+
+    function obtenerIdSubcategoria(item) {
+
+        return item.id_subcategoria ??
+            item.idSubcategoria ??
+            item.id;
+
+    }
+
+
+    function obtenerIdCategoriaDeSubcategoria(item) {
+
+        return item.id_categoria ??
+            item.idCategoria;
+
+    }
+
+
+    function obtenerNombreSubcategoria(item) {
+
+        return item.nombre_subcategoria ??
+            item.nombre ??
+            item.subcategoria;
+
+    }
+
+
+    /*
+     * Cargar categorías activas.
+     */
+
+    async function cargarCategorias() {
+
+        const categorias = await obtenerLista(
+            API_CATEGORIAS,
+            ["categorias"]
+        );
+
+
+        selectorCategoria.replaceChildren();
+
+
+        const opcionInicial =
+            document.createElement("option");
+
+
+        opcionInicial.value = "";
+
+        opcionInicial.textContent =
+            "Seleccioná una categoría";
+
+
+        selectorCategoria.appendChild(opcionInicial);
+
+
+        categorias
+            .filter(categoria =>
+                categoria.estado === "activa"
+            )
+            .forEach(categoria => {
+
+                const id =
+                    obtenerIdCategoria(categoria);
+
+
+                const nombre =
+                    obtenerNombreCategoria(categoria);
+
+
+                if (id == null || !nombre) {
+
+                    return;
+
+                }
+
+
+                const opcion =
+                    document.createElement("option");
+
+
+                opcion.value = id;
+
+                opcion.textContent = nombre;
+
+
+                selectorCategoria.appendChild(opcion);
+
+            });
+
+
+        if (selectorCategoria.options.length === 1) {
+
+            selectorCategoria.options[0].textContent =
+                "No hay categorías disponibles";
+
+        }
+
+    }
+
+
+    /*
+     * Cargar subcategorías.
+     */
+
+    async function cargarSubcategorias() {
+
+        selectorSubcategoria.disabled = true;
+
+
+        todasLasSubcategorias = await obtenerLista(
+            API_SUBCATEGORIAS,
+            ["subcategorias"]
+        );
+
+
+        filtrarSubcategorias();
+
+    }
+
+
+    /*
+     * Filtrar subcategorías por categoría seleccionada.
+     */
+
+    function filtrarSubcategorias() {
+
+        const idCategoriaSeleccionada =
+            selectorCategoria.value;
+
+
+        selectorSubcategoria.replaceChildren();
+
+
+        if (!idCategoriaSeleccionada) {
+
+            const opcion =
+                document.createElement("option");
+
+
+            opcion.value = "";
+
+            opcion.textContent =
+                "Primero seleccioná una categoría";
+
+
+            selectorSubcategoria.appendChild(opcion);
+
+            selectorSubcategoria.disabled = true;
+
+            return;
+
+        }
+
+
+        const filtradas =
+            todasLasSubcategorias.filter(subcategoria =>
+
+                String(
+                    obtenerIdCategoriaDeSubcategoria(subcategoria)
+                ) === String(idCategoriaSeleccionada) &&
+
+                subcategoria.estado === "activa" &&
+
+                (
+                    subcategoria.estado_categoria === undefined ||
+                    subcategoria.estado_categoria === "activa"
+                )
+
+            );
+
+
+        const opcionInicial =
+            document.createElement("option");
+
+
+        opcionInicial.value = "";
+
+        opcionInicial.textContent =
+            "Seleccioná una subcategoría";
+
+
+        selectorSubcategoria.appendChild(opcionInicial);
+
+
+        filtradas.forEach(subcategoria => {
+
+            const id =
+                obtenerIdSubcategoria(subcategoria);
+
+
+            const nombre =
+                obtenerNombreSubcategoria(subcategoria);
+
+
+            if (id == null || !nombre) {
+
+                return;
+
+            }
+
+
+            const opcion =
+                document.createElement("option");
+
+
+            opcion.value = id;
+
+            opcion.textContent = nombre;
+
+
+            selectorSubcategoria.appendChild(opcion);
+
+        });
+
+
+        if (filtradas.length === 0) {
+
+            opcionInicial.textContent =
+                "Esta categoría no tiene subcategorías activas";
+
+
+            selectorSubcategoria.disabled = true;
+
+            return;
+
+        }
+
+
+        selectorSubcategoria.disabled = false;
+
+
+        /*
+         * En modo reemplazo, conservar la subcategoría original.
+         */
+
+        if (
+            modoReemplazo &&
+            idSubcategoriaReemplazo > 0
+        ) {
+
+            const existe =
+                [...selectorSubcategoria.options].some(opcion =>
+
+                    Number(opcion.value) ===
+                    idSubcategoriaReemplazo
+
+                );
+
+
+            if (existe) {
+
+                selectorSubcategoria.value =
+                    String(idSubcategoriaReemplazo);
+
+
+                selectorSubcategoria.disabled = true;
+
+            }
+
+        }
+
+    }
+
+
+    /*
+     * Actualizar el mensaje de preguntas vacías.
+     */
+
+    function actualizarEstadoPreguntas() {
+
+        sinPreguntas.hidden =
+            listaPreguntas.children.length > 0;
+
+    }
+
+
+    /*
+     * Renumerar preguntas.
+     */
+
+    function renumerarPreguntas() {
+
+        const preguntas =
+            listaPreguntas.querySelectorAll(
+                ".pregunta-encuesta"
+            );
+
+
+        preguntas.forEach((bloque, indice) => {
+
+            const leyenda =
+                bloque.querySelector("legend");
+
+
+            if (leyenda) {
+
+                leyenda.textContent =
+                    `Pregunta ${indice + 1}`;
+
+            }
+
+        });
+
+    }
+
+
+    /*
+     * Agregar una opción de respuesta.
+     */
+
+    function agregarOpcion(bloque) {
+
+        const lista =
+            bloque.querySelector(".lista-opciones");
+
+
+        const fila =
+            document.createElement("div");
+
+
+        fila.className =
+            "form-group fila-opcion";
+
+
+        const entrada =
+            document.createElement("input");
+
+
+        entrada.type = "text";
+
+        entrada.className = "texto-opcion";
+
+        entrada.maxLength = 255;
+
+        entrada.placeholder = "Escribí una opción";
+
+        entrada.required = true;
+
+
+        const botonQuitar =
+            document.createElement("button");
+
+
+        botonQuitar.type = "button";
+
+        botonQuitar.className =
+            "btn-danger btn-sm btn-eliminar-opcion";
+
+        botonQuitar.textContent = "Quitar";
+
+
+        botonQuitar.addEventListener("click", () => {
+
+            if (
+                lista.querySelectorAll(".fila-opcion").length <= 2
+            ) {
+
+                mostrarMensaje(
+                    "Cada pregunta debe tener al menos dos opciones.",
+                    "mensaje-error"
+                );
+
+                return;
+
+            }
+
+
+            fila.remove();
+
+            mostrarMensaje("");
+
+        });
+
+
+        fila.append(
+            entrada,
+            botonQuitar
+        );
+
+
+        lista.appendChild(fila);
+
+    }
+
+
+    /*
+     * Crear una pregunta.
+     */
+
+    function crearPregunta() {
+
+        const numeroPregunta =
+            listaPreguntas.querySelectorAll(
+                ".pregunta-encuesta"
+            ).length + 1;
+
+
+        const bloque =
+            document.createElement("fieldset");
+
+
+        bloque.className =
+            "card pregunta-encuesta";
+
+
+        const encabezado =
+            document.createElement("div");
+
+
+        encabezado.className = "top-bar";
+
+
+        const leyenda =
+            document.createElement("legend");
+
+
+        leyenda.textContent =
+            `Pregunta ${numeroPregunta}`;
+
+
+        const botonEliminar =
+            document.createElement("button");
+
+
+        botonEliminar.type = "button";
+
+        botonEliminar.className =
+            "btn-danger btn-sm btn-eliminar-pregunta";
+
+        botonEliminar.textContent = "Quitar pregunta";
+
+
+        encabezado.append(
+            leyenda,
+            botonEliminar
+        );
+
+
+        bloque.appendChild(encabezado);
+
+
+        /*
+         * Texto de la pregunta.
+         */
+
+        const grupoTexto =
+            document.createElement("div");
+
+
+        grupoTexto.className = "form-group";
+
+
+        const labelTexto =
+            document.createElement("label");
+
+
+        labelTexto.textContent =
+            "Texto de la pregunta";
+
+
+        const inputTexto =
+            document.createElement("input");
+
+
+        inputTexto.type = "text";
+
+        inputTexto.className = "texto-pregunta";
+
+        inputTexto.maxLength = 500;
+
+        inputTexto.required = true;
+
+
+        labelTexto.appendChild(inputTexto);
+
+        grupoTexto.appendChild(labelTexto);
+
+        bloque.appendChild(grupoTexto);
+
+
+        /*
+         * Tipo de respuesta.
+         */
+
+        const grupoTipo =
+            document.createElement("div");
+
+
+        grupoTipo.className = "form-group";
+
+
+        const labelTipo =
+            document.createElement("label");
+
+
+        labelTipo.textContent =
+            "Tipo de respuesta";
+
+
+        const selectTipo =
+            document.createElement("select");
+
+
+        selectTipo.className = "tipo-pregunta";
+
+        selectTipo.required = true;
+
+
+        const opcionUnica =
+            document.createElement("option");
+
+
+        opcionUnica.value = "opcion_unica";
+
+        opcionUnica.textContent = "Opción única";
+
+
+        const opcionMultiple =
+            document.createElement("option");
+
+
+        opcionMultiple.value = "opcion_multiple";
+
+        opcionMultiple.textContent = "Opción múltiple";
+
+
+        selectTipo.append(
+            opcionUnica,
+            opcionMultiple
+        );
+
+
+        labelTipo.appendChild(selectTipo);
+
+        grupoTipo.appendChild(labelTipo);
+
+        bloque.appendChild(grupoTipo);
+
+
+        /*
+         * Opciones de respuesta.
+         */
+
+        const grupoOpciones =
+            document.createElement("div");
+
+
+        grupoOpciones.className = "form-group";
+
+
+        const tituloOpciones =
+            document.createElement("p");
+
+
+        tituloOpciones.textContent =
+            "Opciones de respuesta";
+
+
+        const listaOpciones =
+            document.createElement("div");
+
+
+        listaOpciones.className = "lista-opciones";
+
+
+        const botonAgregarOpcion =
+            document.createElement("button");
+
+
+        botonAgregarOpcion.type = "button";
+
+        botonAgregarOpcion.className =
+            "btn-secondary btn-sm btn-agregar-opcion";
+
+        botonAgregarOpcion.textContent =
+            "Agregar opción";
+
+
+        botonAgregarOpcion.addEventListener("click", () => {
+
+            agregarOpcion(bloque);
+
+        });
+
+
+        grupoOpciones.append(
+            tituloOpciones,
+            listaOpciones,
+            botonAgregarOpcion
+        );
+
+
+        bloque.appendChild(grupoOpciones);
+
+
+        /*
+         * Eliminar pregunta.
+         */
+
+        botonEliminar.addEventListener("click", () => {
+
+            bloque.remove();
+
+            actualizarEstadoPreguntas();
+
+            renumerarPreguntas();
+
+            mostrarMensaje("");
+
+        });
+
+
+        listaPreguntas.appendChild(bloque);
+
+
+        /*
+         * Toda pregunta empieza con dos opciones.
+         */
+
+        agregarOpcion(bloque);
+
+        agregarOpcion(bloque);
+
+
+        actualizarEstadoPreguntas();
+
+    }
+
+
+    /*
+     * Obtener los datos del formulario.
+     */
+
+    function obtenerDatosFormulario() {
+
+        const preguntas = [
+
+            ...listaPreguntas.querySelectorAll(
+                ".pregunta-encuesta"
+            )
+
+        ].map(bloque => ({
+
+            texto:
+                bloque.querySelector(
+                    ".texto-pregunta"
+                ).value.trim(),
+
+
+            tipo:
+                bloque.querySelector(
+                    ".tipo-pregunta"
+                ).value,
+
+
+            opciones: [
+
+                ...bloque.querySelectorAll(
+                    ".texto-opcion"
+                )
+
+            ].map(input =>
+                input.value.trim()
+            )
+
+        }));
+
+
+        return {
+
+            titulo:
+                document.getElementById(
+                    "titulo"
+                ).value.trim(),
+
+
+            id_subcategoria:
+                Number(selectorSubcategoria.value),
+
+
+            preguntas
+
+        };
+
+    }
+
+
+    /*
+     * Guardar o reemplazar encuesta.
+     */
+
+    async function guardarEncuesta(evento) {
+
+        evento.preventDefault();
+
+
+        mostrarMensaje("");
+
+
+        if (
+            formularioEnviado ||
+            !formulario.reportValidity()
+        ) {
+
+            return;
+
+        }
+
+
+        const datos =
+            obtenerDatosFormulario();
+
+
+        if (!datos.titulo) {
+
+            mostrarMensaje(
+                "Ingresá el título de la encuesta.",
+                "mensaje-error"
+            );
+
+            return;
+
+        }
+
+
+        if (!datos.id_subcategoria) {
+
+            mostrarMensaje(
+                "Seleccioná una subcategoría.",
+                "mensaje-error"
+            );
+
+            return;
+
+        }
+
+
+        if (datos.preguntas.length === 0) {
+
+            mostrarMensaje(
+                "Agregá al menos una pregunta.",
+                "mensaje-error"
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * Validar preguntas y opciones.
+         */
+
+        for (
+            let indice = 0;
+            indice < datos.preguntas.length;
+            indice++
+        ) {
+
+            const pregunta =
+                datos.preguntas[indice];
+
+
+            if (!pregunta.texto) {
+
+                mostrarMensaje(
+                    `Completá el texto de la pregunta ${indice + 1}.`,
+                    "mensaje-error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                pregunta.opciones.length < 2 ||
+                pregunta.opciones.some(opcion => !opcion)
+            ) {
+
+                mostrarMensaje(
+                    `La pregunta ${indice + 1} necesita al menos dos opciones completas.`,
+                    "mensaje-error"
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        /*
+         * Evitar envíos duplicados.
+         */
+
+        formularioEnviado = true;
+
+
+        btnGuardar.disabled = true;
+
+        btnGuardar.textContent = "Guardando...";
+
+
+        try {
+
+            let url =
+                API_CREAR_ENCUESTA;
+
+
+            let cuerpo =
+                datos;
+
+
+            /*
+             * Si se está reemplazando una encuesta,
+             * utilizar el endpoint de actualización.
+             */
+
+            if (modoReemplazo) {
+
+                if (
+                    !Number.isInteger(idEncuestaAnterior) ||
+                    idEncuestaAnterior <= 0 ||
+                    !Number.isInteger(idSubcategoriaReemplazo) ||
+                    idSubcategoriaReemplazo <= 0
+                ) {
+
+                    throw new Error(
+                        "Los datos de la encuesta que querés reemplazar no son válidos."
+                    );
+
+                }
+
+
+                url =
+                    API_ACTUALIZAR_ENCUESTA;
+
+
+                cuerpo = {
+
+                    accion: "reemplazar",
+
+                    id_encuesta: idEncuestaAnterior,
+
+                    titulo: datos.titulo,
+
+                    id_subcategoria: idSubcategoriaReemplazo,
+
+                    preguntas: datos.preguntas
+
+                };
+
+            }
+
+
+            const respuesta =
+                await fetch(url, {
+
+                    method: "POST",
+
+                    credentials: "same-origin",
+
+                    headers: {
+
+                        "Content-Type": "application/json",
+
+                        "Accept": "application/json"
+
+                    },
+
+                    body: JSON.stringify(cuerpo)
+
+                });
+
+
+            const resultado =
+                await respuesta.json();
+
+
+            if (
+                !respuesta.ok ||
+                resultado.ok === false
+            ) {
+
+                throw new Error(
+                    resultado.mensaje ||
+                    "No se pudo guardar la encuesta."
+                );
+
+            }
+
+
+            mostrarMensaje(
+
+                resultado.mensaje ||
+
+                (
+                    modoReemplazo
+                        ? "Encuesta reemplazada correctamente."
+                        : "Encuesta creada correctamente."
+                ),
+
+                "mensaje-exito"
+
+            );
+
+
+            /*
+             * Volver a la lista de encuestas.
+             */
+
+            window.setTimeout(() => {
+
+                window.location.replace(
+                    "encuestas.html"
+                );
+
+            }, 1000);
+
+
+        } catch (error) {
+
+            console.error(
+                "Error:",
+                error
+            );
+
+
+            mostrarMensaje(
+
+                error.message ||
+                "Ocurrió un error al guardar la encuesta.",
+
+                "mensaje-error"
+
+            );
+
+
+            formularioEnviado = false;
+
+
+            btnGuardar.disabled = false;
+
+
+            btnGuardar.textContent =
+
+                modoReemplazo
+                    ? "Reemplazar encuesta"
+                    : "Crear encuesta";
+
+        }
+
+    }
+
+
+    /*
+     * Eventos.
+     */
+
+    selectorCategoria.addEventListener(
+        "change",
+        filtrarSubcategorias
+    );
+
+
+    btnAgregarPregunta.addEventListener(
+        "click",
+        crearPregunta
+    );
+
+
+    formulario.addEventListener(
+        "submit",
+        guardarEncuesta
+    );
+
+
+    /*
+     * Verificar sesión.
+     */
+
+    const autorizado =
+        await verificarAdministrador();
+
+
+    if (!autorizado) {
+
+        return;
+
+    }
+
+
+    /*
+     * Solo el administrador puede crear
+     * o reemplazar encuestas.
+     */
+
+    const rolUsuario =
+        document.getElementById("rol")
+            .textContent
+            .trim()
+            .toLowerCase();
+
+
+    if (!rolUsuario.includes("administrador")) {
+
+        bloquearFormulario();
+
+
+        mostrarMensaje(
+            "No tenés permisos para crear o reemplazar encuestas.",
+            "mensaje-error"
+        );
+
+
+        window.location.replace(
+            "../encuestas/index.html"
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+     * Configuración del modo reemplazo.
+     */
+
+    if (modoReemplazo) {
+
+        if (
+            !Number.isInteger(idEncuestaAnterior) ||
+            idEncuestaAnterior <= 0 ||
+            !Number.isInteger(idSubcategoriaReemplazo) ||
+            idSubcategoriaReemplazo <= 0
+        ) {
+
+            mostrarMensaje(
+                "No se recibieron los datos necesarios para reemplazar la encuesta.",
+                "mensaje-error"
+            );
+
+
+            bloquearFormulario();
+
+            return;
+
+        }
+
+
+        tituloPagina.textContent =
+            "Reemplazar encuesta";
+
+
+        tituloSeccion.textContent =
+            "Reemplazar encuesta";
+
+
+        descripcionSeccion.textContent =
+            "Creá la nueva versión. La encuesta anterior y sus respuestas deben conservarse.";
+
+
+        btnGuardar.textContent =
+            "Reemplazar encuesta";
+
+    }
+
+
+    /*
+     * Cargar categorías y subcategorías.
+     */
+
+    try {
+
+        await Promise.all([
+
+            cargarCategorias(),
+
+            cargarSubcategorias()
+
+        ]);
+
+
+        /*
+         * Seleccionar la categoría y subcategoría
+         * de la encuesta anterior.
+         */
+
+        if (modoReemplazo) {
+
+            const subcategoria =
+                todasLasSubcategorias.find(item =>
+
+                    Number(
+                        obtenerIdSubcategoria(item)
+                    ) === idSubcategoriaReemplazo
+
+                );
+
+
+            if (!subcategoria) {
+
+                throw new Error(
+                    "No se encontró la subcategoría de la encuesta anterior."
+                );
+
+            }
+
+
+            selectorCategoria.value = String(
+
+                obtenerIdCategoriaDeSubcategoria(
+                    subcategoria
+                )
+
+            );
+
+
+            filtrarSubcategorias();
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error:",
+            error
+        );
+
+
+        mostrarMensaje(
+
+            error.message ||
+            "No se pudieron cargar las categorías y subcategorías.",
+
+            "mensaje-error"
+
+        );
+
+    }
+
+});
+
+</script>
+
+
+
+    <script src="../js/preferencias.js"></script>
+    <script src="../js/header.js"></script>
+</body>
+
+</html>
